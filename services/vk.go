@@ -60,12 +60,7 @@ func (v *VKService) handleMessage(request map[string]interface{}) {
 
 	log.Printf("New message from user %d: %s", fromID, userMessage)
 
-	aiKey := os.Getenv("OPENAI_API_KEY")
-	if os.Getenv("AI_PROVIDER") == "openrouter" {
-		aiKey = os.Getenv("OPENROUTER_API_KEY")
-	}
-
-	aiResponse, err := v.GetAIResponse(userMessage, aiKey)
+	aiResponse, err := v.GetAIResponse(userMessage)
 	if err != nil {
 		log.Printf("Error getting AI response: %v", err)
 		aiResponse = "Sorry, I can't respond right now. Please try again later."

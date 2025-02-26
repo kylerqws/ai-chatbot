@@ -6,13 +6,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strings"
 	"time"
 )
 
 const openAIEndpoint = "https://api.openai.com/v1/chat/completions"
 
-func GetOpenAIResponse(prompt, apiKey string) (string, error) {
+func GetOpenAIResponse(prompt string, apiKey string) (string, error) {
 	requestBody, err := json.Marshal(map[string]interface{}{
 		"model": "gpt-3.5-turbo",
 		"messages": []map[string]string{
@@ -32,10 +31,7 @@ func GetOpenAIResponse(prompt, apiKey string) (string, error) {
 	req.Header.Set("Authorization", "Bearer "+apiKey)
 	req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{
-		Timeout: 10 * time.Second,
-	}
-
+	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
 		return "", fmt.Errorf("Error executing request: %v", err)
@@ -59,5 +55,5 @@ func GetOpenAIResponse(prompt, apiKey string) (string, error) {
 	}
 
 	result := choices[0].(map[string]interface{})["message"].(map[string]interface{})["content"].(string)
-	return strings.TrimSpace(result), nil
+	return result, nil
 }

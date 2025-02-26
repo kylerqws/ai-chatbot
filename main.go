@@ -10,12 +10,14 @@ import (
 	"github.com/kylerqws/go-chatgpt-vk/services"
 )
 
-func main() {
+func init() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
+}
 
+func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "5000"
