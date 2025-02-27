@@ -7,13 +7,25 @@ import (
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/kylerqws/go-chatgpt-vk/models"
 )
 
 const openAIEndpoint = "https://api.openai.com/v1/chat/completions"
 
+var httpClient = &http.Client{
+	Timeout: 60 * time.Second,
+}
+
 func GetOpenAIResponse(prompt string, apiKey string) (string, error) {
+	modelData, err := models.ModelConfig.Load()
+	if err != nil {
+		return "", fmt.Errorf("Failed to load model config: %v", err)
+	}
+	modelName := modelData.Name
+
 	requestBody, err := json.Marshal(map[string]interface{}{
-		"model": "gpt-3.5-turbo",
+		"model": modelName,
 		"messages": []map[string]string{
 			{"role": "user", "content": prompt},
 		},
@@ -31,10 +43,9 @@ func GetOpenAIResponse(prompt string, apiKey string) (string, error) {
 	req.Header.Set("Authorization", "Bearer "+apiKey)
 	req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("Error executing request: %v", err)
+		return "", fmt.Errorf("Request failed: %v", err)
 	}
 	defer resp.Body.Close()
 

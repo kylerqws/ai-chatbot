@@ -6,46 +6,46 @@ import (
 	"os"
 )
 
-type ConfigStorage interface {
-	Load(data interface{}) error
-	Save(data interface{}) error
+const modelConfigPath = "config/model.json"
+
+type ModelData struct {
+	Name   string `json:"name"`
+	FileID string `json:"file_id"`
 }
 
-type FileConfig struct {
+var ModelConfig = &ConfigManager{Path: modelConfigPath}
+
+type ConfigManager struct {
 	Path string
 }
 
-func (f *FileConfig) Load(data interface{}) error {
-	file, err := os.ReadFile(f.Path)
+func (c *ConfigManager) Load() (*ModelData, error) {
+	file, err := os.Open(c.Path)
 	if err != nil {
-		return fmt.Errorf("failed to read config file %s: %v", f.Path, err)
+		return nil, fmt.Errorf("Failed to open config file: %v", err)
+	}
+	defer file.Close()
+
+	var modelData ModelData
+	if err := json.NewDecoder(file).Decode(&modelData); err != nil {
+		return nil, fmt.Errorf("Failed to parse config file: %v", err)
 	}
 
-	if err := json.Unmarshal(file, data); err != nil {
-		return fmt.Errorf("failed to parse config file %s: %v", f.Path, err)
+	return &modelData, nil
+}
+
+func (c *ConfigManager) Save(modelData *ModelData) error {
+	file, err := os.Create(c.Path)
+	if err != nil {
+		return fmt.Errorf("Failed to create config file: %v", err)
+	}
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(modelData); err != nil {
+		return fmt.Errorf("Failed to write config file: %v", err)
 	}
 
 	return nil
 }
-
-func (f *FileConfig) Save(data interface{}) error {
-	file, err := json.MarshalIndent(data, "", "  ")
-	if err != nil {
-		return fmt.Errorf("failed to encode config data: %v", err)
-	}
-
-	if err := os.MkdirAll("config", os.ModePerm); err != nil {
-		return fmt.Errorf("failed to create config directory: %v", err)
-	}
-
-	if err := os.WriteFile(f.Path, file, 0644); err != nil {
-		return fmt.Errorf("failed to save config file %s: %v", f.Path, err)
-	}
-
-	return nil
-}
-
-var (
-	ModelConfig   = &FileConfig{Path: "config/model.json"}
-	PromptsConfig = &FileConfig{Path: "config/prompts.json"}
-)

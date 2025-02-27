@@ -1,7 +1,4 @@
-1. VPN on
-2. go build
-3. go run main.go
-4. ngrok http 5000
-
-Обучение:
-go run commands/train.go
+- `go run main.go train`   # Запустить обучение модели
+- Start NetProxy VPN       # Включить VPN
+- `ngrok http 5000`        # Запустить локальный DNS
+- `go run main.go serve`   # Запустить сервер
