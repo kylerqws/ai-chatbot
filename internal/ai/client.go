@@ -3,6 +3,8 @@ package ai
 import (
 	"fmt"
 	"os"
+
+	"github.com/kylerqws/chatgpt-bot/pkg/openai"
 )
 
 // AIClient - интерфейс для всех AI-сервисов (OpenAI, Azure, Claude и т. д.).
@@ -20,7 +22,7 @@ func NewAIClient() (AIClient, error) {
 		if apiKey == "" {
 			return nil, fmt.Errorf("missing OPENAI_API_KEY")
 		}
-		return NewOpenAIClient(apiKey), nil
+		return openai.NewClient(apiKey), nil
 
 	default:
 		return nil, fmt.Errorf("unsupported AI provider: %s", provider)
