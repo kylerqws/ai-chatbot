@@ -39,14 +39,14 @@ func ConvertToReader(path string) (io.Reader, error) {
 }
 
 func decodeJSON(r io.Reader) ([]map[string]any, error) {
-	var result []map[string]any
+	var data []map[string]any
 	decoder := json.NewDecoder(r)
 
-	if err := decoder.Decode(&result); err != nil {
+	if err := decoder.Decode(&data); err != nil {
 		return nil, fmt.Errorf("failed to decode JSON: %w", err)
 	}
 
-	return result, nil
+	return data, nil
 }
 
 func encodeToJSONL(data []map[string]any) ([]byte, error) {
