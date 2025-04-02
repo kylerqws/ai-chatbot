@@ -15,17 +15,17 @@ import (
 	"github.com/kylerqws/chatbot/pkg/openai/domain/purpose"
 	"github.com/kylerqws/chatbot/pkg/openai/utils/converter/jsonl"
 
-	ctrlg "github.com/kylerqws/chatbot/pkg/logger/contract/logger"
-	ctrcf "github.com/kylerqws/chatbot/pkg/openai/contract/config"
+	ctrlog "github.com/kylerqws/chatbot/pkg/logger/contract/logger"
+	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 )
 
 type Client struct {
-	config     ctrcf.Config
-	logger     ctrlg.Logger
+	config     ctrcfg.Config
+	logger     ctrlog.Logger
 	httpClient *http.Client
 }
 
-func New(cfg ctrcf.Config, log ctrlg.Logger) *Client {
+func New(cfg ctrcfg.Config, log ctrlog.Logger) *Client {
 	return &Client{
 		config:     cfg,
 		logger:     log,

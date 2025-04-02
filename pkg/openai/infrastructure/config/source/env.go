@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	ctrcf "github.com/kylerqws/chatbot/pkg/openai/contract/config"
+	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 )
 
 type envConfig struct {
@@ -17,7 +17,7 @@ type envConfig struct {
 	timeout time.Duration
 }
 
-func NewEnvConfig(_ context.Context) (ctrcf.Config, error) {
+func NewEnvConfig(_ context.Context) (ctrcfg.Config, error) {
 	baseURL := os.Getenv("OPENAI_API_BASE_URL")
 	apiKey := os.Getenv("OPENAI_API_KEY")
 	timeoutStr := os.Getenv("OPENAI_API_TIMEOUT")
