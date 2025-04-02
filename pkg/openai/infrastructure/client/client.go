@@ -133,8 +133,8 @@ func (c *Client) doRequest(ctx context.Context, req *http.Request) ([]byte, erro
 	if err != nil {
 		return nil, err
 	}
-	defer func(Body io.ReadCloser) {
-		if err := Body.Close(); err != nil {
+	defer func(body io.ReadCloser) {
+		if err := body.Close(); err != nil {
 			c.logger.ErrorWithContext(ctx, "failed to close response body from OpenAI:", err)
 		}
 	}(resp.Body)

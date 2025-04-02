@@ -24,7 +24,7 @@ func NewEnvConfig(_ context.Context) (ctrcfg.Config, error) {
 
 	timeout, err := strconv.Atoi(timeoutStr)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse OpenAI API timeout value: %w", err)
+		return nil, fmt.Errorf("failed to parse OpenAI timeout value: %w", err)
 	}
 
 	cfg := &envConfig{}
@@ -47,7 +47,7 @@ func (c *envConfig) GetBaseURL() string {
 
 func (c *envConfig) SetBaseURL(baseURL string) error {
 	if strings.TrimSpace(baseURL) == "" {
-		return fmt.Errorf("required OpenAI API base URL is not set")
+		return fmt.Errorf("required OpenAI base URL is not set")
 	}
 
 	c.baseURL = baseURL
@@ -60,7 +60,7 @@ func (c *envConfig) GetAPIKey() string {
 
 func (c *envConfig) SetAPIKey(apiKey string) error {
 	if strings.TrimSpace(apiKey) == "" {
-		return fmt.Errorf("required OpenAI API key is not set")
+		return fmt.Errorf("required OpenAI key is not set")
 	}
 
 	c.apiKey = apiKey
@@ -73,7 +73,7 @@ func (c *envConfig) GetTimeout() time.Duration {
 
 func (c *envConfig) SetTimeout(seconds int) error {
 	if seconds <= 0 {
-		return fmt.Errorf("invalid value for OpenAI API timeout: %q", seconds)
+		return fmt.Errorf("invalid value for OpenAI timeout: %q", seconds)
 	}
 
 	c.timeout = time.Duration(seconds) * time.Second

@@ -12,7 +12,7 @@ import (
 
 func ConvertToReader(path string) (io.Reader, error) {
 	if !isJSONFile(path) {
-		return nil, fmt.Errorf("file is not a .json")
+		return nil, fmt.Errorf("file does not have .json extension")
 	}
 
 	file, err := os.Open(path)
@@ -55,7 +55,6 @@ func encodeToJSONL(data []map[string]any) ([]byte, error) {
 
 	for _, record := range data {
 		line, err := json.Marshal(record)
-
 		if err != nil {
 			return nil, fmt.Errorf("failed to encode JSONL: %w", err)
 		}
@@ -63,7 +62,6 @@ func encodeToJSONL(data []map[string]any) ([]byte, error) {
 		if _, err := writer.Write(line); err != nil {
 			return nil, err
 		}
-
 		if err := writer.WriteByte('\n'); err != nil {
 			return nil, err
 		}

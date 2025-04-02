@@ -45,5 +45,5 @@ func Resolve(code string) (*Purpose, error) {
 		return purpose, nil
 	}
 
-	return nil, fmt.Errorf("invalid purpose value for OpenAI API request: %q", code)
+	return nil, fmt.Errorf("invalid purpose value for OpenAI request: %q", code)
 }
