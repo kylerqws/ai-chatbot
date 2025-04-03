@@ -20,11 +20,11 @@ func New() ctrreg.LoggerRegistry {
 	}
 }
 
-func (r *loggerRegistry) Register(name string, logger ctrlog.Logger) {
+func (r *loggerRegistry) Register(name string, log ctrlog.Logger) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	r.loggers[name] = logger
+	r.loggers[name] = log
 }
 
 func (r *loggerRegistry) Logger(name string) (ctrlog.Logger, error) {
@@ -35,8 +35,8 @@ func (r *loggerRegistry) Logger(name string) (ctrlog.Logger, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	if logger, ok := r.loggers[name]; ok {
-		return logger, nil
+	if log, ok := r.loggers[name]; ok {
+		return log, nil
 	}
 
 	return nil, fmt.Errorf("unregistered logger: %q", name)
