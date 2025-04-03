@@ -25,7 +25,7 @@ type DeleteFileRequest struct {
 }
 
 type ListFilesRequest struct {
-	// filters may be added in the future
+	// TODO: filters may be added in the future
 }
 
 type FileService interface {
