@@ -9,8 +9,12 @@ import (
 )
 
 type (
-	dbProvider struct{ config ctrcfg.Config }
-	dbWriter   struct{}
+	dbProvider struct {
+		config ctrcfg.Config
+	}
+	dbWriter struct {
+		config ctrcfg.Config
+	}
 )
 
 func NewDBProvider(cfg ctrcfg.Config) ctrwrt.Provider {
@@ -18,9 +22,10 @@ func NewDBProvider(cfg ctrcfg.Config) ctrwrt.Provider {
 }
 
 func (p *dbProvider) Writer() io.Writer {
-	return &dbWriter{}
+	return &dbWriter{config: p.config}
 }
 
+// TODO: need to implement for storing logs in the DB
 func (w *dbWriter) Write(p []byte) (int, error) {
 	return len(p), fmt.Errorf("database writer not implemented")
 }

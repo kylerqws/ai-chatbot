@@ -8,10 +8,12 @@ import (
 	ctrwrt "github.com/kylerqws/chatbot/pkg/logger/contract/writer"
 )
 
-type stdoutProvider struct{ config ctrcfg.Config }
+type stdoutProvider struct {
+	config ctrcfg.Config
+}
 
-func NewStdoutProvider(_ ctrcfg.Config) ctrwrt.Provider {
-	return &stdoutProvider{}
+func NewStdoutProvider(cfg ctrcfg.Config) ctrwrt.Provider {
+	return &stdoutProvider{config: cfg}
 }
 
 func (stdoutProvider) Writer() io.Writer {
