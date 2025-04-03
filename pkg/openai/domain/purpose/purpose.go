@@ -37,8 +37,8 @@ func Resolve(code string) (*Purpose, error) {
 	if code == "" {
 		return &FineTune, nil
 	}
-	if purpose, ok := AllPurposes[code]; ok {
-		return purpose, nil
+	if prp, ok := AllPurposes[code]; ok {
+		return prp, nil
 	}
 
 	return nil, fmt.Errorf("invalid purpose value for OpenAI request: %q", code)
