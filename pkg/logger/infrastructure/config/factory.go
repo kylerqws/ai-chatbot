@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	SourceTypeKey     = "configSourceType"
+	SourceTypeKey     = "sourceType"
 	DefaultSourceType = "env"
 )
 
