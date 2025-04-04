@@ -1,9 +1,9 @@
 package dialect
 
-import "database/sql"
+import "github.com/uptrace/bun"
 
 type Dialect interface {
 	Connect() error
 	Close() error
-	DB() *sql.DB
+	DB() *bun.DB
 }
