@@ -14,8 +14,8 @@ type migrator struct {
 	migrations *migrate.Migrations
 }
 
-func New(cl ctrcli.Client) ctrmig.Migrator {
-	return &migrator{client: cl}
+func New(cl ctrcli.Client) (ctrmig.Migrator, error) {
+	return &migrator{client: cl}, nil
 }
 
 func (m *migrator) Migrate(ctx context.Context) error {
