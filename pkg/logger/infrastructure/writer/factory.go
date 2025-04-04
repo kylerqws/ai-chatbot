@@ -8,7 +8,7 @@ import (
 	ctrwrt "github.com/kylerqws/chatbot/pkg/logger/contract/writer"
 )
 
-func New(cfg ctrcfg.Config) (ctrwrt.Provider, error) {
+func NewProvider(cfg ctrcfg.Config) (ctrwrt.Provider, error) {
 	wrtType := cfg.GetWriter()
 
 	switch wrtType {

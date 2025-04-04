@@ -16,7 +16,7 @@ func NewLogger(ctx context.Context) (ctrlog.Logger, error) {
 		return nil, err
 	}
 
-	prv, err := writer.New(cfg)
+	prv, err := writer.NewProvider(cfg)
 	if err != nil {
 		return nil, err
 	}

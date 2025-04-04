@@ -3,8 +3,9 @@ package logger
 import (
 	"context"
 	"fmt"
-	"github.com/rs/zerolog"
 	"io"
+
+	"github.com/rs/zerolog"
 
 	ctrcfg "github.com/kylerqws/chatbot/pkg/logger/contract/config"
 	ctrlog "github.com/kylerqws/chatbot/pkg/logger/contract/logger"
