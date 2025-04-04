@@ -1,4 +1,4 @@
-package writer
+package provider
 
 import (
 	"fmt"
@@ -25,7 +25,7 @@ func (p *dbProvider) Writer() io.Writer {
 	return &dbWriter{config: p.config}
 }
 
-// TODO: need to implement for storing logs in the DB
+// TODO: need to implement for storing logs in the database
 func (w *dbWriter) Write(p []byte) (int, error) {
-	return len(p), fmt.Errorf("database writer not implemented")
+	return len(p), fmt.Errorf("no writer for db logger")
 }

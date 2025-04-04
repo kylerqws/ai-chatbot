@@ -1,4 +1,4 @@
-package writer
+package provider
 
 import (
 	"io"

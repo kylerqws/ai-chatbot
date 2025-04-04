@@ -16,16 +16,10 @@ func NewLogger(ctx context.Context) (ctrlog.Logger, error) {
 		return nil, err
 	}
 
-	w := writer.NewStdoutProvider(cfg).Writer()
-	return logger.NewZeroLogger(cfg, w), nil
-}
-
-func NewDBLogger(ctx context.Context) (ctrlog.Logger, error) {
-	cfg, err := config.New(ctx)
+	prv, err := writer.New(cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	w := writer.NewDBProvider(cfg).Writer()
-	return logger.NewZeroLogger(cfg, w), nil
+	return logger.NewZeroLogger(cfg, prv.Writer()), nil
 }
