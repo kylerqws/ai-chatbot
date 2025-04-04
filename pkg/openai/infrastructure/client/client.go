@@ -15,40 +15,37 @@ import (
 	"github.com/kylerqws/chatbot/pkg/openai/domain/purpose"
 	"github.com/kylerqws/chatbot/pkg/openai/utils/converter/jsonl"
 
-	ctrlog "github.com/kylerqws/chatbot/pkg/logger/contract/logger"
 	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 )
 
 type Client struct {
 	config     ctrcfg.Config
-	logger     ctrlog.Logger
 	httpClient *http.Client
 }
 
-func New(cfg ctrcfg.Config, log ctrlog.Logger) *Client {
+func New(cfg ctrcfg.Config) *Client {
 	return &Client{
 		config:     cfg,
-		logger:     log,
 		httpClient: &http.Client{Timeout: cfg.GetTimeout()},
 	}
 }
 
-func (c *Client) RequestMultipart(ctx context.Context, path string, body map[string]string, fileField string) ([]byte, error) {
-	filePath := body[fileField]
+func (c *Client) RequestMultipart(ctx context.Context, path string, body map[string]string) ([]byte, error) {
+	filePath := body["file"]
 	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, err
 	}
 	defer func(file *os.File) {
-		if err := file.Close(); err != nil {
-			c.logger.ErrorWithContext(ctx, "failed to close file uploaded to OpenAI:", err)
+		if clerr := file.Close(); clerr != nil && err == nil {
+			err = clerr
 		}
 	}(file)
 
 	var fileReader io.Reader = file
 	if strings.HasSuffix(strings.ToLower(filePath), ".json") {
 		prp := body["purpose"]
-		if prp == purpose.FineTune.Value || prp == purpose.FineTuneResults.Value {
+		if prp == purpose.FineTune.Code || prp == purpose.FineTuneResults.Code {
 			fileReader, err = jsonl.ConvertToReader(filePath)
 			if err != nil {
 				return nil, err
@@ -59,7 +56,7 @@ func (c *Client) RequestMultipart(ctx context.Context, path string, body map[str
 	b := &bytes.Buffer{}
 	w := multipart.NewWriter(b)
 
-	part, err := w.CreateFormFile(fileField, filepath.Base(filePath))
+	part, err := w.CreateFormFile("file", filepath.Base(filePath))
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +65,7 @@ func (c *Client) RequestMultipart(ctx context.Context, path string, body map[str
 	}
 
 	for key, val := range body {
-		if key != fileField {
+		if key != "file" {
 			if err := w.WriteField(key, val); err != nil {
 				return nil, err
 			}
@@ -128,14 +125,13 @@ func (c *Client) buildRequest(method, path string, body io.Reader) (*http.Reques
 }
 
 func (c *Client) doRequest(ctx context.Context, req *http.Request) ([]byte, error) {
-	req = req.WithContext(ctx)
-	resp, err := c.httpClient.Do(req)
+	resp, err := c.httpClient.Do(req.WithContext(ctx))
 	if err != nil {
 		return nil, err
 	}
 	defer func(body io.ReadCloser) {
-		if err := body.Close(); err != nil {
-			c.logger.ErrorWithContext(ctx, "failed to close response body from OpenAI:", err)
+		if clerr := body.Close(); clerr != nil && err == nil {
+			err = clerr
 		}
 	}(resp.Body)
 
@@ -146,7 +142,7 @@ func (c *Client) doRequest(ctx context.Context, req *http.Request) ([]byte, erro
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		msg := c.extractAPIError(body)
-		return nil, fmt.Errorf("failed to request to OpenAI: %s (%s)", resp.Status, msg)
+		return nil, fmt.Errorf("request to OpenAI failed: %s (%s)", resp.Status, msg)
 	}
 
 	return body, nil
@@ -158,7 +154,6 @@ func (c *Client) extractAPIError(body []byte) string {
 			Message string `json:"message"`
 		} `json:"error"`
 	}
-
 	if err := json.Unmarshal(body, &data); err == nil && data.Error.Message != "" {
 		return data.Error.Message
 	}
