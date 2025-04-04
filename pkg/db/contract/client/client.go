@@ -1,13 +1,9 @@
 package client
 
-import (
-	"context"
-	"database/sql"
-)
+import "github.com/uptrace/bun"
 
 type Client interface {
-	Init(context.Context) error
-	Connect() (*sql.DB, error)
+	Connect() error
 	Close() error
-	DB() *sql.DB
+	DB() *bun.DB
 }

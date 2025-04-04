@@ -1,13 +1,9 @@
 package dialect
 
-import (
-	"context"
-	"database/sql"
-)
+import "database/sql"
 
 type Dialect interface {
-	Init(context.Context) error
-	Connect() (*sql.DB, error)
+	Connect() error
 	Close() error
 	DB() *sql.DB
 }
