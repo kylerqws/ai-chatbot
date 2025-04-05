@@ -12,9 +12,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 	"github.com/kylerqws/chatbot/pkg/openai/domain/purpose"
 	"github.com/kylerqws/chatbot/pkg/openai/utils/converter/jsonl"
+
+	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 )
 
 type Client struct {

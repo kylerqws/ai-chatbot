@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/uptrace/bun/migrate"
+
 	ctrcli "github.com/kylerqws/chatbot/pkg/db/contract/client"
 	ctrmig "github.com/kylerqws/chatbot/pkg/db/contract/migrator"
-	"github.com/uptrace/bun/migrate"
 )
 
 type migrator struct {

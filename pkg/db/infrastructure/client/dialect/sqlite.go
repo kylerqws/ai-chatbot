@@ -7,13 +7,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	ctrdlt "github.com/kylerqws/chatbot/pkg/db/contract/client/dialect"
-	ctrcfg "github.com/kylerqws/chatbot/pkg/db/contract/config"
-
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/sqlitedialect"
 	"github.com/uptrace/bun/extra/bundebug"
+
+	ctrdlt "github.com/kylerqws/chatbot/pkg/db/contract/client/dialect"
+	ctrcfg "github.com/kylerqws/chatbot/pkg/db/contract/config"
 )
 
 type sqliteDialect struct {

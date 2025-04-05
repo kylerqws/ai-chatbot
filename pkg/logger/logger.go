@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	ctr "github.com/kylerqws/chatbot/pkg/logger/contract"
 	"github.com/kylerqws/chatbot/pkg/logger/infrastructure/config"
 	"github.com/kylerqws/chatbot/pkg/logger/infrastructure/logger"
 	"github.com/kylerqws/chatbot/pkg/logger/infrastructure/writer"
+
+	ctr "github.com/kylerqws/chatbot/pkg/logger/contract"
 )
 
 func New(ctx context.Context) (ctr.Logger, error) {

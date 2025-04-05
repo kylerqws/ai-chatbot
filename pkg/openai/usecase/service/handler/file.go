@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 
-	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
-	ctrsrv "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 	"github.com/kylerqws/chatbot/pkg/openai/domain/purpose"
 	"github.com/kylerqws/chatbot/pkg/openai/infrastructure/client"
+
+	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
+	ctrsrv "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 )
 
 type fileService struct {

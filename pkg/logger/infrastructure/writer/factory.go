@@ -3,9 +3,10 @@ package writer
 import (
 	"fmt"
 
+	"github.com/kylerqws/chatbot/pkg/logger/infrastructure/writer/provider"
+
 	ctrcfg "github.com/kylerqws/chatbot/pkg/logger/contract/config"
 	ctrwrt "github.com/kylerqws/chatbot/pkg/logger/contract/writer"
-	"github.com/kylerqws/chatbot/pkg/logger/infrastructure/writer/provider"
 )
 
 func NewProvider(cfg ctrcfg.Config) (ctrwrt.Provider, error) {

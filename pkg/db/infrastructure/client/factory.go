@@ -3,11 +3,12 @@ package client
 import (
 	"fmt"
 
+	"github.com/kylerqws/chatbot/pkg/db/infrastructure/client/dialect"
+	"github.com/uptrace/bun"
+
 	ctrcli "github.com/kylerqws/chatbot/pkg/db/contract/client"
 	ctrdlt "github.com/kylerqws/chatbot/pkg/db/contract/client/dialect"
 	ctrcfg "github.com/kylerqws/chatbot/pkg/db/contract/config"
-	"github.com/kylerqws/chatbot/pkg/db/infrastructure/client/dialect"
-	"github.com/uptrace/bun"
 )
 
 type dbClient struct {

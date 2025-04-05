@@ -4,16 +4,17 @@ import (
 	"context"
 	"fmt"
 
-	ctr "github.com/kylerqws/chatbot/pkg/db/contract"
-	ctrcfg "github.com/kylerqws/chatbot/pkg/db/contract/client"
-	ctrmig "github.com/kylerqws/chatbot/pkg/db/contract/migrator"
 	"github.com/kylerqws/chatbot/pkg/db/infrastructure/client"
 	"github.com/kylerqws/chatbot/pkg/db/infrastructure/config"
 	"github.com/kylerqws/chatbot/pkg/db/infrastructure/migrator"
+
+	ctr "github.com/kylerqws/chatbot/pkg/db/contract"
+	ctrcli "github.com/kylerqws/chatbot/pkg/db/contract/client"
+	ctrmig "github.com/kylerqws/chatbot/pkg/db/contract/migrator"
 )
 
 type db struct {
-	client   ctrcfg.Client
+	client   ctrcli.Client
 	migrator ctrmig.Migrator
 }
 
@@ -29,7 +30,7 @@ func New(ctx context.Context) (ctr.DB, error) {
 	return &db{client: cl, migrator: mig}, nil
 }
 
-func (db *db) Client() ctrcfg.Client {
+func (db *db) Client() ctrcli.Client {
 	return db.client
 }
 

@@ -1,10 +1,11 @@
 package service
 
 import (
-	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
-	ctrsrv "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 	"github.com/kylerqws/chatbot/pkg/openai/infrastructure/client"
 	"github.com/kylerqws/chatbot/pkg/openai/usecase/service/handler"
+
+	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
+	ctrsrv "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 )
 
 type Factory struct {
