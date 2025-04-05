@@ -12,27 +12,27 @@ import (
 
 func ConvertToReader(path string) (io.Reader, error) {
 	if !isJSONFile(path) {
-		return nil, fmt.Errorf("file does not have .json extension")
+		return nil, fmt.Errorf("file is not json: %s", path)
 	}
 
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("open file %s error: %w", path, err)
 	}
 	defer func(file *os.File) {
 		if clerr := file.Close(); clerr != nil && err == nil {
-			err = clerr
+			err = fmt.Errorf("close file %s error: %w", path, clerr)
 		}
 	}(file)
 
 	data, err := decodeJSON(file)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("decode file %s error: %w", path, err)
 	}
 
 	jsonlBytes, err := encodeToJSONL(data)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("encode file %s error: %w", path, err)
 	}
 
 	return bytes.NewReader(jsonlBytes), nil
@@ -56,20 +56,20 @@ func encodeToJSONL(data []map[string]any) ([]byte, error) {
 	for _, record := range data {
 		line, err := json.Marshal(record)
 		if err != nil {
-			return nil, fmt.Errorf("failed to encode JSONL: %w", err)
+			return nil, fmt.Errorf("failed to marshal record: %w", err)
 		}
 
 		if _, err := writer.Write(line); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to write line: %w", err)
 		}
 		if err := writer.WriteByte('\n'); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to write line break: %w", err)
 		}
 	}
 
 	err := writer.Flush()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to flush writer: %w", err)
 	}
 
 	return buf.Bytes(), nil
