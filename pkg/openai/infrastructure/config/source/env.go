@@ -24,18 +24,18 @@ func NewEnvConfig(_ context.Context) (ctrcfg.Config, error) {
 
 	timeout, err := strconv.Atoi(timeoutStr)
 	if err != nil {
-		return nil, fmt.Errorf("invalid OPENAI_API_TIMEOUT: %w", err)
+		return nil, fmt.Errorf("env config: invalid OPENAI_API_TIMEOUT %q: %w", timeoutStr, err)
 	}
 
 	cfg := &envConfig{}
 	if err := cfg.SetBaseURL(baseURL); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("env config: %w", err)
 	}
 	if err := cfg.SetAPIKey(apiKey); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("env config: %w", err)
 	}
 	if err := cfg.SetTimeout(timeout); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("env config: %w", err)
 	}
 
 	return cfg, nil
@@ -47,9 +47,8 @@ func (c *envConfig) GetBaseURL() string {
 
 func (c *envConfig) SetBaseURL(baseURL string) error {
 	if strings.TrimSpace(baseURL) == "" {
-		return fmt.Errorf("missing OPENAI_API_BASE_URL")
+		return fmt.Errorf("missing required environment variable: OPENAI_API_BASE_URL")
 	}
-
 	c.baseURL = baseURL
 	return nil
 }
@@ -60,9 +59,8 @@ func (c *envConfig) GetAPIKey() string {
 
 func (c *envConfig) SetAPIKey(apiKey string) error {
 	if strings.TrimSpace(apiKey) == "" {
-		return fmt.Errorf("missing OPENAI_API_KEY")
+		return fmt.Errorf("missing required environment variable: OPENAI_API_KEY")
 	}
-
 	c.apiKey = apiKey
 	return nil
 }
@@ -73,9 +71,8 @@ func (c *envConfig) GetTimeout() time.Duration {
 
 func (c *envConfig) SetTimeout(seconds int) error {
 	if seconds <= 0 {
-		return fmt.Errorf("invalid OPENAI_API_TIMEOUT: %d", seconds)
+		return fmt.Errorf("invalid OPENAI_API_TIMEOUT value: %d (must be > 0)", seconds)
 	}
-
 	c.timeout = time.Duration(seconds) * time.Second
 	return nil
 }

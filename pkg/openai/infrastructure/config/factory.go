@@ -21,8 +21,12 @@ func New(ctx context.Context) (ctrcfg.Config, error) {
 
 	switch st {
 	case "env":
-		return source.NewEnvConfig(ctx)
+		cfg, err := source.NewEnvConfig(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("config: failed to load env source: %w", err)
+		}
+		return cfg, nil
 	default:
-		return nil, fmt.Errorf("unsupported config source: %q", st)
+		return nil, fmt.Errorf("config: unsupported source type: %q", st)
 	}
 }
