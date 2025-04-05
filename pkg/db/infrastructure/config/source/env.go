@@ -23,18 +23,18 @@ func NewEnvConfig(_ context.Context) (ctrcfg.Config, error) {
 
 	debug, err := strconv.ParseBool(debugStr)
 	if err != nil {
-		return nil, fmt.Errorf("invalid DB_DEBUG: %w", err)
+		return nil, fmt.Errorf("env config: invalid DB_DEBUG %q: %w", debugStr, err)
 	}
 
 	cfg := &envConfig{}
 	if err := cfg.SetDialect(dialect); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("env config: %w", err)
 	}
 	if err := cfg.SetDSN(dsn); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("env config: %w", err)
 	}
 	if err := cfg.SetDebug(debug); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("env config: %w", err)
 	}
 
 	return cfg, nil
@@ -46,7 +46,7 @@ func (c *envConfig) GetDialect() string {
 
 func (c *envConfig) SetDialect(dialect string) error {
 	if strings.TrimSpace(dialect) == "" {
-		return fmt.Errorf("missing DB_DIALECT")
+		return fmt.Errorf("missing required environment variable: DB_DIALECT")
 	}
 
 	c.dialect = dialect
@@ -59,7 +59,7 @@ func (c *envConfig) GetDSN() string {
 
 func (c *envConfig) SetDSN(dsn string) error {
 	if strings.TrimSpace(dsn) == "" {
-		return fmt.Errorf("missing DB_DSN")
+		return fmt.Errorf("missing required environment variable: DB_DSN")
 	}
 
 	c.dsn = dsn

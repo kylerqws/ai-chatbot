@@ -2,46 +2,37 @@ package db
 
 import (
 	"context"
+	"fmt"
 
+	ctr "github.com/kylerqws/chatbot/pkg/db/contract"
+	ctrcfg "github.com/kylerqws/chatbot/pkg/db/contract/client"
+	ctrmig "github.com/kylerqws/chatbot/pkg/db/contract/migrator"
 	"github.com/kylerqws/chatbot/pkg/db/infrastructure/client"
 	"github.com/kylerqws/chatbot/pkg/db/infrastructure/config"
 	"github.com/kylerqws/chatbot/pkg/db/infrastructure/migrator"
-
-	ctrcfg "github.com/kylerqws/chatbot/pkg/db/contract/client"
-	ctrmig "github.com/kylerqws/chatbot/pkg/db/contract/migrator"
 )
 
-type DB struct {
+type db struct {
 	client   ctrcfg.Client
 	migrator ctrmig.Migrator
 }
 
-func New(ctx context.Context) (*DB, error) {
+func New(ctx context.Context) (ctr.DB, error) {
 	cfg, err := config.New(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("db: failed to load config: %w", err)
 	}
 
-	cl, err := client.New(cfg)
-	if err != nil {
-		return nil, err
-	}
+	cl := client.New(cfg)
+	mig := migrator.New(cl)
 
-	mig, err := migrator.New(cl)
-	if err != nil {
-		return nil, err
-	}
-
-	return &DB{
-		client:   cl,
-		migrator: mig,
-	}, nil
+	return &db{client: cl, migrator: mig}, nil
 }
 
-func (db *DB) Client() ctrcfg.Client {
+func (db *db) Client() ctrcfg.Client {
 	return db.client
 }
 
-func (db *DB) Migrator() ctrmig.Migrator {
+func (db *db) Migrator() ctrmig.Migrator {
 	return db.migrator
 }
