@@ -21,15 +21,15 @@ func NewEnvConfig(_ context.Context) (ctrcfg.Config, error) {
 
 	debug, err := strconv.ParseBool(debugStr)
 	if err != nil {
-		return nil, fmt.Errorf("invalid LOGGER_DEBUG: %w", err)
+		return nil, fmt.Errorf("env config: invalid LOGGER_DEBUG %q: %w", debugStr, err)
 	}
 
 	cfg := &envConfig{}
 	if err := cfg.SetWriter(writer); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("env config: %w", err)
 	}
 	if err := cfg.SetDebug(debug); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("env config: %w", err)
 	}
 
 	return cfg, nil
@@ -41,7 +41,7 @@ func (c *envConfig) GetWriter() string {
 
 func (c *envConfig) SetWriter(writer string) error {
 	if strings.TrimSpace(writer) == "" {
-		return fmt.Errorf("missing LOGGER_WRITER")
+		return fmt.Errorf("missing required environment variable: LOGGER_WRITER")
 	}
 
 	c.writer = writer

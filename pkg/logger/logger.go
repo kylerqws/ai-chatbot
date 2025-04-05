@@ -2,23 +2,23 @@ package logger
 
 import (
 	"context"
+	"fmt"
 
+	ctr "github.com/kylerqws/chatbot/pkg/logger/contract"
 	"github.com/kylerqws/chatbot/pkg/logger/infrastructure/config"
 	"github.com/kylerqws/chatbot/pkg/logger/infrastructure/logger"
 	"github.com/kylerqws/chatbot/pkg/logger/infrastructure/writer"
-
-	ctrlog "github.com/kylerqws/chatbot/pkg/logger/contract/logger"
 )
 
-func NewLogger(ctx context.Context) (ctrlog.Logger, error) {
+func NewLogger(ctx context.Context) (ctr.Logger, error) {
 	cfg, err := config.New(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("logger: failed to load config: %w", err)
 	}
 
 	prv, err := writer.NewProvider(cfg)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("logger: failed to create writer provider: %w", err)
 	}
 
 	return logger.NewZeroLogger(cfg, prv.Writer()), nil

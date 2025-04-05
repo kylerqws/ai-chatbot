@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/rs/zerolog"
-
+	ctrlog "github.com/kylerqws/chatbot/pkg/logger/contract"
 	ctrcfg "github.com/kylerqws/chatbot/pkg/logger/contract/config"
-	ctrlog "github.com/kylerqws/chatbot/pkg/logger/contract/logger"
+	"github.com/rs/zerolog"
 )
 
 type zeroLogger struct {
@@ -18,6 +17,7 @@ type zeroLogger struct {
 
 func NewZeroLogger(cfg ctrcfg.Config, w io.Writer) ctrlog.Logger {
 	zl := zerolog.New(w).With().Timestamp().Logger()
+
 	return &zeroLogger{config: cfg, logger: &zl}
 }
 
