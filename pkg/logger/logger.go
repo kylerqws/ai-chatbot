@@ -10,7 +10,7 @@ import (
 	"github.com/kylerqws/chatbot/pkg/logger/infrastructure/writer"
 )
 
-func NewLogger(ctx context.Context) (ctr.Logger, error) {
+func New(ctx context.Context) (ctr.Logger, error) {
 	cfg, err := config.New(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("logger: failed to load config: %w", err)
