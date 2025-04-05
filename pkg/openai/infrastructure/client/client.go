@@ -157,5 +157,6 @@ func (c *Client) extractAPIError(body []byte) string {
 	if err := json.Unmarshal(body, &data); err == nil && data.Error.Message != "" {
 		return data.Error.Message
 	}
+
 	return "unknown OpenAI API error"
 }

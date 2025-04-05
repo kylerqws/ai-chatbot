@@ -49,6 +49,7 @@ func (c *envConfig) SetBaseURL(baseURL string) error {
 	if strings.TrimSpace(baseURL) == "" {
 		return fmt.Errorf("missing required environment variable: OPENAI_API_BASE_URL")
 	}
+
 	c.baseURL = baseURL
 	return nil
 }
@@ -61,6 +62,7 @@ func (c *envConfig) SetAPIKey(apiKey string) error {
 	if strings.TrimSpace(apiKey) == "" {
 		return fmt.Errorf("missing required environment variable: OPENAI_API_KEY")
 	}
+
 	c.apiKey = apiKey
 	return nil
 }
@@ -73,6 +75,7 @@ func (c *envConfig) SetTimeout(seconds int) error {
 	if seconds <= 0 {
 		return fmt.Errorf("invalid OPENAI_API_TIMEOUT value: %d (must be > 0)", seconds)
 	}
+
 	c.timeout = time.Duration(seconds) * time.Second
 	return nil
 }
