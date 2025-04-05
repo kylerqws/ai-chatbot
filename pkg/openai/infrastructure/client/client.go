@@ -23,10 +23,8 @@ type Client struct {
 }
 
 func New(cfg ctrcfg.Config) *Client {
-	return &Client{
-		config:     cfg,
-		httpClient: &http.Client{Timeout: cfg.GetTimeout()},
-	}
+	hc := &http.Client{Timeout: cfg.GetTimeout()}
+	return &Client{config: cfg, httpClient: hc}
 }
 
 func (c *Client) RequestMultipart(ctx context.Context, path string, body map[string]string) ([]byte, error) {

@@ -17,7 +17,6 @@ type zeroLogger struct {
 
 func NewZeroLogger(cfg ctrcfg.Config, w io.Writer) ctrlog.Logger {
 	zl := zerolog.New(w).With().Timestamp().Logger()
-
 	return &zeroLogger{config: cfg, logger: &zl}
 }
 
@@ -53,6 +52,7 @@ func (l *zeroLogger) from(ctx context.Context) *zerolog.Logger {
 	if ctx == nil {
 		return l.logger
 	}
+
 	if ctxLogger := zerolog.Ctx(ctx); ctxLogger != nil {
 		logger := ctxLogger.With().Logger()
 		return &logger
