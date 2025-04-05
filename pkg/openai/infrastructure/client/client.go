@@ -12,10 +12,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 	"github.com/kylerqws/chatbot/pkg/openai/domain/purpose"
 	"github.com/kylerqws/chatbot/pkg/openai/utils/converter/jsonl"
-
-	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 )
 
 type Client struct {
@@ -42,45 +41,28 @@ func (c *Client) RequestMultipart(ctx context.Context, path string, body map[str
 		}
 	}(file)
 
-	var fileReader io.Reader = file
+	reader := io.Reader(file)
 	if strings.HasSuffix(strings.ToLower(filePath), ".json") {
 		prp := body["purpose"]
 		if prp == purpose.FineTune.Code || prp == purpose.FineTuneResults.Code {
-			fileReader, err = jsonl.ConvertToReader(filePath)
+			reader, err = jsonl.ConvertToReader(filePath)
 			if err != nil {
 				return nil, fmt.Errorf("client: failed to convert json to jsonl: %w", err)
 			}
 		}
 	}
 
-	b := &bytes.Buffer{}
-	w := multipart.NewWriter(b)
-
-	part, err := w.CreateFormFile("file", filepath.Base(filePath))
-	if err != nil {
-		return nil, fmt.Errorf("client: failed to create multipart file part: %w", err)
-	}
-	if _, err = io.Copy(part, fileReader); err != nil {
-		return nil, fmt.Errorf("client: failed to copy file content: %w", err)
+	buf := &bytes.Buffer{}
+	writer := multipart.NewWriter(buf)
+	if err := writeMultipart(writer, reader, filepath.Base(filePath), body); err != nil {
+		return nil, err
 	}
 
-	for key, val := range body {
-		if key != "file" {
-			if err := w.WriteField(key, val); err != nil {
-				return nil, fmt.Errorf("client: failed to write multipart field %q: %w", key, err)
-			}
-		}
-	}
-
-	if err = w.Close(); err != nil {
-		return nil, fmt.Errorf("client: failed to close multipart writer: %w", err)
-	}
-
-	req, err := c.buildRequest("POST", path, b)
+	req, err := c.buildRequest("POST", path, buf)
 	if err != nil {
 		return nil, fmt.Errorf("client: failed to build request: %w", err)
 	}
-	req.Header.Set("Content-Type", w.FormDataContentType())
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 
 	return c.doRequest(ctx, req)
 }
@@ -109,6 +91,7 @@ func (c *Client) RequestReader(ctx context.Context, method, path string, body io
 	if err != nil {
 		return nil, fmt.Errorf("client: failed to build request: %w", err)
 	}
+
 	return c.doRequest(ctx, req)
 }
 
@@ -124,6 +107,31 @@ func (c *Client) buildRequest(method, path string, body io.Reader) (*http.Reques
 	return req, nil
 }
 
+func writeMultipart(w *multipart.Writer, file io.Reader, filename string, fields map[string]string) error {
+	part, err := w.CreateFormFile("file", filename)
+	if err != nil {
+		return fmt.Errorf("client: failed to create multipart file part: %w", err)
+	}
+
+	if _, err = io.Copy(part, file); err != nil {
+		return fmt.Errorf("client: failed to copy file content: %w", err)
+	}
+
+	for k, v := range fields {
+		if k != "file" {
+			if err := w.WriteField(k, v); err != nil {
+				return fmt.Errorf("client: failed to write field %q: %w", k, err)
+			}
+		}
+	}
+
+	if err := w.Close(); err != nil {
+		return fmt.Errorf("client: failed to close multipart writer: %w", err)
+	}
+
+	return nil
+}
+
 func (c *Client) doRequest(ctx context.Context, req *http.Request) ([]byte, error) {
 	resp, err := c.httpClient.Do(req.WithContext(ctx))
 	if err != nil {
@@ -135,17 +143,17 @@ func (c *Client) doRequest(ctx context.Context, req *http.Request) ([]byte, erro
 		}
 	}(resp.Body)
 
-	body, err := io.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("client: failed to read response body: %w", err)
 	}
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		msg := c.extractAPIError(body)
+		msg := c.extractAPIError(respBody)
 		return nil, fmt.Errorf("client: unexpected status %s (%s)", resp.Status, msg)
 	}
 
-	return body, nil
+	return respBody, nil
 }
 
 func (c *Client) extractAPIError(body []byte) string {

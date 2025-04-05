@@ -37,7 +37,6 @@ func Resolve(code string) (*Purpose, error) {
 	if code == "" {
 		return &FineTune, nil
 	}
-
 	if prp, ok := AllPurposes[code]; ok {
 		return prp, nil
 	}

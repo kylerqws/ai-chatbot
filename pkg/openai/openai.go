@@ -4,12 +4,11 @@ import (
 	"context"
 	"fmt"
 
+	ctr "github.com/kylerqws/chatbot/pkg/openai/contract"
+	ctrsrv "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 	"github.com/kylerqws/chatbot/pkg/openai/infrastructure/client"
 	"github.com/kylerqws/chatbot/pkg/openai/infrastructure/config"
 	"github.com/kylerqws/chatbot/pkg/openai/usecase/service"
-
-	ctr "github.com/kylerqws/chatbot/pkg/openai/contract"
-	ctrsrv "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 )
 
 type api struct {
