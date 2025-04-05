@@ -8,5 +8,5 @@ import (
 )
 
 func New(ctx context.Context) (ctr.Logger, error) {
-	return logger.NewLogger(ctx)
+	return logger.New(ctx)
 }
