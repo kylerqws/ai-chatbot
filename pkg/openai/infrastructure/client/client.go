@@ -158,5 +158,5 @@ func (c *Client) extractAPIError(body []byte) string {
 		return data.Error.Message
 	}
 
-	return "unknown error"
+	return "OpenAI API error"
 }
