@@ -1,4 +1,4 @@
-package migration
+package migrations
 
 import (
 	"context"
@@ -7,14 +7,14 @@ import (
 	"github.com/uptrace/bun/migrate"
 )
 
-func CreateServiceTable06032025002(migrations *migrate.Migrations) {
+func CreateMessageTable06032025001(migrations *migrate.Migrations) {
 	migrations.MustRegister(
 		func(ctx context.Context, db *bun.DB) error {
 			_, err := db.ExecContext(ctx, `
-				CREATE TABLE IF NOT EXISTS service (
+				CREATE TABLE IF NOT EXISTS message (
 					entity_id INTEGER PRIMARY KEY AUTOINCREMENT,
-					code TEXT UNIQUE NOT NULL,
-					name TEXT UNIQUE NOT NULL,
+					request TEXT NOT NULL,
+					response TEXT NOT NULL,
 					created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 					updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 				);
@@ -23,7 +23,7 @@ func CreateServiceTable06032025002(migrations *migrate.Migrations) {
 			return err
 		},
 		func(ctx context.Context, db *bun.DB) error {
-			_, err := db.ExecContext(ctx, `DROP TABLE IF EXISTS service;`)
+			_, err := db.ExecContext(ctx, `DROP TABLE IF EXISTS message;`)
 
 			return err
 		},

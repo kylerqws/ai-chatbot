@@ -1,4 +1,4 @@
-package migration
+package migrations
 
 import (
 	"context"
@@ -7,25 +7,25 @@ import (
 	"github.com/uptrace/bun/migrate"
 )
 
-func CreateUserTable06032025003(migrations *migrate.Migrations) {
+func CreateAiChatTable06032025004(migrations *migrate.Migrations) {
 	migrations.MustRegister(
 		func(ctx context.Context, db *bun.DB) error {
 			_, err := db.ExecContext(ctx, `
-				CREATE TABLE IF NOT EXISTS user (
+				CREATE TABLE IF NOT EXISTS aichat (
 					entity_id INTEGER PRIMARY KEY AUTOINCREMENT,
-					service_id INTEGER NOT NULL,
-					user_id TEXT NOT NULL,
+					user_id INTEGER NOT NULL,
+					message_id INTEGER NOT NULL,
 					created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 					updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-					UNIQUE(service_id, user_id),
-					FOREIGN KEY (service_id) REFERENCES service(entity_id) ON DELETE CASCADE
+					FOREIGN KEY (user_id) REFERENCES user(entity_id) ON DELETE CASCADE,
+					FOREIGN KEY (message_id) REFERENCES message(entity_id) ON DELETE CASCADE
 				);
 			`)
 
 			return err
 		},
 		func(ctx context.Context, db *bun.DB) error {
-			_, err := db.ExecContext(ctx, `DROP TABLE IF EXISTS user;`)
+			_, err := db.ExecContext(ctx, `DROP TABLE IF EXISTS aichat;`)
 
 			return err
 		},
