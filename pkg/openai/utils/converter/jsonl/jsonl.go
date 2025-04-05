@@ -43,7 +43,7 @@ func decodeJSON(r io.Reader) ([]map[string]any, error) {
 	decoder := json.NewDecoder(r)
 
 	if err := decoder.Decode(&data); err != nil {
-		return nil, fmt.Errorf("failed to decode JSON: %w", err)
+		return nil, fmt.Errorf("failed to decode data: %w", err)
 	}
 
 	return data, nil
