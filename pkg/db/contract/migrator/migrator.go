@@ -1,8 +1,11 @@
 package migrator
 
-import "context"
+import (
+	"context"
+	"github.com/uptrace/bun/migrate"
+)
 
 type Migrator interface {
-	Migrate(ctx context.Context) error
-	Rollback(ctx context.Context) error
+	Migrate(ctx context.Context, mgs *migrate.Migrations) error
+	Rollback(ctx context.Context, mgs *migrate.Migrations) error
 }

@@ -65,7 +65,7 @@ func (d *sqliteDialect) prepareDSN(dsn string) (string, error) {
 
 	dir := filepath.Dir(dsn)
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
-		return "", fmt.Errorf("failed to create directory: %w", err)
+		return "", fmt.Errorf("failed to create dir: %w", err)
 	}
 
 	return dsn, nil

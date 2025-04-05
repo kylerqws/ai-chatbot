@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+
 	"github.com/kylerqws/chatbot/pkg/db/infrastructure/client"
 	"github.com/kylerqws/chatbot/pkg/db/infrastructure/config"
 	"github.com/kylerqws/chatbot/pkg/db/infrastructure/migrator"

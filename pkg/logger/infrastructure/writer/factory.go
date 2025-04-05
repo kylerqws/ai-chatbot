@@ -17,6 +17,6 @@ func NewProvider(cfg ctrcfg.Config) (ctrwrt.Provider, error) {
 	case "db":
 		return provider.NewDBProvider(cfg), nil
 	default:
-		return nil, fmt.Errorf("unsupported logger writer: %q", wrtType)
+		return nil, fmt.Errorf("unsupported writer type: %q", wrtType)
 	}
 }

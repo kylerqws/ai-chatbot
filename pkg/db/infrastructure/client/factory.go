@@ -29,7 +29,7 @@ func (c *dbClient) Connect() error {
 	case "sqlite":
 		dlt = dialect.NewSQLite(c.config)
 	default:
-		return fmt.Errorf("unsupported databse dialect: %q", dltName)
+		return fmt.Errorf("unsupported db dialect: %q", dltName)
 	}
 
 	c.dialect = dlt

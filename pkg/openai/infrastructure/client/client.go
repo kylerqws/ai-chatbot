@@ -142,7 +142,7 @@ func (c *Client) doRequest(ctx context.Context, req *http.Request) ([]byte, erro
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		msg := c.extractAPIError(body)
-		return nil, fmt.Errorf("request to OpenAI failed: %s (%s)", resp.Status, msg)
+		return nil, fmt.Errorf("%s (%s)", resp.Status, msg)
 	}
 
 	return body, nil

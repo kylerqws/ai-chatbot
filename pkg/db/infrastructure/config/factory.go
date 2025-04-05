@@ -23,6 +23,6 @@ func New(ctx context.Context) (ctrcfg.Config, error) {
 	case "env":
 		return source.NewEnvConfig(ctx)
 	default:
-		return nil, fmt.Errorf("unsupported database configuration source: %q", st)
+		return nil, fmt.Errorf("unsupported config source: %q", st)
 	}
 }
