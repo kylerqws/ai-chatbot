@@ -9,27 +9,37 @@ import (
 	"github.com/kylerqws/chatbot/pkg/openai/usecase/service"
 
 	ctr "github.com/kylerqws/chatbot/pkg/openai/contract"
-	ctrsrv "github.com/kylerqws/chatbot/pkg/openai/contract/service"
+	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 )
 
 type api struct {
-	fileService ctrsrv.FileService
+	fileService ctrsvc.FileService
+	jobService  ctrsvc.JobService
+	chatService ctrsvc.ChatService
 }
 
 func New(ctx context.Context) (ctr.OpenAI, error) {
 	cfg, err := config.New(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("openai: failed to load config: %w", err)
+		return nil, fmt.Errorf("[openai.New] failed to load config: %w", err)
 	}
 
 	cl := client.New(cfg)
-	sf := service.NewFactory(cl, cfg)
-
 	return &api{
-		fileService: sf.FileService(),
+		fileService: service.NewFileService(cl, cfg),
+		jobService:  service.NewJobService(cl, cfg),
+		chatService: service.NewChatService(cl, cfg),
 	}, nil
 }
 
-func (api *api) FileService() ctrsrv.FileService {
+func (api *api) FileService() ctrsvc.FileService {
 	return api.fileService
+}
+
+func (api *api) JobService() ctrsvc.JobService {
+	return api.jobService
+}
+
+func (api *api) ChatService() ctrsvc.ChatService {
+	return api.chatService
 }
