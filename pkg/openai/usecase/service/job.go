@@ -116,16 +116,10 @@ func (_ *jobService) filterJobs(jobs []*ctrsvc.Job, req *ctrsvc.ListJobsRequest)
 	var result []*ctrsvc.Job
 
 	for _, j := range jobs {
-		if req.Model != "" && j.Model != req.Model {
-			continue
-		}
-		if req.Status != "" && j.Status != req.Status {
-			continue
-		}
-		if req.CreatedAfter > 0 && j.CreatedAt <= req.CreatedAfter {
-			continue
-		}
-		if req.CreatedBefore > 0 && j.CreatedAt >= req.CreatedBefore {
+		if (req.Model != "" && j.Model != req.Model) ||
+			(req.Status != "" && j.Status != req.Status) ||
+			(req.CreatedAfter > 0 && j.CreatedAt <= req.CreatedAfter) ||
+			(req.CreatedBefore > 0 && j.CreatedAt >= req.CreatedBefore) {
 			continue
 		}
 

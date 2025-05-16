@@ -105,19 +105,11 @@ func (_ *fileService) filterFiles(files []*ctrsvc.File, req *ctrsvc.ListFilesReq
 	var result []*ctrsvc.File
 
 	for _, f := range files {
-		if req.Purpose != "" && f.Purpose != req.Purpose {
-			continue
-		}
-		if req.Filename != "" && f.Filename != req.Filename {
-			continue
-		}
-		if req.Status != "" && f.Status != req.Status {
-			continue
-		}
-		if req.CreatedAfter > 0 && f.CreatedAt <= req.CreatedAfter {
-			continue
-		}
-		if req.CreatedBefore > 0 && f.CreatedAt >= req.CreatedBefore {
+		if (req.Purpose != "" && f.Purpose != req.Purpose) ||
+			(req.Filename != "" && f.Filename != req.Filename) ||
+			(req.Status != "" && f.Status != req.Status) ||
+			(req.CreatedAfter > 0 && f.CreatedAt <= req.CreatedAfter) ||
+			(req.CreatedBefore > 0 && f.CreatedAt >= req.CreatedBefore) {
 			continue
 		}
 

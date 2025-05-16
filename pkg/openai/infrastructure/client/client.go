@@ -45,8 +45,7 @@ func (c *Client) RequestMultipart(ctx context.Context, path string, body map[str
 	if strings.HasSuffix(strings.ToLower(filePath), ".json") {
 		prp := body["purpose"]
 		if prp == purpose.FineTune.Code {
-			reader, err = jsonl.ConvertToReader(filePath)
-			if err != nil {
+			if reader, err = jsonl.ConvertToReader(filePath); err != nil {
 				return nil, fmt.Errorf("[client.RequestMultipart] failed to convert json to jsonl: %w", err)
 			}
 		}
