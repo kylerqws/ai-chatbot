@@ -11,6 +11,11 @@ import (
 	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 )
 
+const (
+	DefaultBaseUrl = "https://api.openai.com/v1"
+	DefaultTimeout = 30
+)
+
 type envConfig struct {
 	baseURL string
 	apiKey  string
@@ -24,18 +29,18 @@ func NewEnvConfig(_ context.Context) (ctrcfg.Config, error) {
 
 	timeout, err := strconv.Atoi(timeoutStr)
 	if err != nil {
-		return nil, fmt.Errorf("env config: invalid OPENAI_API_TIMEOUT %q: %w", timeoutStr, err)
+		timeout = DefaultTimeout
 	}
 
 	cfg := &envConfig{}
-	if err := cfg.SetBaseURL(baseURL); err != nil {
-		return nil, fmt.Errorf("env config: %w", err)
+	if err = cfg.SetBaseURL(baseURL); err != nil {
+		return nil, fmt.Errorf("[source.NewEnvConfig] %w", err)
 	}
-	if err := cfg.SetAPIKey(apiKey); err != nil {
-		return nil, fmt.Errorf("env config: %w", err)
+	if err = cfg.SetAPIKey(apiKey); err != nil {
+		return nil, fmt.Errorf("[source.NewEnvConfig] %w", err)
 	}
-	if err := cfg.SetTimeout(timeout); err != nil {
-		return nil, fmt.Errorf("env config: %w", err)
+	if err = cfg.SetTimeout(timeout); err != nil {
+		return nil, fmt.Errorf("[source.NewEnvConfig] %w", err)
 	}
 
 	return cfg, nil
@@ -47,7 +52,7 @@ func (c *envConfig) GetBaseURL() string {
 
 func (c *envConfig) SetBaseURL(baseURL string) error {
 	if strings.TrimSpace(baseURL) == "" {
-		return fmt.Errorf("missing required environment variable: OPENAI_API_BASE_URL")
+		baseURL = DefaultBaseUrl
 	}
 
 	c.baseURL = baseURL
@@ -60,7 +65,7 @@ func (c *envConfig) GetAPIKey() string {
 
 func (c *envConfig) SetAPIKey(apiKey string) error {
 	if strings.TrimSpace(apiKey) == "" {
-		return fmt.Errorf("missing required environment variable: OPENAI_API_KEY")
+		return fmt.Errorf("missing required environment variable OPENAI_API_KEY")
 	}
 
 	c.apiKey = apiKey
@@ -73,7 +78,7 @@ func (c *envConfig) GetTimeout() time.Duration {
 
 func (c *envConfig) SetTimeout(seconds int) error {
 	if seconds <= 0 {
-		return fmt.Errorf("invalid OPENAI_API_TIMEOUT value: %d (must be > 0)", seconds)
+		seconds = DefaultTimeout
 	}
 
 	c.timeout = time.Duration(seconds) * time.Second
