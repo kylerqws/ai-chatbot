@@ -1,20 +1,23 @@
-.PHONY: run build migrate
+.PHONY: run build migrate rollback
 
 MAKEFLAGS += --silent
 CGO_ENABLED = 1
 
+CGO_TAGS := -tags "cgo"
+GO_RUN := go run $(CGO_TAGS) main.go
+GO_BUILD := go build $(CGO_TAGS) -o chatbot.exe main.go
+
 run:
-	@go run -tags "cgo" main.go $(filter-out run,$(MAKECMDGOALS))
+	@$(GO_RUN) $(filter-out run,$(MAKECMDGOALS))
 
 build:
-	@go build -tags "cgo" -o chatbot.exe main.go
+	@$(GO_BUILD)
 
 migrate:
-	@if not "$(findstring up, $(MAKECMDGOALS))" == "" ( \
-		$(MAKE) run dev db migrate \
-	) else if not "$(findstring down, $(MAKECMDGOALS))" == "" ( \
-		$(MAKE) run dev db rollback \
-	)
+	@$(GO_RUN) dev db migrate
+
+rollback:
+	@$(GO_RUN) dev db rollback
 
 %:
 	@:
