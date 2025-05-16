@@ -1,7 +1,9 @@
 package contract
 
-import ctrsrv "github.com/kylerqws/chatbot/pkg/openai/contract/service"
+import ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 
 type OpenAI interface {
-	FileService() ctrsrv.FileService
+	FileService() ctrsvc.FileService
+	JobService() ctrsvc.JobService
+	ChatService() ctrsvc.ChatService
 }
