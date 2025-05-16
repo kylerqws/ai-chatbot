@@ -34,8 +34,10 @@ func (c *Client) RequestMultipart(ctx context.Context, path string, body map[str
 		return nil, fmt.Errorf("[client.RequestMultipart] failed to open file %v: %w", filePath, err)
 	}
 	defer func(file *os.File) {
-		if clerr := file.Close(); clerr != nil && err == nil {
-			err = fmt.Errorf("[client.RequestMultipart] failed to close file %v: %w", filePath, clerr)
+		if clerr := file.Close(); clerr != nil {
+			if err == nil {
+				err = fmt.Errorf("[client.RequestMultipart] failed to close file %v: %w", filePath, clerr)
+			}
 		}
 	}(file)
 
@@ -143,8 +145,10 @@ func (c *Client) doRequest(ctx context.Context, req *http.Request) (body []byte,
 		return nil, fmt.Errorf("[client.doRequest] HTTP request failed: %w", err)
 	}
 	defer func(body io.ReadCloser) {
-		if clerr := body.Close(); clerr != nil && err == nil {
-			err = fmt.Errorf("[client.doRequest] failed to close response body: %w", clerr)
+		if clerr := body.Close(); clerr != nil {
+			if err == nil {
+				err = fmt.Errorf("[client.doRequest] failed to close response body: %w", clerr)
+			}
 		}
 	}(resp.Body)
 

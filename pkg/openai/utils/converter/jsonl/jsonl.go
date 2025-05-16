@@ -20,8 +20,10 @@ func ConvertToReader(path string) (reader io.Reader, err error) {
 		return nil, fmt.Errorf("[jsonl.ConvertToReader] failed to open file %v: %w", path, err)
 	}
 	defer func(file *os.File) {
-		if clerr := file.Close(); clerr != nil && err == nil {
-			err = fmt.Errorf("[jsonl.ConvertToReader] failed to close file %v: %w", path, clerr)
+		if clerr := file.Close(); clerr != nil {
+			if err == nil {
+				err = fmt.Errorf("[jsonl.ConvertToReader] failed to close file %v: %w", path, clerr)
+			}
 		}
 	}(file)
 
