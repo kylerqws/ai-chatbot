@@ -3,46 +3,33 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/kylerqws/chatbot/internal/app"
-	"github.com/kylerqws/chatbot/internal/cli/setup"
+	action "github.com/kylerqws/chatbot/cmd/openai"
+	intapp "github.com/kylerqws/chatbot/internal/app"
+	inthlp "github.com/kylerqws/chatbot/internal/cli/helper"
 
-	"github.com/kylerqws/chatbot/cmd/openai"
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
 )
 
 type OpenAIAdapter struct {
-	app      *app.App
-	command  *cobra.Command
-	children []*cobra.Command
+	*inthlp.ParentAdapterHelper
 }
 
-func NewOpenAIAdapter(app *app.App) ctr.ParentAdapter {
-	return &OpenAIAdapter{app: app}
+func NewOpenAIAdapter(app *intapp.App) ctr.ParentAdapter {
+	adp := &OpenAIAdapter{}
+	cmd := &cobra.Command{}
+
+	adp.ParentAdapterHelper =
+		inthlp.NewParentAdapterHelper(adp, app, cmd)
+
+	return adp
 }
 
 func (a *OpenAIAdapter) Configure() *cobra.Command {
-	a.command = &cobra.Command{
-		Use:   "openai",
-		Short: "Commands for interacting with the OpenAI API",
-	}
+	app := a.App()
 
-	a.children = []*cobra.Command{
-		openai.FileCommand(a.app),
-		openai.JobCommand(a.app),
-		openai.ChatCommand(a.app),
-	}
+	a.SetUse("openai")
+	a.SetShort("Commands for interacting with the OpenAI API")
+	a.AddChildren(action.FileCommand(app), action.JobCommand(app), action.ChatCommand(app))
 
-	return setup.ParentConfigure(a)
-}
-
-func (a *OpenAIAdapter) App() *app.App {
-	return a.app
-}
-
-func (a *OpenAIAdapter) Command() *cobra.Command {
-	return a.command
-}
-
-func (a *OpenAIAdapter) Children() []*cobra.Command {
-	return a.children
+	return a.MainConfigure()
 }

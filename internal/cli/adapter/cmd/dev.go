@@ -3,44 +3,33 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/kylerqws/chatbot/internal/app"
-	"github.com/kylerqws/chatbot/internal/cli/setup"
+	action "github.com/kylerqws/chatbot/cmd/dev"
+	intapp "github.com/kylerqws/chatbot/internal/app"
+	inthlp "github.com/kylerqws/chatbot/internal/cli/helper"
 
-	"github.com/kylerqws/chatbot/cmd/dev"
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
 )
 
 type DevAdapter struct {
-	app      *app.App
-	command  *cobra.Command
-	children []*cobra.Command
+	*inthlp.ParentAdapterHelper
 }
 
-func NewDevAdapter(app *app.App) ctr.ParentAdapter {
-	return &DevAdapter{app: app}
+func NewDevAdapter(app *intapp.App) ctr.ParentAdapter {
+	adp := &DevAdapter{}
+	cmd := &cobra.Command{}
+
+	adp.ParentAdapterHelper =
+		inthlp.NewParentAdapterHelper(adp, app, cmd)
+
+	return adp
 }
 
 func (a *DevAdapter) Configure() *cobra.Command {
-	a.command = &cobra.Command{
-		Use:   "dev",
-		Short: "Tools for application development",
-	}
+	app := a.App()
 
-	a.children = []*cobra.Command{
-		dev.DBCommand(a.app),
-	}
+	a.SetUse("dev")
+	a.SetShort("Tools for application development")
+	a.AddChildren(action.DBCommand(app))
 
-	return setup.ParentConfigure(a)
-}
-
-func (a *DevAdapter) App() *app.App {
-	return a.app
-}
-
-func (a *DevAdapter) Command() *cobra.Command {
-	return a.command
-}
-
-func (a *DevAdapter) Children() []*cobra.Command {
-	return a.children
+	return a.MainConfigure()
 }

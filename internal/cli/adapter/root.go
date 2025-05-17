@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 
-	intcmd "github.com/kylerqws/chatbot/cmd"
+	action "github.com/kylerqws/chatbot/cmd"
 	intapp "github.com/kylerqws/chatbot/internal/app"
 	inthlp "github.com/kylerqws/chatbot/internal/cli/helper"
 
@@ -31,7 +31,7 @@ func (a *RootAdapter) Configure() *cobra.Command {
 	a.SetUse("chatbot")
 	a.SetShort(fmt.Sprintf("CLI for managing %s", app.Name()))
 	a.SetVersion(fmt.Sprintf("v%s", app.Version()))
-	a.AddChildren(intcmd.OpenAICommand(app), intcmd.DevCommand(app))
+	a.AddChildren(action.OpenAICommand(app), action.DevCommand(app))
 
 	return a.MainConfigure()
 }

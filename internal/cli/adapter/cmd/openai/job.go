@@ -3,41 +3,33 @@ package openai
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/kylerqws/chatbot/internal/app"
-	"github.com/kylerqws/chatbot/internal/cli/setup"
+	//action "github.com/kylerqws/chatbot/cmd/openai/job"
+	intapp "github.com/kylerqws/chatbot/internal/app"
+	inthlp "github.com/kylerqws/chatbot/internal/cli/helper"
 
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
 )
 
 type JobAdapter struct {
-	app      *app.App
-	command  *cobra.Command
-	children []*cobra.Command
+	*inthlp.ParentAdapterHelper
 }
 
-func NewJobAdapter(app *app.App) ctr.ParentAdapter {
-	return &JobAdapter{app: app}
+func NewJobAdapter(app *intapp.App) ctr.ParentAdapter {
+	adp := &JobAdapter{}
+	cmd := &cobra.Command{}
+
+	adp.ParentAdapterHelper =
+		inthlp.NewParentAdapterHelper(adp, app, cmd)
+
+	return adp
 }
 
 func (a *JobAdapter) Configure() *cobra.Command {
-	a.command = &cobra.Command{
-		Use:   "job",
-		Short: "Manage jobs used with the OpenAI API",
-	}
+	_ = a.App()
 
-	a.children = []*cobra.Command{}
+	a.SetUse("job")
+	a.SetShort("Manage jobs used with the OpenAI API")
+	a.AddChildren()
 
-	return setup.ParentConfigure(a)
-}
-
-func (a *JobAdapter) App() *app.App {
-	return a.app
-}
-
-func (a *JobAdapter) Command() *cobra.Command {
-	return a.command
-}
-
-func (a *JobAdapter) Children() []*cobra.Command {
-	return a.children
+	return a.MainConfigure()
 }
