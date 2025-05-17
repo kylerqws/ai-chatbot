@@ -2,11 +2,12 @@ package client
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/kylerqws/chatbot/pkg/db/infrastructure/client/dialect"
 	"github.com/uptrace/bun"
 
-	ctrcli "github.com/kylerqws/chatbot/pkg/db/contract/client"
+	ctrcl "github.com/kylerqws/chatbot/pkg/db/contract/client"
 	ctrdlt "github.com/kylerqws/chatbot/pkg/db/contract/client/dialect"
 	ctrcfg "github.com/kylerqws/chatbot/pkg/db/contract/config"
 )
@@ -17,37 +18,42 @@ type dbClient struct {
 	db      *bun.DB
 }
 
-func New(cfg ctrcfg.Config) ctrcli.Client {
+func New(cfg ctrcfg.Config) ctrcl.Client {
 	return &dbClient{config: cfg}
 }
 
 func (c *dbClient) Connect() error {
-	dltName := c.config.GetDialect()
+	dn := c.config.GetDialect()
 
-	var dlt ctrdlt.Dialect
-	switch dltName {
+	switch dn {
 	case "sqlite":
-		dlt = dialect.NewSQLite(c.config)
+		c.dialect = dialect.NewSQLite(c.config)
 	default:
-		return fmt.Errorf("client: unsupported database dialect: %q", dltName)
+		return fmt.Errorf("unsupported database dialect: '%v'", dn)
 	}
 
-	c.dialect = dlt
-	if err := c.dialect.Connect(); err != nil {
-		return fmt.Errorf("client: failed to connect dialect %q: %w", dltName, err)
+	err := c.dialect.Connect()
+	if err != nil {
+		return fmt.Errorf("failed to connect dialect '%v': %w", dn, err)
 	}
 
+	c.db = c.dialect.DB()
 	return nil
 }
 
 func (c *dbClient) Close() error {
-	if err := c.db.Close(); err != nil {
-		return fmt.Errorf("client: failed to close database: %w", err)
+	err := c.db.Close()
+	if err != nil {
+		return fmt.Errorf("failed to close database: %w", err)
 	}
 
 	return nil
 }
 
 func (c *dbClient) DB() *bun.DB {
+	if c.db == nil {
+		log.Fatalf("database not initialized")
+	}
+
 	return c.db
 }

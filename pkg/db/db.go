@@ -9,19 +9,19 @@ import (
 	"github.com/kylerqws/chatbot/pkg/db/infrastructure/migrator"
 
 	ctr "github.com/kylerqws/chatbot/pkg/db/contract"
-	ctrcli "github.com/kylerqws/chatbot/pkg/db/contract/client"
+	ctrcl "github.com/kylerqws/chatbot/pkg/db/contract/client"
 	ctrmig "github.com/kylerqws/chatbot/pkg/db/contract/migrator"
 )
 
 type db struct {
-	client   ctrcli.Client
+	client   ctrcl.Client
 	migrator ctrmig.Migrator
 }
 
 func New(ctx context.Context) (ctr.DB, error) {
 	cfg, err := config.New(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("db: failed to load config: %w", err)
+		return nil, fmt.Errorf("failed to load config: %w", err)
 	}
 
 	cl := client.New(cfg)
@@ -30,7 +30,7 @@ func New(ctx context.Context) (ctr.DB, error) {
 	return &db{client: cl, migrator: mig}, nil
 }
 
-func (db *db) Client() ctrcli.Client {
+func (db *db) Client() ctrcl.Client {
 	return db.client
 }
 
