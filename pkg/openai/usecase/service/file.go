@@ -114,22 +114,19 @@ func (s *fileService) DeleteFile(
 	return result, nil
 }
 
-func (_ *fileService) filterFiles(
-	files []*ctrsvc.File,
-	req *ctrsvc.ListFilesRequest,
-) []*ctrsvc.File {
+func (_ *fileService) filterFiles(files []*ctrsvc.File, req *ctrsvc.ListFilesRequest) []*ctrsvc.File {
 	var result []*ctrsvc.File
 
 	for _, f := range files {
-		if (req.Purpose != "" && f.Purpose != req.Purpose) ||
+		isSkip := (req.Purpose != "" && f.Purpose != req.Purpose) ||
 			(req.Filename != "" && f.Filename != req.Filename) ||
 			(req.Status != "" && f.Status != req.Status) ||
 			(req.CreatedAfter > 0 && f.CreatedAt <= req.CreatedAfter) ||
-			(req.CreatedBefore > 0 && f.CreatedAt >= req.CreatedBefore) {
-			continue
-		}
+			(req.CreatedBefore > 0 && f.CreatedAt >= req.CreatedBefore)
 
-		result = append(result, f)
+		if !isSkip {
+			result = append(result, f)
+		}
 	}
 
 	return result

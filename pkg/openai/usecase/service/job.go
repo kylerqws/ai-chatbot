@@ -124,21 +124,18 @@ func (s *jobService) CancelJob(
 	return result, nil
 }
 
-func (_ *jobService) filterJobs(
-	jobs []*ctrsvc.Job,
-	req *ctrsvc.ListJobsRequest,
-) []*ctrsvc.Job {
+func (_ *jobService) filterJobs(jobs []*ctrsvc.Job, req *ctrsvc.ListJobsRequest) []*ctrsvc.Job {
 	var result []*ctrsvc.Job
 
 	for _, j := range jobs {
-		if (req.Model != "" && j.Model != req.Model) ||
+		isSkip := (req.Model != "" && j.Model != req.Model) ||
 			(req.Status != "" && j.Status != req.Status) ||
 			(req.CreatedAfter > 0 && j.CreatedAt <= req.CreatedAfter) ||
-			(req.CreatedBefore > 0 && j.CreatedAt >= req.CreatedBefore) {
-			continue
-		}
+			(req.CreatedBefore > 0 && j.CreatedAt >= req.CreatedBefore)
 
-		result = append(result, j)
+		if !isSkip {
+			result = append(result, j)
+		}
 	}
 
 	return result
