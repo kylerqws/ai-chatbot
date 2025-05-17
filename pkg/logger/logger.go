@@ -14,12 +14,12 @@ import (
 func New(ctx context.Context) (ctr.Logger, error) {
 	cfg, err := config.New(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("logger: failed to load config: %w", err)
+		return nil, fmt.Errorf("failed to load config: %w", err)
 	}
 
 	prv, err := writer.NewProvider(cfg)
 	if err != nil {
-		return nil, fmt.Errorf("logger: failed to create writer provider: %w", err)
+		return nil, fmt.Errorf("failed to create writer provider: %w", err)
 	}
 
 	return logger.NewZeroLogger(cfg, prv.Writer()), nil

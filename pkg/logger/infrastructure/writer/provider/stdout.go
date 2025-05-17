@@ -16,6 +16,6 @@ func NewStdoutProvider(cfg ctrcfg.Config) ctrwrt.Provider {
 	return &stdoutProvider{config: cfg}
 }
 
-func (stdoutProvider) Writer() io.Writer {
+func (_ stdoutProvider) Writer() io.Writer {
 	return os.Stdout
 }

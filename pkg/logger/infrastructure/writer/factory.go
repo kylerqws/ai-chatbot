@@ -10,14 +10,14 @@ import (
 )
 
 func NewProvider(cfg ctrcfg.Config) (ctrwrt.Provider, error) {
-	wrtType := cfg.GetWriter()
+	wt := cfg.GetWriter()
 
-	switch wrtType {
+	switch wt {
 	case "stdout":
 		return provider.NewStdoutProvider(cfg), nil
 	case "db":
 		return provider.NewDBProvider(cfg), nil
 	default:
-		return nil, fmt.Errorf("writer: unsupported writer type %q", wrtType)
+		return nil, fmt.Errorf("unsupported writer type '%v'", wt)
 	}
 }
