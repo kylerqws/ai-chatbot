@@ -22,49 +22,58 @@ func NewJobService(cl *client.Client, cfg ctrcfg.Config) ctrsvc.JobService {
 	return &jobService{config: cfg, client: cl}
 }
 
-func (s *jobService) CreateJob(ctx context.Context, req *ctrsvc.CreateJobRequest) (*ctrsvc.CreateJobResponse, error) {
+func (s *jobService) CreateJob(
+	ctx context.Context,
+	req *ctrsvc.CreateJobRequest,
+) (*ctrsvc.CreateJobResponse, error) {
 	result := &ctrsvc.CreateJobResponse{}
 
 	mdl, err := model.Resolve(req.Model)
 	if err != nil {
-		return result, fmt.Errorf("[service.CreateJob] failed to resolve model: %w", err)
+		return result, fmt.Errorf("failed to resolve model: %w", err)
 	}
 	req.Model = mdl.Code
 
 	resp, err := s.client.RequestJSON(ctx, "POST", "/fine_tuning/jobs", req)
 	if err != nil {
-		return result, fmt.Errorf("[service.CreateJob] failed to send request: %w", err)
+		return result, fmt.Errorf("failed to send request: %w", err)
 	}
 
 	var job ctrsvc.Job
 	err = json.Unmarshal(resp, &job)
 	if err != nil {
-		return result, fmt.Errorf("[service.CreateJob] failed to unmarshal response: %w", err)
+		return result, fmt.Errorf("failed to unmarshal response: %w", err)
 	}
 
 	result.Job = &job
 	return result, nil
 }
 
-func (s *jobService) GetJobInfo(ctx context.Context, req *ctrsvc.GetJobInfoRequest) (*ctrsvc.GetJobInfoResponse, error) {
+func (s *jobService) GetJobInfo(
+	ctx context.Context,
+	req *ctrsvc.GetJobInfoRequest,
+) (*ctrsvc.GetJobInfoResponse, error) {
 	result := &ctrsvc.GetJobInfoResponse{}
 
 	resp, err := s.client.Request(ctx, "GET", "/fine_tuning/jobs/"+req.JobID)
 	if err != nil {
-		return result, fmt.Errorf("[service.GetJobInfo] failed to send request: %w", err)
+		return result, fmt.Errorf("failed to send request: %w", err)
 	}
 
 	var job ctrsvc.Job
 	err = json.Unmarshal(resp, &job)
 	if err != nil {
-		return result, fmt.Errorf("[service.GetJobInfo] failed to unmarshal response: %w", err)
+		return result, fmt.Errorf("failed to unmarshal response: %w", err)
 	}
 
 	result.Job = &job
 	return result, nil
 }
 
-func (s *jobService) ListJobs(ctx context.Context, req *ctrsvc.ListJobsRequest) (*ctrsvc.ListJobsResponse, error) {
+func (s *jobService) ListJobs(
+	ctx context.Context,
+	req *ctrsvc.ListJobsRequest,
+) (*ctrsvc.ListJobsResponse, error) {
 	result := &ctrsvc.ListJobsResponse{}
 
 	path := "/fine_tuning/jobs"
@@ -76,7 +85,7 @@ func (s *jobService) ListJobs(ctx context.Context, req *ctrsvc.ListJobsRequest) 
 
 	resp, err := s.client.Request(ctx, "GET", path)
 	if err != nil {
-		return result, fmt.Errorf("[service.ListJobs] failed to send request: %w", err)
+		return result, fmt.Errorf("failed to send request: %w", err)
 	}
 
 	var parsed struct {
@@ -85,7 +94,7 @@ func (s *jobService) ListJobs(ctx context.Context, req *ctrsvc.ListJobsRequest) 
 	}
 	err = json.Unmarshal(resp, &parsed)
 	if err != nil {
-		return result, fmt.Errorf("[service.ListJobs] failed to unmarshal response: %w", err)
+		return result, fmt.Errorf("failed to unmarshal response: %w", err)
 	}
 
 	result.Jobs = s.filterJobs(parsed.Data, req)
@@ -94,25 +103,31 @@ func (s *jobService) ListJobs(ctx context.Context, req *ctrsvc.ListJobsRequest) 
 	return result, nil
 }
 
-func (s *jobService) CancelJob(ctx context.Context, req *ctrsvc.CancelJobRequest) (*ctrsvc.CancelJobResponse, error) {
+func (s *jobService) CancelJob(
+	ctx context.Context,
+	req *ctrsvc.CancelJobRequest,
+) (*ctrsvc.CancelJobResponse, error) {
 	result := &ctrsvc.CancelJobResponse{}
 
 	resp, err := s.client.Request(ctx, "POST", "/fine_tuning/jobs/"+req.JobID+"/cancel")
 	if err != nil {
-		return result, fmt.Errorf("[service.CancelJob] failed to send request: %w", err)
+		return result, fmt.Errorf("failed to send request: %w", err)
 	}
 
 	var job ctrsvc.Job
 	err = json.Unmarshal(resp, &job)
 	if err != nil {
-		return result, fmt.Errorf("[service.CancelJob] failed to unmarshal response: %w", err)
+		return result, fmt.Errorf("failed to unmarshal response: %w", err)
 	}
 
 	result.Job = &job
 	return result, nil
 }
 
-func (_ *jobService) filterJobs(jobs []*ctrsvc.Job, req *ctrsvc.ListJobsRequest) []*ctrsvc.Job {
+func (_ *jobService) filterJobs(
+	jobs []*ctrsvc.Job,
+	req *ctrsvc.ListJobsRequest,
+) []*ctrsvc.Job {
 	var result []*ctrsvc.Job
 
 	for _, j := range jobs {

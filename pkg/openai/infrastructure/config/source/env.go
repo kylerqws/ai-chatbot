@@ -34,13 +34,13 @@ func NewEnvConfig(_ context.Context) (ctrcfg.Config, error) {
 
 	cfg := &envConfig{}
 	if err = cfg.SetBaseURL(baseURL); err != nil {
-		return nil, fmt.Errorf("[source.NewEnvConfig] %w", err)
+		return nil, err
 	}
 	if err = cfg.SetAPIKey(apiKey); err != nil {
-		return nil, fmt.Errorf("[source.NewEnvConfig] %w", err)
+		return nil, err
 	}
 	if err = cfg.SetTimeout(timeout); err != nil {
-		return nil, fmt.Errorf("[source.NewEnvConfig] %w", err)
+		return nil, err
 	}
 
 	return cfg, nil
@@ -51,7 +51,8 @@ func (c *envConfig) GetBaseURL() string {
 }
 
 func (c *envConfig) SetBaseURL(baseURL string) error {
-	if strings.TrimSpace(baseURL) == "" {
+	baseURL = strings.TrimSpace(baseURL)
+	if baseURL == "" {
 		baseURL = DefaultBaseUrl
 	}
 
@@ -64,7 +65,8 @@ func (c *envConfig) GetAPIKey() string {
 }
 
 func (c *envConfig) SetAPIKey(apiKey string) error {
-	if strings.TrimSpace(apiKey) == "" {
+	apiKey = strings.TrimSpace(apiKey)
+	if apiKey == "" {
 		return fmt.Errorf("missing required environment variable OPENAI_API_KEY")
 	}
 

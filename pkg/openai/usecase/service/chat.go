@@ -21,22 +21,25 @@ func NewChatService(cl *client.Client, cfg ctrcfg.Config) ctrsvc.ChatService {
 	return &chatService{config: cfg, client: cl}
 }
 
-func (s *chatService) ChatCompletion(ctx context.Context, req *ctrsvc.ChatCompletionRequest) (*ctrsvc.ChatCompletionResponse, error) {
+func (s *chatService) ChatCompletion(
+	ctx context.Context,
+	req *ctrsvc.ChatCompletionRequest,
+) (*ctrsvc.ChatCompletionResponse, error) {
 	result := &ctrsvc.ChatCompletionResponse{}
 
 	payload, err := json.Marshal(req)
 	if err != nil {
-		return result, fmt.Errorf("[service.ChatCompletion] failed to marshal request: %w", err)
+		return result, fmt.Errorf("failed to marshal request: %w", err)
 	}
 
 	resp, err := s.client.RequestReader(ctx, "POST", "/chat/completions", bytes.NewReader(payload))
 	if err != nil {
-		return result, fmt.Errorf("[service.ChatCompletion] failed to send request: %w", err)
+		return result, fmt.Errorf("failed to send request: %w", err)
 	}
 
 	err = json.Unmarshal(resp, result)
 	if err != nil {
-		return result, fmt.Errorf("[service.ChatCompletion] failed to unmarshal response: %w", err)
+		return result, fmt.Errorf("failed to unmarshal response: %w", err)
 	}
 
 	return result, nil

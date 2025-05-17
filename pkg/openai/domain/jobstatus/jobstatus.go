@@ -46,7 +46,7 @@ func Resolve(code string) (*JobStatus, error) {
 		return sts, nil
 	}
 
-	return nil, fmt.Errorf("[jobstatus.Resolve] unknown value '%v'", code)
+	return nil, fmt.Errorf("unknown value '%v'", code)
 }
 
 func JoinCodes(sep string) string {

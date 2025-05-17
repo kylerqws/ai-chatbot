@@ -54,7 +54,7 @@ func Resolve(code string) (*Purpose, error) {
 		return prp, nil
 	}
 
-	return nil, fmt.Errorf("[purpose.Resolve] unknown value '%v'", code)
+	return nil, fmt.Errorf("unknown value '%v'", code)
 }
 
 func JoinCodes(sep string) string {

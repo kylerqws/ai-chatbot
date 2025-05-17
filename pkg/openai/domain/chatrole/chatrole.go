@@ -41,7 +41,7 @@ func Resolve(code string) (*ChatRole, error) {
 		return rol, nil
 	}
 
-	return nil, fmt.Errorf("[chatrole.Resolve] unknown value '%v'", code)
+	return nil, fmt.Errorf("unknown value '%v'", code)
 }
 
 func JoinCodes(sep string) string {

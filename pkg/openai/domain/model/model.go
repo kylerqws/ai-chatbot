@@ -34,7 +34,7 @@ func Resolve(code string) (*Model, error) {
 		return mdl, nil
 	}
 
-	return nil, fmt.Errorf("[model.Resolve] unknown value '%v'", code)
+	return nil, fmt.Errorf("unknown value '%v'", code)
 }
 
 func JoinCodes(sep string) string {

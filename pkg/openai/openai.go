@@ -21,7 +21,7 @@ type api struct {
 func New(ctx context.Context) (ctr.OpenAI, error) {
 	cfg, err := config.New(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("[openai.New] failed to load config: %w", err)
+		return nil, fmt.Errorf("failed to load config: %w", err)
 	}
 
 	cl := client.New(cfg)
