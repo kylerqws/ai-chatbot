@@ -11,11 +11,6 @@ import (
 	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 )
 
-const (
-	DefaultBaseUrl = "https://api.openai.com/v1"
-	DefaultTimeout = 30
-)
-
 type envConfig struct {
 	baseURL string
 	apiKey  string
