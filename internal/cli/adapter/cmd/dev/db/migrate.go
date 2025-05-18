@@ -12,14 +12,15 @@ import (
 
 type MigrateAdapter struct {
 	*inthlp.CommandAdapterHelper
+	*inthlp.PrintAdapterHelper
 }
 
 func NewMigrateAdapter(app *intapp.App) ctr.CommandAdapter {
 	adp := &MigrateAdapter{}
 	cmd := &cobra.Command{}
 
-	adp.CommandAdapterHelper =
-		inthlp.NewCommandAdapterHelper(adp, app, cmd)
+	adp.CommandAdapterHelper = inthlp.NewCommandAdapterHelper(adp, app, cmd)
+	adp.PrintAdapterHelper = inthlp.NewPrintAdapterHelper(cmd)
 
 	return adp
 }
