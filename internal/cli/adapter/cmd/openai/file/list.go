@@ -1,0 +1,123 @@
+package file
+
+import (
+	"github.com/spf13/cobra"
+
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
+
+	intapp "github.com/kylerqws/chatbot/internal/app"
+	inthlp "github.com/kylerqws/chatbot/internal/cli/helper"
+	enmset "github.com/kylerqws/chatbot/internal/openai/enumset"
+
+	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
+	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
+)
+
+const (
+	purposeFlagKey       = "purpose"
+	createdAfterFlagKey  = "created-after"
+	createdBeforeFlagKey = "created-before"
+)
+
+type ListAdapter struct {
+	*inthlp.CommandAdapterHelper
+	*inthlp.FlagAdapterHelper
+	*inthlp.PrintAdapterHelper
+	*inthlp.TableAdapterHelper
+	*inthlp.DateTimeAdapterHelper
+	*inthlp.OpenAiFileAdapterHelper
+}
+
+func NewListAdapter(app *intapp.App) ctr.CommandAdapter {
+	adp := &ListAdapter{}
+	cmd := &cobra.Command{}
+
+	adp.CommandAdapterHelper = inthlp.NewCommandAdapterHelper(adp, app, cmd)
+	adp.FlagAdapterHelper = inthlp.NewFlagAdapterHelper(cmd)
+	adp.PrintAdapterHelper = inthlp.NewPrintAdapterHelper(cmd)
+	adp.TableAdapterHelper = inthlp.NewTableAdapterHelper(cmd)
+	adp.DateTimeAdapterHelper = inthlp.NewDateTimeAdapterHelper(cmd)
+	adp.OpenAiFileAdapterHelper = inthlp.NewOpenAiFileAdapterHelper(cmd)
+
+	return adp
+}
+
+func (a *ListAdapter) Configure() *cobra.Command {
+	a.SetUse("list")
+	a.SetShort("List files in OpenAI account")
+	a.SetFuncRunE(a.FuncRunE)
+
+	desc := "Filter by purpose (e.g. " + enmset.NewPurposeManager().JoinCodes(", ") + ")"
+	a.AddStringFlag(purposeFlagKey, "", "", desc)
+
+	desc = "Filter by creation date after the given date (e.g. 2024-04-20)"
+	a.AddStringFlag(createdAfterFlagKey, "", a.DateTime(0, -1, 0), desc)
+
+	desc = "Filter by creation date before the given date (e.g. 2024-04-23)"
+	a.AddStringFlag(createdBeforeFlagKey, "", "", desc)
+
+	return a.MainConfigure()
+}
+
+func (a *ListAdapter) FuncRunE(_ *cobra.Command, _ []string) error {
+	a.Request()
+
+	if !a.ExistFiles() {
+		if !a.ExistErrors() {
+			return a.PrintMessage("No files found.")
+		}
+		if !a.ShowErrors() {
+			return a.PrintMessage("Failed to retrieve the file list from the OpenAI API.")
+		}
+	}
+
+	if err := a.PrintFiles(); err != nil {
+		return err
+	}
+	return a.PrintErrors()
+}
+
+func (a *ListAdapter) Request() {
+	app := a.App()
+	svc := app.OpenAI().FileService()
+	fgs := a.Command().Flags()
+
+	purpose, _ := fgs.GetString(purposeFlagKey)
+	afterStr, _ := fgs.GetString(createdAfterFlagKey)
+	beforeStr, _ := fgs.GetString(createdBeforeFlagKey)
+
+	resp, err := svc.ListFiles(app.Context(), &ctrsvc.ListFilesRequest{
+		Purpose:       purpose,
+		CreatedAfter:  a.ParseDateTime(afterStr),
+		CreatedBefore: a.ParseDateTime(beforeStr),
+	})
+
+	if err != nil {
+		a.AddError(err)
+	}
+	a.AddFiles(resp.Files...)
+}
+
+func (a *ListAdapter) PrintFiles() error {
+	_ = a.CreateTable()
+
+	a.AppendTableHeader("File ID", "File Name", "Purpose", "Size", "Created")
+	a.SetColumnTableConfigs(
+		table.ColumnConfig{Number: 1, Align: text.AlignLeft, WidthMin: 27},
+		table.ColumnConfig{Number: 2, Align: text.AlignRight, WidthMin: 19},
+		table.ColumnConfig{Number: 3, Align: text.AlignRight, WidthMin: 19},
+		table.ColumnConfig{Number: 4, Align: text.AlignRight, WidthMin: 10},
+		table.ColumnConfig{Number: 5, Align: text.AlignRight, WidthMin: 19},
+	)
+
+	doth := inthlp.EmptyTableColumn
+	for _, file := range a.Files() {
+		a.AppendTableRow(file.ID, file.Filename, file.Purpose,
+			a.FormatBytes(file.Bytes, &doth), a.FormatTime(file.CreatedAt, &doth),
+		)
+	}
+
+	a.RenderTable()
+	return nil
+}
