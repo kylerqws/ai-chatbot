@@ -30,11 +30,12 @@ type GetFileInfoResponse struct {
 }
 
 type ListFilesRequest struct {
-	Purpose       string `json:"purpose,omitempty"`
-	Filename      string `json:"filename,omitempty"`
-	Status        string `json:"status,omitempty"`
-	CreatedAfter  int64  `json:"created_after,omitempty"`
-	CreatedBefore int64  `json:"created_before,omitempty"`
+	FileIDs       []string `json:"file_ids,omitempty"`
+	Purpose       string   `json:"purpose,omitempty"`
+	Filename      string   `json:"filename,omitempty"`
+	Status        string   `json:"status,omitempty"`
+	CreatedAfter  int64    `json:"created_after,omitempty"`
+	CreatedBefore int64    `json:"created_before,omitempty"`
 }
 
 type ListFilesResponse struct {

@@ -114,20 +114,43 @@ func (s *fileService) DeleteFile(
 	return result, nil
 }
 
-func (_ *fileService) filterFiles(files []*ctrsvc.File, req *ctrsvc.ListFilesRequest) []*ctrsvc.File {
+func (s *fileService) filterFiles(files []*ctrsvc.File, req *ctrsvc.ListFilesRequest) []*ctrsvc.File {
 	var result []*ctrsvc.File
+	fileIDCount := len(req.FileIDs)
 
-	for _, f := range files {
-		isSkip := (req.Purpose != "" && f.Purpose != req.Purpose) ||
-			(req.Filename != "" && f.Filename != req.Filename) ||
-			(req.Status != "" && f.Status != req.Status) ||
-			(req.CreatedAfter > 0 && f.CreatedAt <= req.CreatedAfter) ||
-			(req.CreatedBefore > 0 && f.CreatedAt >= req.CreatedBefore)
+	for i := range files {
+		f := files[i]
 
-		if !isSkip {
-			result = append(result, f)
+		if req.Purpose != "" && f.Purpose != req.Purpose {
+			continue
 		}
+		if req.Filename != "" && f.Filename != req.Filename {
+			continue
+		}
+		if req.Status != "" && f.Status != req.Status {
+			continue
+		}
+		if req.CreatedAfter > 0 && f.CreatedAt <= req.CreatedAfter {
+			continue
+		}
+		if req.CreatedBefore > 0 && f.CreatedAt >= req.CreatedBefore {
+			continue
+		}
+		if fileIDCount > 0 && !s.containsFileID(f.ID, req.FileIDs) {
+			continue
+		}
+
+		result = append(result, f)
 	}
 
 	return result
+}
+
+func (_ *fileService) containsFileID(id string, list []string) bool {
+	for i := range list {
+		if list[i] == id {
+			return true
+		}
+	}
+	return false
 }
