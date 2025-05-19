@@ -15,9 +15,13 @@ import (
 )
 
 const (
+	idFlagKey            = "id"
 	purposeFlagKey       = "purpose"
 	createdAfterFlagKey  = "created-after"
 	createdBeforeFlagKey = "created-before"
+	fileIDTemplate       = "file-xxxxxx..."
+	dateTemplate         = "1970-01-01"
+	datetimeTemplate     = "1970-01-01 00:00:00"
 )
 
 type ListAdapter struct {
@@ -48,16 +52,24 @@ func (a *ListAdapter) Configure() *cobra.Command {
 	a.SetShort("List files in OpenAI account")
 	a.SetFuncRunE(a.FuncRunE)
 
-	desc := "Filter by purpose (e.g. " + enmset.NewPurposeManager().JoinCodes(", ") + ")"
+	a.AddFlags()
+	return a.MainConfigure()
+}
+
+func (a *ListAdapter) AddFlags() {
+	var desc string
+
+	desc = "Filter by file ID (e.g. " + fileIDTemplate + ")"
+	a.AddStringSliceFlag(idFlagKey, []string{}, desc)
+
+	desc = "Filter by purpose (e.g. " + enmset.NewPurposeManager().JoinCodes(", ") + ")"
 	a.AddStringFlag(purposeFlagKey, "", "", desc)
 
-	desc = "Filter by creation date after the given date (e.g. 2024-04-20)"
+	desc = "Filter by creation date after (e.g. " + dateTemplate + " or " + datetimeTemplate + ")"
 	a.AddStringFlag(createdAfterFlagKey, "", a.DateTime(0, -1, 0), desc)
 
-	desc = "Filter by creation date before the given date (e.g. 2024-04-23)"
+	desc = "Filter by creation date before (e.g. " + dateTemplate + " or " + datetimeTemplate + ")"
 	a.AddStringFlag(createdBeforeFlagKey, "", "", desc)
-
-	return a.MainConfigure()
 }
 
 func (a *ListAdapter) FuncRunE(_ *cobra.Command, _ []string) error {
@@ -80,14 +92,17 @@ func (a *ListAdapter) FuncRunE(_ *cobra.Command, _ []string) error {
 
 func (a *ListAdapter) Request() {
 	app := a.App()
+	ctx := app.Context()
 	svc := app.OpenAI().FileService()
 	fgs := a.Command().Flags()
 
+	fileIDs, _ := fgs.GetStringSlice(idFlagKey)
 	purpose, _ := fgs.GetString(purposeFlagKey)
 	afterStr, _ := fgs.GetString(createdAfterFlagKey)
 	beforeStr, _ := fgs.GetString(createdBeforeFlagKey)
 
-	resp, err := svc.ListFiles(app.Context(), &ctrsvc.ListFilesRequest{
+	resp, err := svc.ListFiles(ctx, &ctrsvc.ListFilesRequest{
+		FileIDs:       fileIDs,
 		Purpose:       purpose,
 		CreatedAfter:  a.ParseDateTime(afterStr),
 		CreatedBefore: a.ParseDateTime(beforeStr),
