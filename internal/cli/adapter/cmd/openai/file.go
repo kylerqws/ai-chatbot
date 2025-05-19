@@ -29,7 +29,7 @@ func (a *FileAdapter) Configure() *cobra.Command {
 
 	a.SetUse("file")
 	a.SetShort("Manage files used with the OpenAI API")
-	a.AddChildren(action.ListCommand(app))
+	a.AddChildren(action.ListCommand(app), action.UploadCommand(app), action.DeleteCommand(app))
 
 	return a.MainConfigure()
 }
