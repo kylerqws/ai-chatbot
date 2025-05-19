@@ -124,6 +124,7 @@ func (s *jobService) CancelJob(
 	return result, nil
 }
 
+// TODO: rewrite this function the same as file.filterFiles
 func (_ *jobService) filterJobs(jobs []*ctrsvc.Job, req *ctrsvc.ListJobsRequest) []*ctrsvc.Job {
 	var result []*ctrsvc.Job
 
