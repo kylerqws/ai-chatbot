@@ -3,10 +3,10 @@ package dev
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/kylerqws/chatbot/internal/app"
-	cli "github.com/kylerqws/chatbot/internal/cli/adapter/cmd/dev"
+	intapp "github.com/kylerqws/chatbot/internal/app"
+	intcli "github.com/kylerqws/chatbot/internal/cli/adapter/cmd/dev"
 )
 
-func DBCommand(app *app.App) *cobra.Command {
-	return cli.NewDBAdapter(app).Configure()
+func DBCommand(app *intapp.App) *cobra.Command {
+	return intcli.NewDBAdapter(app).Configure()
 }

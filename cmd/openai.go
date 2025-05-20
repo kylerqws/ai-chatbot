@@ -3,10 +3,10 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/kylerqws/chatbot/internal/app"
-	cli "github.com/kylerqws/chatbot/internal/cli/adapter/cmd"
+	intapp "github.com/kylerqws/chatbot/internal/app"
+	intcli "github.com/kylerqws/chatbot/internal/cli/adapter/cmd"
 )
 
-func OpenAICommand(app *app.App) *cobra.Command {
-	return cli.NewOpenAIAdapter(app).Configure()
+func OpenAICommand(app *intapp.App) *cobra.Command {
+	return intcli.NewOpenAIAdapter(app).Configure()
 }
