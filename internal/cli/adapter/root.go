@@ -31,7 +31,11 @@ func (a *RootAdapter) Configure() *cobra.Command {
 	a.SetUse("chatbot")
 	a.SetShort(fmt.Sprintf("CLI for managing %s", app.Name()))
 	a.SetVersion(fmt.Sprintf("v%s", app.Version()))
-	a.AddChildren(action.OpenAICommand(app), action.DevCommand(app))
+
+	a.AddChildren(
+		action.OpenAICommand(app),
+		action.DevCommand(app),
+	)
 
 	return a.MainConfigure()
 }

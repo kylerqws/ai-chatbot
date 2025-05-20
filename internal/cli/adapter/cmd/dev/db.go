@@ -28,8 +28,12 @@ func (a *DBAdapter) Configure() *cobra.Command {
 	app := a.App()
 
 	a.SetUse("db")
-	a.SetShort("Commands for managing the database")
-	a.AddChildren(action.MigrateCommand(app), action.RollbackCommand(app))
+	a.SetShort("Manage database schema and data")
+
+	a.AddChildren(
+		action.MigrateCommand(app),
+		action.RollbackCommand(app),
+	)
 
 	return a.MainConfigure()
 }

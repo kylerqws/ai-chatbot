@@ -28,8 +28,13 @@ func (a *OpenAIAdapter) Configure() *cobra.Command {
 	app := a.App()
 
 	a.SetUse("openai")
-	a.SetShort("Commands for interacting with the OpenAI API")
-	a.AddChildren(action.FileCommand(app), action.JobCommand(app), action.ChatCommand(app))
+	a.SetShort("OpenAI API integration commands")
+
+	a.AddChildren(
+		action.FileCommand(app),
+		action.JobCommand(app),
+		action.ChatCommand(app),
+	)
 
 	return a.MainConfigure()
 }

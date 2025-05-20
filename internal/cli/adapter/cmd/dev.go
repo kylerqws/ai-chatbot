@@ -29,7 +29,10 @@ func (a *DevAdapter) Configure() *cobra.Command {
 
 	a.SetUse("dev")
 	a.SetShort("Tools for application development")
-	a.AddChildren(action.DBCommand(app))
+
+	a.AddChildren(
+		action.DBCommand(app),
+	)
 
 	return a.MainConfigure()
 }
