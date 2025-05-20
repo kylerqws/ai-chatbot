@@ -1,13 +1,14 @@
 package contract
 
 import (
-	"github.com/spf13/cobra"
+	"io"
 
-	"github.com/kylerqws/chatbot/internal/app"
+	intapp "github.com/kylerqws/chatbot/internal/app"
+	"github.com/spf13/cobra"
 )
 
 type Adapter interface {
-	App() *app.App
+	App() *intapp.App
 	Command() *cobra.Command
 	Configure() *cobra.Command
 }
@@ -24,5 +25,13 @@ type RootAdapter interface {
 
 type CommandAdapter interface {
 	Adapter
+
 	Errors() []error
+	AddError(error)
+
+	ShowErrors() bool
+	ExistErrors() bool
+
+	PrintErrors() error
+	PrintErrorsToWriter(io.Writer) error
 }
