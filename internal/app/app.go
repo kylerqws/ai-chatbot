@@ -17,7 +17,7 @@ type App struct {
 	logger ctrlog.Logger
 	openai ctropenai.OpenAI
 
-	ctx       context.Context
+	context   context.Context
 	ctxCancel context.CancelFunc
 }
 
@@ -53,7 +53,7 @@ func New(ctx context.Context, ctxCancel context.CancelFunc) (*App, error) {
 		logger: logger,
 		openai: openai,
 
-		ctx:       ctx,
+		context:   ctx,
 		ctxCancel: ctxCancel,
 	}, nil
 }
@@ -79,7 +79,7 @@ func (app *App) OpenAI() ctropenai.OpenAI {
 }
 
 func (app *App) Context() context.Context {
-	return app.ctx
+	return app.context
 }
 
 func (app *App) ContextCancel() context.CancelFunc {
