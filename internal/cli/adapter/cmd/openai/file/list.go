@@ -143,7 +143,7 @@ func (a *ListAdapter) PrintFiles() error {
 
 	a.AppendTableHeader("File ID", "File Name", "Purpose", "Size", "Created")
 	a.SetColumnTableConfigs(
-		table.ColumnConfig{Number: 1, Align: text.AlignLeft, WidthMin: 27},
+		table.ColumnConfig{Number: 1, Align: text.AlignCenter, WidthMin: 27, Colors: text.Colors{text.Bold}},
 		table.ColumnConfig{Number: 2, Align: text.AlignRight, WidthMin: 19},
 		table.ColumnConfig{Number: 3, Align: text.AlignRight, WidthMin: 19},
 		table.ColumnConfig{Number: 4, Align: text.AlignRight, WidthMin: 10},
@@ -152,8 +152,12 @@ func (a *ListAdapter) PrintFiles() error {
 
 	doth := inthlp.EmptyTableColumn
 	for _, file := range a.Files() {
-		a.AppendTableRow(file.ID, file.Filename, file.Purpose,
-			a.FormatBytes(file.Bytes, &doth), a.FormatTime(file.CreatedAt, &doth),
+		a.AppendTableRow(
+			a.FormatString(file.ID, &doth),
+			a.FormatString(file.Filename, &doth),
+			a.FormatString(file.Purpose, &doth),
+			a.FormatBytes(file.Bytes, &doth),
+			a.FormatTime(file.CreatedAt, &doth),
 		)
 	}
 

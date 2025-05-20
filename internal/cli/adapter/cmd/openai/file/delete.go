@@ -113,20 +113,24 @@ func (a *DeleteAdapter) Request() {
 func (a *DeleteAdapter) PrintFiles() error {
 	_ = a.CreateTable()
 
-	a.AppendTableHeader("File ID", "File Name", "Purpose", "Size", "Created", "Deleted")
+	a.AppendTableHeader("File ID", "File Name", "Purpose", "Size", "Created", "State")
 	a.SetColumnTableConfigs(
-		table.ColumnConfig{Number: 1, Align: text.AlignLeft, WidthMin: 27},
+		table.ColumnConfig{Number: 1, Align: text.AlignCenter, WidthMin: 27, Colors: text.Colors{text.Bold}},
 		table.ColumnConfig{Number: 2, Align: text.AlignRight, WidthMin: 19},
 		table.ColumnConfig{Number: 3, Align: text.AlignRight, WidthMin: 19},
 		table.ColumnConfig{Number: 4, Align: text.AlignRight, WidthMin: 10},
 		table.ColumnConfig{Number: 5, Align: text.AlignRight, WidthMin: 19},
-		table.ColumnConfig{Number: 6, Align: text.AlignRight, WidthMin: 8},
+		table.ColumnConfig{Number: 6, Align: text.AlignCenter, WidthMin: 7, Colors: text.Colors{text.Bold}},
 	)
 
 	doth := inthlp.EmptyTableColumn
 	for _, file := range a.Files() {
-		a.AppendTableRow(file.ID, file.Filename, file.Purpose,
-			a.FormatBytes(file.Bytes, &doth), a.FormatTime(file.CreatedAt, &doth),
+		a.AppendTableRow(
+			a.FormatString(file.ID, &doth),
+			a.FormatString(file.Filename, &doth),
+			a.FormatString(file.Purpose, &doth),
+			a.FormatBytes(file.Bytes, &doth),
+			a.FormatTime(file.CreatedAt, &doth),
 			a.FormatExecStatus(file.ExecStatus),
 		)
 	}
