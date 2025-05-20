@@ -2,7 +2,6 @@ package helper
 
 import (
 	"fmt"
-	"strings"
 	"time"
 )
 
@@ -24,27 +23,4 @@ func FormatBytes(b int64) string {
 
 func FormatTime(t int64) string {
 	return time.Unix(t, 0).Format(time.DateTime)
-}
-
-func FormatPadToWidth(s string, width int) string {
-	if len(s) >= width {
-		return s
-	}
-
-	totalPad := width - len(s)
-	if totalPad%2 != 0 {
-		totalPad--
-	}
-
-	pad := totalPad / 2
-	return strings.Repeat(" ", pad) + s + strings.Repeat(" ", pad)
-}
-
-func FormatPadCenter(s string, padding int) string {
-	if padding <= 0 {
-		return s
-	}
-	pad := strings.Repeat(" ", padding)
-
-	return pad + s + pad
 }
