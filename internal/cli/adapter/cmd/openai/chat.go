@@ -25,10 +25,11 @@ func NewChatAdapter(app *intapp.App) ctr.ParentAdapter {
 }
 
 func (a *ChatAdapter) Configure() *cobra.Command {
-	_ = a.App()
+	//app := a.App()
 
 	a.SetUse("chat")
-	a.SetShort("Manage chats used with the OpenAI API")
+	a.SetShort("Manage chats via the OpenAI API")
+
 	a.AddChildren()
 
 	return a.MainConfigure()

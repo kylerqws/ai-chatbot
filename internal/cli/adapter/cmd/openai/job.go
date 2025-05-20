@@ -25,10 +25,11 @@ func NewJobAdapter(app *intapp.App) ctr.ParentAdapter {
 }
 
 func (a *JobAdapter) Configure() *cobra.Command {
-	_ = a.App()
+	//app := a.App()
 
 	a.SetUse("job")
-	a.SetShort("Manage jobs used with the OpenAI API")
+	a.SetShort("Manage jobs via the OpenAI API")
+
 	a.AddChildren()
 
 	return a.MainConfigure()
