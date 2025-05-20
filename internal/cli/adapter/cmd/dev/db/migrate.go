@@ -27,7 +27,7 @@ func NewMigrateAdapter(app *intapp.App) ctr.CommandAdapter {
 
 func (a *MigrateAdapter) Configure() *cobra.Command {
 	a.SetUse("migrate")
-	a.SetShort("Run database schema migrations for the application")
+	a.SetShort("Run schema migrations for the application")
 	a.SetFuncRunE(a.FuncRunE)
 
 	return a.MainConfigure()
@@ -42,10 +42,10 @@ func (a *MigrateAdapter) FuncRunE(_ *cobra.Command, _ []string) error {
 	}
 
 	if !a.ExistErrors() {
-		return a.PrintMessage("Database migrations have been applied successfully.")
+		return a.PrintMessage("Database migrations applied successfully.")
 	}
 	if !a.ShowErrors() {
-		return a.PrintMessage("Database migrations have not been applied.")
+		return a.PrintMessage("Failed to apply database migrations.")
 	}
 
 	return a.PrintErrors()

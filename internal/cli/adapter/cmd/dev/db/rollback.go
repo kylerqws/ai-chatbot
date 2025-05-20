@@ -27,7 +27,7 @@ func NewRollbackAdapter(app *intapp.App) ctr.CommandAdapter {
 
 func (a *RollbackAdapter) Configure() *cobra.Command {
 	a.SetUse("rollback")
-	a.SetShort("Revert the last set of applied database migrations")
+	a.SetShort("Revert the most recent set of migrations")
 	a.SetFuncRunE(a.FuncRunE)
 
 	return a.MainConfigure()
@@ -36,7 +36,7 @@ func (a *RollbackAdapter) Configure() *cobra.Command {
 func (a *RollbackAdapter) FuncRunE(_ *cobra.Command, _ []string) error {
 	app := a.App()
 
-	err := intmig.Migrate(app.Context(), app.DB())
+	err := intmig.Rollback(app.Context(), app.DB())
 	if err != nil {
 		a.AddError(err)
 	}
@@ -45,7 +45,7 @@ func (a *RollbackAdapter) FuncRunE(_ *cobra.Command, _ []string) error {
 		return a.PrintMessage("Database rollback completed successfully.")
 	}
 	if !a.ShowErrors() {
-		return a.PrintMessage("Database rollback has not been completed.")
+		return a.PrintMessage("Failed to complete database rollback.")
 	}
 
 	return a.PrintErrors()
