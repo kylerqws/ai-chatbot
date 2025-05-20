@@ -23,7 +23,7 @@ const (
 )
 
 var (
-	PurposeManager = enmset.NewPurposeManager()
+	prpManager = enmset.NewPurposeManager()
 )
 
 type UploadAdapter struct {
@@ -79,7 +79,7 @@ func (a *UploadAdapter) FuncArgs(cmd *cobra.Command, args []string) error {
 		}
 
 		return fmt.Errorf("one or more purpose values are incorrect, usage: %s%s",
-			PurposeManager.JoinCodes(", "), strings.TrimRight("\n"+buf.String(), "\n"))
+			prpManager.JoinCodes(", "), strings.TrimRight("\n"+buf.String(), "\n"))
 	}
 
 	return nil
@@ -122,7 +122,7 @@ func (a *UploadAdapter) Request() {
 			prpCode = defaultPrpCode
 		}
 
-		prp, _ := PurposeManager.Resolve(prpCode)
+		prp, _ := prpManager.Resolve(prpCode)
 
 		resp, err := svc.UploadFile(ctx, &ctrsvc.UploadFileRequest{
 			FilePath: filePath,
@@ -185,7 +185,7 @@ func (a *UploadAdapter) ValidatePurposes() bool {
 
 	for _, arg := range args {
 		_, prpCode := a.SeparateArg(arg)
-		if _, err := PurposeManager.Resolve(prpCode); err != nil {
+		if _, err := prpManager.Resolve(prpCode); err != nil {
 			a.AddError(fmt.Errorf("invalid purpose in %q: %w", arg, err))
 			ok = false
 		}
@@ -194,7 +194,7 @@ func (a *UploadAdapter) ValidatePurposes() bool {
 	if prpCode, err := fgs.GetString(defaultPurposeFlagKey); err != nil {
 		a.AddError(fmt.Errorf("failed to get --%s flag value: %w", defaultPurposeFlagKey, err))
 		ok = false
-	} else if _, err = PurposeManager.Resolve(prpCode); err != nil {
+	} else if _, err = prpManager.Resolve(prpCode); err != nil {
 		a.AddError(fmt.Errorf("invalid purpose in --%s flag: %w", defaultPurposeFlagKey, err))
 		ok = false
 	}
