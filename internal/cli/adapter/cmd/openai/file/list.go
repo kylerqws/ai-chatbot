@@ -74,18 +74,29 @@ func (a *ListAdapter) AddFlags() {
 
 func (a *ListAdapter) FuncRunE(_ *cobra.Command, _ []string) error {
 	a.Request()
-	if a.ExistFiles() {
-		return a.PrintFiles()
+
+	hasFiles := a.ExistFiles()
+	hasErrors := a.ExistErrors()
+	showErrors := a.ShowErrors()
+
+	if hasFiles {
+		if err := a.PrintFiles(); err != nil {
+			return err
+		}
 	}
 
-	if a.ExistErrors() {
-		if a.ShowErrors() {
+	if !hasFiles && !hasErrors {
+		return a.PrintMessage("No files found.")
+	}
+
+	if hasErrors {
+		if showErrors {
 			return a.PrintErrors()
 		}
 		return a.PrintMessage("Failed to retrieve the file list from the OpenAI API.")
 	}
 
-	return a.PrintMessage("No files found.")
+	return nil
 }
 
 func (a *ListAdapter) Request() {

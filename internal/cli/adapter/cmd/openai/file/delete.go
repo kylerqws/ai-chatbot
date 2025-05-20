@@ -68,18 +68,29 @@ func (a *DeleteAdapter) FuncArgs(cmd *cobra.Command, _ []string) error {
 
 func (a *DeleteAdapter) FuncRunE(_ *cobra.Command, _ []string) error {
 	a.Request()
-	if a.ExistFiles() {
-		return a.PrintFiles()
+
+	hasFiles := a.ExistFiles()
+	hasErrors := a.ExistErrors()
+	showErrors := a.ShowErrors()
+
+	if hasFiles {
+		if err := a.PrintFiles(); err != nil {
+			return err
+		}
 	}
 
-	if a.ExistErrors() {
-		if a.ShowErrors() {
+	if !hasFiles && !hasErrors {
+		return a.PrintMessage("No files found.")
+	}
+
+	if hasErrors {
+		if showErrors {
 			return a.PrintErrors()
 		}
 		return a.PrintMessage("Failed to delete one or more files from the OpenAI API.")
 	}
 
-	return a.PrintMessage("No files found.")
+	return nil
 }
 
 func (a *DeleteAdapter) Request() {
