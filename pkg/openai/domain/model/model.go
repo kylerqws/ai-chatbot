@@ -38,6 +38,7 @@ func Resolve(code string) (*Model, error) {
 	if model, ok := AllModels[code]; ok {
 		return model, nil
 	}
+
 	return nil, fmt.Errorf("unknown value '%v'", code)
 }
 
@@ -46,5 +47,6 @@ func JoinCodes(sep string) string {
 	for code := range AllModels {
 		codes = append(codes, code)
 	}
+
 	return strings.Join(codes, sep)
 }

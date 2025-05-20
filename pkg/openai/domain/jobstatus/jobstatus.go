@@ -53,6 +53,7 @@ func Resolve(code string) (*JobStatus, error) {
 	if status, ok := AllJobStatuses[code]; ok {
 		return status, nil
 	}
+
 	return nil, fmt.Errorf("unknown value '%v'", code)
 }
 
@@ -61,5 +62,6 @@ func JoinCodes(sep string) string {
 	for code := range AllJobStatuses {
 		codes = append(codes, code)
 	}
+
 	return strings.Join(codes, sep)
 }

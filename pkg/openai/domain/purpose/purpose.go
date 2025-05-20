@@ -62,6 +62,7 @@ func Resolve(code string) (*Purpose, error) {
 	if prp, ok := AllPurposes[code]; ok {
 		return prp, nil
 	}
+
 	return nil, fmt.Errorf("unknown value '%v'", code)
 }
 
@@ -70,5 +71,6 @@ func JoinCodes(sep string) string {
 	for code := range AllPurposes {
 		codes = append(codes, code)
 	}
+
 	return strings.Join(codes, sep)
 }

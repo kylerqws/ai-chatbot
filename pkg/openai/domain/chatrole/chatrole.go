@@ -47,6 +47,7 @@ func Resolve(code string) (*ChatRole, error) {
 	if role, ok := AllChatRoles[code]; ok {
 		return role, nil
 	}
+
 	return nil, fmt.Errorf("unknown value '%v'", code)
 }
 
@@ -55,5 +56,6 @@ func JoinCodes(sep string) string {
 	for code := range AllChatRoles {
 		codes = append(codes, code)
 	}
+
 	return strings.Join(codes, sep)
 }
