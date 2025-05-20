@@ -27,7 +27,7 @@ func NewRollbackAdapter(app *intapp.App) ctr.CommandAdapter {
 
 func (a *RollbackAdapter) Configure() *cobra.Command {
 	a.SetUse("rollback")
-	a.SetShort("Revert the most recent set of migrations")
+	a.SetShort("Rollback the last set of migrations")
 	a.SetFuncRunE(a.FuncRunE)
 
 	return a.MainConfigure()
