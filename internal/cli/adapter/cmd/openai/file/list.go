@@ -74,20 +74,18 @@ func (a *ListAdapter) AddFlags() {
 
 func (a *ListAdapter) FuncRunE(_ *cobra.Command, _ []string) error {
 	a.Request()
-
-	if !a.ExistFiles() {
-		if !a.ExistErrors() {
-			return a.PrintMessage("No files found.")
-		}
-		if !a.ShowErrors() {
-			return a.PrintMessage("Failed to retrieve the file list from the OpenAI API.")
-		}
+	if a.ExistFiles() {
+		return a.PrintFiles()
 	}
 
-	if err := a.PrintFiles(); err != nil {
-		return err
+	if a.ExistErrors() {
+		if a.ShowErrors() {
+			return a.PrintErrors()
+		}
+		return a.PrintMessage("Failed to retrieve the file list from the OpenAI API.")
 	}
-	return a.PrintErrors()
+
+	return a.PrintMessage("No files found.")
 }
 
 func (a *ListAdapter) Request() {
@@ -96,10 +94,25 @@ func (a *ListAdapter) Request() {
 	svc := app.OpenAI().FileService()
 	fgs := a.Command().Flags()
 
-	fileIDs, _ := fgs.GetStringSlice(idFlagKey)
-	purpose, _ := fgs.GetString(purposeFlagKey)
-	afterStr, _ := fgs.GetString(createdAfterFlagKey)
-	beforeStr, _ := fgs.GetString(createdBeforeFlagKey)
+	fileIDs, err := fgs.GetStringSlice(idFlagKey)
+	if err != nil {
+		a.AddError(err)
+	}
+
+	purpose, err := fgs.GetString(purposeFlagKey)
+	if err != nil {
+		a.AddError(err)
+	}
+
+	afterStr, err := fgs.GetString(createdAfterFlagKey)
+	if err != nil {
+		a.AddError(err)
+	}
+
+	beforeStr, err := fgs.GetString(createdBeforeFlagKey)
+	if err != nil {
+		a.AddError(err)
+	}
 
 	resp, err := svc.ListFiles(ctx, &ctrsvc.ListFilesRequest{
 		FileIDs:       fileIDs,
