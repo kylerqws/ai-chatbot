@@ -8,5 +8,5 @@ import (
 )
 
 func ChatCommand(app *app.App) *cobra.Command {
-	return cli.NewJobAdapter(app).Configure()
+	return cli.NewChatAdapter(app).Configure()
 }
