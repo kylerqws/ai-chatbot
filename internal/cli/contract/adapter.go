@@ -1,8 +1,9 @@
 package contract
 
 import (
-	"github.com/kylerqws/chatbot/internal/app"
 	"github.com/spf13/cobra"
+
+	"github.com/kylerqws/chatbot/internal/app"
 )
 
 type Adapter interface {
@@ -18,6 +19,7 @@ type ParentAdapter interface {
 
 type RootAdapter interface {
 	ParentAdapter
+	Version() string
 }
 
 type CommandAdapter interface {
