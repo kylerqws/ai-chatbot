@@ -10,50 +10,56 @@ type JobStatus struct {
 	Description string
 }
 
+const (
+	ValidatingCode = "validating"
+	RunningCode    = "running"
+	SucceededCode  = "succeeded"
+	FailedCode     = "failed"
+	CancelledCode  = "cancelled"
+)
+
 var (
-	Validating = JobStatus{
-		Code:        "validating",
+	Validating = &JobStatus{
+		Code:        ValidatingCode,
 		Description: "The job is currently being validated.",
 	}
-	Running = JobStatus{
-		Code:        "running",
+	Running = &JobStatus{
+		Code:        RunningCode,
 		Description: "The job is currently running.",
 	}
-	Succeeded = JobStatus{
-		Code:        "succeeded",
+	Succeeded = &JobStatus{
+		Code:        SucceededCode,
 		Description: "The job completed successfully.",
 	}
-	Failed = JobStatus{
-		Code:        "failed",
+	Failed = &JobStatus{
+		Code:        FailedCode,
 		Description: "The job failed to complete.",
 	}
-	Cancelled = JobStatus{
-		Code:        "cancelled",
+	Cancelled = &JobStatus{
+		Code:        CancelledCode,
 		Description: "The job was cancelled.",
 	}
 )
 
 var AllJobStatuses = map[string]*JobStatus{
-	Validating.Code: &Validating,
-	Running.Code:    &Running,
-	Succeeded.Code:  &Succeeded,
-	Failed.Code:     &Failed,
-	Cancelled.Code:  &Cancelled,
+	ValidatingCode: Validating,
+	RunningCode:    Running,
+	SucceededCode:  Succeeded,
+	FailedCode:     Failed,
+	CancelledCode:  Cancelled,
 }
 
 func Resolve(code string) (*JobStatus, error) {
-	if sts, ok := AllJobStatuses[code]; ok {
-		return sts, nil
+	if status, ok := AllJobStatuses[code]; ok {
+		return status, nil
 	}
-
 	return nil, fmt.Errorf("unknown value '%v'", code)
 }
 
 func JoinCodes(sep string) string {
-	var codes []string
-	for _, sts := range AllJobStatuses {
-		codes = append(codes, sts.Code)
+	codes := make([]string, 0, len(AllJobStatuses))
+	for code := range AllJobStatuses {
+		codes = append(codes, code)
 	}
-
 	return strings.Join(codes, sep)
 }

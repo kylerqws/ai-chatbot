@@ -35,11 +35,12 @@ type GetJobInfoResponse struct {
 }
 
 type ListJobsRequest struct {
-	After         string `json:"after,omitempty"`
-	Model         string `json:"model,omitempty"`
-	Status        string `json:"status,omitempty"`
-	CreatedAfter  int64  `json:"created_after,omitempty"`
-	CreatedBefore int64  `json:"created_before,omitempty"`
+	JobIDs        []string `json:"job_ids,omitempty"`
+	After         string   `json:"after,omitempty"`
+	Model         string   `json:"model,omitempty"`
+	Status        string   `json:"status,omitempty"`
+	CreatedAfter  int64    `json:"created_after,omitempty"`
+	CreatedBefore int64    `json:"created_before,omitempty"`
 }
 
 type ListJobsResponse struct {

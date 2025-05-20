@@ -58,8 +58,8 @@ func encodeToJSONL(data []map[string]any) ([]byte, error) {
 	var buffer bytes.Buffer
 	writer := bufio.NewWriter(&buffer)
 
-	for _, record := range data {
-		line, err := json.Marshal(record)
+	for i := range data {
+		line, err := json.Marshal(data[i])
 		if err != nil {
 			return nil, fmt.Errorf("failed to marshal record: %w", err)
 		}

@@ -124,20 +124,40 @@ func (s *jobService) CancelJob(
 	return result, nil
 }
 
-// TODO: rewrite this function the same as file.filterFiles
-func (_ *jobService) filterJobs(jobs []*ctrsvc.Job, req *ctrsvc.ListJobsRequest) []*ctrsvc.Job {
+func (s *jobService) filterJobs(jobs []*ctrsvc.Job, req *ctrsvc.ListJobsRequest) []*ctrsvc.Job {
 	var result []*ctrsvc.Job
+	jobIDCount := len(req.JobIDs)
 
-	for _, j := range jobs {
-		isSkip := (req.Model != "" && j.Model != req.Model) ||
-			(req.Status != "" && j.Status != req.Status) ||
-			(req.CreatedAfter > 0 && j.CreatedAt <= req.CreatedAfter) ||
-			(req.CreatedBefore > 0 && j.CreatedAt >= req.CreatedBefore)
+	for i := range jobs {
+		j := jobs[i]
 
-		if !isSkip {
-			result = append(result, j)
+		if req.Model != "" && j.Model != req.Model {
+			continue
 		}
+		if req.Status != "" && j.Status != req.Status {
+			continue
+		}
+		if req.CreatedAfter > 0 && j.CreatedAt <= req.CreatedAfter {
+			continue
+		}
+		if req.CreatedBefore > 0 && j.CreatedAt >= req.CreatedBefore {
+			continue
+		}
+		if jobIDCount > 0 && !s.containsJobID(j.ID, req.JobIDs) {
+			continue
+		}
+
+		result = append(result, j)
 	}
 
 	return result
+}
+
+func (_ *jobService) containsJobID(id string, list []string) bool {
+	for i := range list {
+		if list[i] == id {
+			return true
+		}
+	}
+	return false
 }
