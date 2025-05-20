@@ -1,8 +1,6 @@
 package contract
 
 import (
-	"io"
-
 	intapp "github.com/kylerqws/chatbot/internal/app"
 	"github.com/spf13/cobra"
 )
@@ -25,13 +23,5 @@ type RootAdapter interface {
 
 type CommandAdapter interface {
 	Adapter
-
 	Errors() []error
-	AddError(error)
-
-	ShowErrors() bool
-	ExistErrors() bool
-
-	PrintErrors() error
-	PrintErrorsToWriter(io.Writer) error
 }
