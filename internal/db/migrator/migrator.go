@@ -54,8 +54,8 @@ func Rollback(ctx context.Context, db ctr.DB) (err error) {
 
 func migrations() *migrate.Migrations {
 	migs := migrate.NewMigrations()
-	for _, fn := range migrationRegistry {
-		fn(migs)
+	for i := range migrationRegistry {
+		migrationRegistry[i](migs)
 	}
 
 	return migs
