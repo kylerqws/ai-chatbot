@@ -1,20 +1,20 @@
 package helper
 
 import (
-	intapp "github.com/kylerqws/chatbot/internal/app"
+	"github.com/kylerqws/chatbot/internal/app"
 	"github.com/spf13/cobra"
 )
 
 type AdapterHelper struct {
-	app     *intapp.App
+	app     *app.App
 	command *cobra.Command
 }
 
-func NewAdapterHelper(app *intapp.App, cmd *cobra.Command) *AdapterHelper {
+func NewAdapterHelper(app *app.App, cmd *cobra.Command) *AdapterHelper {
 	return &AdapterHelper{app: app, command: cmd}
 }
 
-func (h *AdapterHelper) App() *intapp.App {
+func (h *AdapterHelper) App() *app.App {
 	return h.app
 }
 
