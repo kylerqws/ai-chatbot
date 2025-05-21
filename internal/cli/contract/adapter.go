@@ -8,20 +8,13 @@ import (
 type Adapter interface {
 	App() *intapp.App
 	Command() *cobra.Command
+
+	Use() string
+	SetUse(string)
+
+	Short() string
+	SetShort(string)
+
 	Configure() *cobra.Command
-}
-
-type ParentAdapter interface {
-	Adapter
-	Children() []*cobra.Command
-}
-
-type RootAdapter interface {
-	ParentAdapter
-	Version() string
-}
-
-type CommandAdapter interface {
-	Adapter
-	Errors() []error
+	MainConfigure() *cobra.Command
 }
