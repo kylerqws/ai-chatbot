@@ -1,8 +1,10 @@
 package helper
 
 import (
-	"github.com/kylerqws/chatbot/internal/app"
 	"github.com/spf13/cobra"
+
+	"github.com/kylerqws/chatbot/internal/app"
+	"github.com/kylerqws/chatbot/internal/cli/setup"
 )
 
 type AdapterHelper struct {
@@ -43,5 +45,5 @@ func (h *AdapterHelper) Configure() *cobra.Command {
 }
 
 func (h *AdapterHelper) MainConfigure() *cobra.Command {
-	return h.command
+	return setup.GeneralConfigure(h)
 }
