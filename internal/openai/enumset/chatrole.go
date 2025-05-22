@@ -10,10 +10,10 @@ func NewChatRoleManager() *ChatRoleManager {
 	return &ChatRoleManager{List: base.AllChatRoles}
 }
 
-func (_ *ChatRoleManager) Resolve(code string) (*base.ChatRole, error) {
+func (*ChatRoleManager) Resolve(code string) (*base.ChatRole, error) {
 	return base.Resolve(code)
 }
 
-func (_ *ChatRoleManager) JoinCodes(sep string) string {
+func (*ChatRoleManager) JoinCodes(sep string) string {
 	return base.JoinCodes(sep)
 }

@@ -10,10 +10,10 @@ func NewPurposeManager() *PurposeManager {
 	return &PurposeManager{List: base.AllPurposes}
 }
 
-func (_ *PurposeManager) Resolve(code string) (*base.Purpose, error) {
+func (*PurposeManager) Resolve(code string) (*base.Purpose, error) {
 	return base.Resolve(code)
 }
 
-func (_ *PurposeManager) JoinCodes(sep string) string {
+func (*PurposeManager) JoinCodes(sep string) string {
 	return base.JoinCodes(sep)
 }

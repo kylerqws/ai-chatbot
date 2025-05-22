@@ -10,10 +10,10 @@ func NewJobStatusManager() *JobStatusManager {
 	return &JobStatusManager{List: base.AllJobStatuses}
 }
 
-func (_ *JobStatusManager) Resolve(code string) (*base.JobStatus, error) {
+func (*JobStatusManager) Resolve(code string) (*base.JobStatus, error) {
 	return base.Resolve(code)
 }
 
-func (_ *JobStatusManager) JoinCodes(sep string) string {
+func (*JobStatusManager) JoinCodes(sep string) string {
 	return base.JoinCodes(sep)
 }
