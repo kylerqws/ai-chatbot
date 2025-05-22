@@ -6,6 +6,7 @@ type CommandAdapter interface {
 	Adapter
 
 	Errors() []error
+	AddErrors(...error)
 	AddError(error)
 
 	ShowErrors() bool
