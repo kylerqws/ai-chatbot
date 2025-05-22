@@ -86,9 +86,17 @@ func localFlags(cmd *cobra.Command) []*pflag.Flag {
 
 	if set := cmd.LocalFlags(); set != nil {
 		set.VisitAll(func(f *pflag.Flag) {
-			if !f.Hidden && inheritedFlags.Lookup(f.Name) == nil && persistentFlags.Lookup(f.Name) == nil {
-				flags = append(flags, f)
+			if f.Hidden {
+				return
 			}
+			if inheritedFlags.Lookup(f.Name) != nil {
+				return
+			}
+			if persistentFlags.Lookup(f.Name) != nil {
+				return
+			}
+
+			flags = append(flags, f)
 		})
 	}
 
@@ -100,17 +108,21 @@ func globalFlags(cmd *cobra.Command) []*pflag.Flag {
 
 	if set := cmd.InheritedFlags(); set != nil {
 		set.VisitAll(func(f *pflag.Flag) {
-			if !f.Hidden && !cmd.LocalFlags().Changed(f.Name) {
-				flags = append(flags, f)
+			if f.Hidden {
+				return
 			}
+
+			flags = append(flags, f)
 		})
 	}
 
 	if set := cmd.PersistentFlags(); set != nil {
 		set.VisitAll(func(f *pflag.Flag) {
-			if !f.Hidden && !cmd.LocalFlags().Changed(f.Name) {
-				flags = append(flags, f)
+			if f.Hidden {
+				return
 			}
+
+			flags = append(flags, f)
 		})
 	}
 
