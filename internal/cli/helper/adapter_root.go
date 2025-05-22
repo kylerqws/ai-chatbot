@@ -3,7 +3,7 @@ package helper
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/kylerqws/chatbot/internal/app"
+	intapp "github.com/kylerqws/chatbot/internal/app"
 	"github.com/kylerqws/chatbot/internal/cli/setup"
 )
 
@@ -11,7 +11,7 @@ type RootAdapterHelper struct {
 	*ParentAdapterHelper
 }
 
-func NewRootAdapterHelper(app *app.App, cmd *cobra.Command) *RootAdapterHelper {
+func NewRootAdapterHelper(app *intapp.App, cmd *cobra.Command) *RootAdapterHelper {
 	hlp := &RootAdapterHelper{}
 	hlp.ParentAdapterHelper = NewParentAdapterHelper(app, cmd)
 
