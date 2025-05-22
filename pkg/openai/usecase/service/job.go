@@ -153,7 +153,7 @@ func (s *jobService) filterJobs(jobs []*ctrsvc.Job, req *ctrsvc.ListJobsRequest)
 	return result
 }
 
-func (_ *jobService) containsJobID(id string, list []string) bool {
+func (*jobService) containsJobID(id string, list []string) bool {
 	for i := range list {
 		if list[i] == id {
 			return true

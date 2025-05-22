@@ -146,7 +146,7 @@ func (s *fileService) filterFiles(files []*ctrsvc.File, req *ctrsvc.ListFilesReq
 	return result
 }
 
-func (_ *fileService) containsFileID(id string, list []string) bool {
+func (*fileService) containsFileID(id string, list []string) bool {
 	for i := range list {
 		if list[i] == id {
 			return true

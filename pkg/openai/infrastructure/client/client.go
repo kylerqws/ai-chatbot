@@ -113,7 +113,7 @@ func (c *Client) buildRequest(method, path string, body io.Reader) (*http.Reques
 	return req, nil
 }
 
-func (_ *Client) writeMultipart(w *multipart.Writer, file io.Reader, filename string, fields map[string]string) error {
+func (*Client) writeMultipart(w *multipart.Writer, file io.Reader, filename string, fields map[string]string) error {
 	part, err := w.CreateFormFile("file", filename)
 	if err != nil {
 		return fmt.Errorf("failed to create multipart file part: %w", err)
@@ -168,7 +168,7 @@ func (c *Client) doRequest(ctx context.Context, req *http.Request) (body []byte,
 	return body, err
 }
 
-func (_ *Client) extractAPIError(body []byte) string {
+func (*Client) extractAPIError(body []byte) string {
 	var data struct {
 		Error struct {
 			Message string `json:"message"`

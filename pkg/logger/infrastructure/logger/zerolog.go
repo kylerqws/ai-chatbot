@@ -62,7 +62,7 @@ func (l *zeroLogger) from(ctx context.Context) *zerolog.Logger {
 	return l.logger
 }
 
-func (_ *zeroLogger) format(args ...any) string {
+func (*zeroLogger) format(args ...any) string {
 	if len(args) == 1 {
 		if str, ok := args[0].(string); ok {
 			return str

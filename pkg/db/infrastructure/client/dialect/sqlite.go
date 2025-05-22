@@ -69,7 +69,7 @@ func (d *sqliteDialect) DB() *bun.DB {
 	return d.db
 }
 
-func (_ *sqliteDialect) prepareDSN(dsn string) (string, error) {
+func (*sqliteDialect) prepareDSN(dsn string) (string, error) {
 	if strings.TrimSpace(dsn) == "" {
 		dsn = "var/database.sqlite"
 	}

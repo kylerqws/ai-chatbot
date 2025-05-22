@@ -26,6 +26,6 @@ func (p *dbProvider) Writer() io.Writer {
 }
 
 // TODO: need to implement for storing logs in the database
-func (_ *dbWriter) Write(p []byte) (int, error) {
+func (*dbWriter) Write(p []byte) (int, error) {
 	return len(p), fmt.Errorf("database writer is not implemented")
 }
