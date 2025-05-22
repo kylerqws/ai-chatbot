@@ -10,7 +10,7 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
 )
 
-func Function() ctr.FuncHelp {
+func FunctionHelp() ctr.FuncHelp {
 	return func(cmd *cobra.Command, _ []string) {
 		if cmd.Deprecated != "" {
 			return
