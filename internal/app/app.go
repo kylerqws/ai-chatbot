@@ -58,11 +58,11 @@ func New(ctx context.Context, ctxCancel context.CancelFunc) (*App, error) {
 	}, nil
 }
 
-func (_ *App) Name() string {
+func (*App) Name() string {
 	return Name
 }
 
-func (_ *App) Version() string {
+func (*App) Version() string {
 	return Version
 }
 
