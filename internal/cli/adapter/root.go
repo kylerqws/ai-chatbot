@@ -20,7 +20,7 @@ func NewRootAdapter(app *intapp.App) ctr.RootAdapter {
 	cmd := &cobra.Command{}
 
 	adp.RootAdapterHelper =
-		inthlp.NewRootAdapterHelper(adp, app, cmd)
+		inthlp.NewRootAdapterHelper(app, cmd)
 
 	return adp
 }

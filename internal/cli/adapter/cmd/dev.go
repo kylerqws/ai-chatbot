@@ -19,7 +19,7 @@ func NewDevAdapter(app *intapp.App) ctr.ParentAdapter {
 	cmd := &cobra.Command{}
 
 	adp.ParentAdapterHelper =
-		inthlp.NewParentAdapterHelper(adp, app, cmd)
+		inthlp.NewParentAdapterHelper(app, cmd)
 
 	return adp
 }
