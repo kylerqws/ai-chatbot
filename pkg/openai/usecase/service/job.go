@@ -129,25 +129,23 @@ func (s *jobService) filterJobs(jobs []*ctrsvc.Job, req *ctrsvc.ListJobsRequest)
 	jobIDCount := len(req.JobIDs)
 
 	for i := range jobs {
-		j := jobs[i]
-
-		if req.Model != "" && j.Model != req.Model {
+		if req.Model != "" && jobs[i].Model != req.Model {
 			continue
 		}
-		if req.Status != "" && j.Status != req.Status {
+		if req.Status != "" && jobs[i].Status != req.Status {
 			continue
 		}
-		if req.CreatedAfter > 0 && j.CreatedAt <= req.CreatedAfter {
+		if req.CreatedAfter > 0 && jobs[i].CreatedAt <= req.CreatedAfter {
 			continue
 		}
-		if req.CreatedBefore > 0 && j.CreatedAt >= req.CreatedBefore {
+		if req.CreatedBefore > 0 && jobs[i].CreatedAt >= req.CreatedBefore {
 			continue
 		}
-		if jobIDCount > 0 && !s.containsJobID(j.ID, req.JobIDs) {
+		if jobIDCount > 0 && !s.containsJobID(jobs[i].ID, req.JobIDs) {
 			continue
 		}
 
-		result = append(result, j)
+		result = append(result, jobs[i])
 	}
 
 	return result

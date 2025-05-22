@@ -119,28 +119,26 @@ func (s *fileService) filterFiles(files []*ctrsvc.File, req *ctrsvc.ListFilesReq
 	fileIDCount := len(req.FileIDs)
 
 	for i := range files {
-		f := files[i]
-
-		if req.Purpose != "" && f.Purpose != req.Purpose {
+		if req.Purpose != "" && files[i].Purpose != req.Purpose {
 			continue
 		}
-		if req.Filename != "" && f.Filename != req.Filename {
+		if req.Filename != "" && files[i].Filename != req.Filename {
 			continue
 		}
-		if req.Status != "" && f.Status != req.Status {
+		if req.Status != "" && files[i].Status != req.Status {
 			continue
 		}
-		if req.CreatedAfter > 0 && f.CreatedAt <= req.CreatedAfter {
+		if req.CreatedAfter > 0 && files[i].CreatedAt <= req.CreatedAfter {
 			continue
 		}
-		if req.CreatedBefore > 0 && f.CreatedAt >= req.CreatedBefore {
+		if req.CreatedBefore > 0 && files[i].CreatedAt >= req.CreatedBefore {
 			continue
 		}
-		if fileIDCount > 0 && !s.containsFileID(f.ID, req.FileIDs) {
+		if fileIDCount > 0 && !s.containsFileID(files[i].ID, req.FileIDs) {
 			continue
 		}
 
-		result = append(result, f)
+		result = append(result, files[i])
 	}
 
 	return result
