@@ -12,15 +12,13 @@ import (
 
 type MigrateAdapter struct {
 	*inthlp.CommandAdapterHelper
-	*inthlp.PrintAdapterHelper
 }
 
 func NewMigrateAdapter(app *intapp.App) ctr.CommandAdapter {
 	adp := &MigrateAdapter{}
 	cmd := &cobra.Command{}
 
-	adp.CommandAdapterHelper = inthlp.NewCommandAdapterHelper(adp, app, cmd)
-	adp.PrintAdapterHelper = inthlp.NewPrintAdapterHelper(cmd)
+	adp.CommandAdapterHelper = inthlp.NewCommandAdapterHelper(app, cmd)
 
 	return adp
 }
@@ -28,12 +26,12 @@ func NewMigrateAdapter(app *intapp.App) ctr.CommandAdapter {
 func (a *MigrateAdapter) Configure() *cobra.Command {
 	a.SetUse("migrate")
 	a.SetShort("Run schema migrations for the application")
-	a.SetFuncRunE(a.FuncRunE)
+	a.SetFuncRunE(a.Migrate)
 
 	return a.MainConfigure()
 }
 
-func (a *MigrateAdapter) FuncRunE(_ *cobra.Command, _ []string) error {
+func (a *MigrateAdapter) Migrate(_ *cobra.Command, _ []string) error {
 	app := a.App()
 
 	err := intmig.Migrate(app.Context(), app.DB())

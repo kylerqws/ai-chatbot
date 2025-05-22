@@ -12,15 +12,13 @@ import (
 
 type RollbackAdapter struct {
 	*inthlp.CommandAdapterHelper
-	*inthlp.PrintAdapterHelper
 }
 
 func NewRollbackAdapter(app *intapp.App) ctr.CommandAdapter {
 	adp := &RollbackAdapter{}
 	cmd := &cobra.Command{}
 
-	adp.CommandAdapterHelper = inthlp.NewCommandAdapterHelper(adp, app, cmd)
-	adp.PrintAdapterHelper = inthlp.NewPrintAdapterHelper(cmd)
+	adp.CommandAdapterHelper = inthlp.NewCommandAdapterHelper(app, cmd)
 
 	return adp
 }
@@ -28,12 +26,12 @@ func NewRollbackAdapter(app *intapp.App) ctr.CommandAdapter {
 func (a *RollbackAdapter) Configure() *cobra.Command {
 	a.SetUse("rollback")
 	a.SetShort("Rollback the last set of migrations")
-	a.SetFuncRunE(a.FuncRunE)
+	a.SetFuncRunE(a.Rollback)
 
 	return a.MainConfigure()
 }
 
-func (a *RollbackAdapter) FuncRunE(_ *cobra.Command, _ []string) error {
+func (a *RollbackAdapter) Rollback(_ *cobra.Command, _ []string) error {
 	app := a.App()
 
 	err := intmig.Rollback(app.Context(), app.DB())
