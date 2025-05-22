@@ -23,7 +23,7 @@ func (h *PrintAdapterHelper) PrintErrMessage(args ...any) error {
 	return h.PrintMessageToWriter(h.command.ErrOrStderr(), args...)
 }
 
-func (h *PrintAdapterHelper) PrintMessageToWriter(w io.Writer, args ...any) error {
+func (*PrintAdapterHelper) PrintMessageToWriter(w io.Writer, args ...any) error {
 	if _, err := fmt.Fprintln(w, args...); err != nil {
 		return err
 	}

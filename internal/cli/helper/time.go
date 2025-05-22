@@ -14,7 +14,7 @@ func NewDateTimeAdapterHelper(cmd *cobra.Command) *DateTimeAdapterHelper {
 	return &DateTimeAdapterHelper{command: cmd}
 }
 
-func (h *DateTimeAdapterHelper) ParseDateTime(dateStr string) int64 {
+func (*DateTimeAdapterHelper) ParseDateTime(dateStr string) int64 {
 	now := time.Now()
 	loc := now.Location()
 
@@ -28,6 +28,6 @@ func (h *DateTimeAdapterHelper) ParseDateTime(dateStr string) int64 {
 	return now.UTC().Unix()
 }
 
-func (h *DateTimeAdapterHelper) DateTime(years, months, days int) string {
+func (*DateTimeAdapterHelper) DateTime(years, months, days int) string {
 	return time.Now().AddDate(years, months, days).UTC().Format(time.DateTime)
 }
