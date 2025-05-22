@@ -1,12 +1,13 @@
 package contract
 
 import (
-	"github.com/kylerqws/chatbot/internal/app"
 	"github.com/spf13/cobra"
+
+	intapp "github.com/kylerqws/chatbot/internal/app"
 )
 
 type Adapter interface {
-	App() *app.App
+	App() *intapp.App
 	Command() *cobra.Command
 
 	Use() string

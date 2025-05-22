@@ -1,9 +1,6 @@
 package contract
 
-import (
-	"github.com/spf13/cobra"
-	"io"
-)
+import "io"
 
 type CommandAdapter interface {
 	Adapter
@@ -21,9 +18,9 @@ type CommandAdapter interface {
 	PrintErrMessage(...any) error
 	PrintMessageToWriter(io.Writer, ...any) error
 
-	FuncArgs(*cobra.Command, []string) error
+	FuncArgs() FuncArgs
 	SetFuncArgs(FuncArgs)
 
-	FuncRunE(*cobra.Command, []string) error
+	FuncRunE() FuncRunE
 	SetFuncRunE(FuncRunE)
 }
