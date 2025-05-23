@@ -5,13 +5,13 @@ import (
 
 	action "github.com/kylerqws/chatbot/cmd/openai/file"
 	intapp "github.com/kylerqws/chatbot/internal/app"
-	inthlp "github.com/kylerqws/chatbot/internal/cli/helper"
+	hlppar "github.com/kylerqws/chatbot/internal/cli/helper/adapter/parent"
 
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
 )
 
 type FileAdapter struct {
-	*inthlp.ParentAdapterHelper
+	*hlppar.ParentAdapterHelper
 }
 
 func NewFileAdapter(app *intapp.App) ctr.ParentAdapter {
@@ -19,7 +19,7 @@ func NewFileAdapter(app *intapp.App) ctr.ParentAdapter {
 	cmd := &cobra.Command{}
 
 	adp.ParentAdapterHelper =
-		inthlp.NewParentAdapterHelper(app, cmd)
+		hlppar.NewParentAdapterHelper(app, cmd)
 
 	return adp
 }
