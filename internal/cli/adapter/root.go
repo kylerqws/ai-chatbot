@@ -6,13 +6,13 @@ import (
 
 	action "github.com/kylerqws/chatbot/cmd"
 	intapp "github.com/kylerqws/chatbot/internal/app"
-	inthlp "github.com/kylerqws/chatbot/internal/cli/helper"
+	hlpadp "github.com/kylerqws/chatbot/internal/cli/helper/adapter/root"
 
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
 )
 
 type RootAdapter struct {
-	*inthlp.RootAdapterHelper
+	*hlpadp.RootAdapterHelper
 }
 
 func NewRootAdapter(app *intapp.App) ctr.RootAdapter {
@@ -20,7 +20,7 @@ func NewRootAdapter(app *intapp.App) ctr.RootAdapter {
 	cmd := &cobra.Command{}
 
 	adp.RootAdapterHelper =
-		inthlp.NewRootAdapterHelper(app, cmd)
+		hlpadp.NewRootAdapterHelper(app, cmd)
 
 	return adp
 }
