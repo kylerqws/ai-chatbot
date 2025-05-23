@@ -21,15 +21,10 @@ func GeneralConfigure(adp ctr.Adapter) *cobra.Command {
 
 func RootConfigure(adp ctr.RootAdapter) *cobra.Command {
 	cmd := adp.Command()
-
-	cmd.CompletionOptions = cobra.CompletionOptions{
-		DisableDefaultCmd: true,
-	}
-
-	cmd.SilenceUsage = true
-	cmd.SilenceErrors = true
-
 	cmn.FixVersionTemplate(cmd, adp.App().Name())
+
+	cmn.HideCompletionCommand(cmd)
+	cmn.SilenceCommandOutput(cmd)
 
 	cmn.AddHelpFlag(cmd)
 	cmn.AddVersionFlag(cmd)

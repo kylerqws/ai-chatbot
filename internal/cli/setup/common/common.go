@@ -18,6 +18,17 @@ func HideHelpCommand(cmd *cobra.Command) {
 	cmd.SetHelpCommand(&cobra.Command{Hidden: true})
 }
 
+func HideCompletionCommand(cmd *cobra.Command) {
+	cmd.CompletionOptions = cobra.CompletionOptions{
+		DisableDefaultCmd: true,
+	}
+}
+
+func SilenceCommandOutput(cmd *cobra.Command) {
+	cmd.SilenceUsage = true
+	cmd.SilenceErrors = true
+}
+
 func FixVersionTemplate(cmd *cobra.Command, name string) {
 	cmd.SetVersionTemplate(fmt.Sprintf("%s version {{.Version}}\n", name))
 }
