@@ -4,21 +4,22 @@ import (
 	"github.com/spf13/cobra"
 
 	intapp "github.com/kylerqws/chatbot/internal/app"
-	inthlp "github.com/kylerqws/chatbot/internal/cli/helper"
+	hlpcmd "github.com/kylerqws/chatbot/internal/cli/helper/adapter/command"
 	intmig "github.com/kylerqws/chatbot/internal/db/migrator"
 
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
 )
 
 type MigrateAdapter struct {
-	*inthlp.CommandAdapterHelper
+	*hlpcmd.CommandAdapterHelper
 }
 
 func NewMigrateAdapter(app *intapp.App) ctr.CommandAdapter {
 	adp := &MigrateAdapter{}
 	cmd := &cobra.Command{}
 
-	adp.CommandAdapterHelper = inthlp.NewCommandAdapterHelper(app, cmd)
+	adp.CommandAdapterHelper =
+		hlpcmd.NewCommandAdapterHelper(app, cmd)
 
 	return adp
 }
