@@ -1,9 +1,12 @@
-package contract
+package adapter
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/kylerqws/chatbot/internal/cli/contract"
+	"github.com/spf13/cobra"
+)
 
 type ParentAdapter interface {
-	Adapter
+	contract.Adapter
 
 	Children() []*cobra.Command
 	ExistChildren() bool

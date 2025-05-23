@@ -7,7 +7,7 @@ import (
 	intapp "github.com/kylerqws/chatbot/internal/app"
 	hlppar "github.com/kylerqws/chatbot/internal/cli/helper/adapter/parent"
 
-	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
+	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
 type FileAdapter struct {

@@ -1,4 +1,4 @@
-package contract
+package adapter
 
 type RootAdapter interface {
 	ParentAdapter

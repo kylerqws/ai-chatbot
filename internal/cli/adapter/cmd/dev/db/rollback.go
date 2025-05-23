@@ -7,7 +7,7 @@ import (
 	hlpcmd "github.com/kylerqws/chatbot/internal/cli/helper/adapter/command"
 	intmig "github.com/kylerqws/chatbot/internal/db/migrator"
 
-	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
+	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
 type RollbackAdapter struct {

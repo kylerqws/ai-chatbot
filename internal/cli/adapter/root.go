@@ -8,7 +8,7 @@ import (
 	intapp "github.com/kylerqws/chatbot/internal/app"
 	hlpadp "github.com/kylerqws/chatbot/internal/cli/helper/adapter/root"
 
-	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
+	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
 type RootAdapter struct {

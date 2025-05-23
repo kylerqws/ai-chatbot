@@ -1,9 +1,12 @@
-package contract
+package adapter
 
-import "io"
+import (
+	"github.com/kylerqws/chatbot/internal/cli/contract"
+	"io"
+)
 
 type CommandAdapter interface {
-	Adapter
+	contract.Adapter
 
 	Errors() []error
 	AddErrors(...error)
@@ -19,9 +22,9 @@ type CommandAdapter interface {
 	PrintErrMessage(...any) error
 	PrintMessageToWriter(io.Writer, ...any) error
 
-	FuncArgs() FuncArgs
-	SetFuncArgs(FuncArgs)
+	FuncArgs() contract.FuncArgs
+	SetFuncArgs(contract.FuncArgs)
 
-	FuncRunE() FuncRunE
-	SetFuncRunE(FuncRunE)
+	FuncRunE() contract.FuncRunE
+	SetFuncRunE(contract.FuncRunE)
 }
