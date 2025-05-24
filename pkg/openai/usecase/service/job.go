@@ -8,6 +8,7 @@ import (
 
 	"github.com/kylerqws/chatbot/pkg/openai/domain/model"
 	"github.com/kylerqws/chatbot/pkg/openai/infrastructure/client"
+	"github.com/kylerqws/chatbot/pkg/openai/utils/contains"
 
 	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
@@ -141,7 +142,7 @@ func (s *jobService) filterJobs(jobs []*ctrsvc.Job, req *ctrsvc.ListJobsRequest)
 		if req.CreatedBefore > 0 && jobs[i].CreatedAt >= req.CreatedBefore {
 			continue
 		}
-		if jobIDCount > 0 && !s.containsJobID(jobs[i].ID, req.JobIDs) {
+		if jobIDCount > 0 && !contains.StrValue(jobs[i].ID, req.JobIDs) {
 			continue
 		}
 
@@ -149,13 +150,4 @@ func (s *jobService) filterJobs(jobs []*ctrsvc.Job, req *ctrsvc.ListJobsRequest)
 	}
 
 	return result
-}
-
-func (*jobService) containsJobID(id string, list []string) bool {
-	for i := range list {
-		if list[i] == id {
-			return true
-		}
-	}
-	return false
 }

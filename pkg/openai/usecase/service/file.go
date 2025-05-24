@@ -7,6 +7,7 @@ import (
 
 	"github.com/kylerqws/chatbot/pkg/openai/domain/purpose"
 	"github.com/kylerqws/chatbot/pkg/openai/infrastructure/client"
+	"github.com/kylerqws/chatbot/pkg/openai/utils/contains"
 
 	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
@@ -133,10 +134,10 @@ func (s *fileService) filterFiles(files []*ctrsvc.File, req *ctrsvc.ListFilesReq
 		if req.CreatedBefore > 0 && files[i].CreatedAt >= req.CreatedBefore {
 			continue
 		}
-		if fileIDCount > 0 && !s.containsStrValue(files[i].ID, req.FileIDs) {
+		if fileIDCount > 0 && !contains.StrValue(files[i].ID, req.FileIDs) {
 			continue
 		}
-		if purposeCount > 0 && !s.containsStrValue(files[i].Purpose, req.Purposes) {
+		if purposeCount > 0 && !contains.StrValue(files[i].Purpose, req.Purposes) {
 			continue
 		}
 
@@ -144,13 +145,4 @@ func (s *fileService) filterFiles(files []*ctrsvc.File, req *ctrsvc.ListFilesReq
 	}
 
 	return result
-}
-
-func (*fileService) containsStrValue(val string, list []string) bool {
-	for i := range list {
-		if list[i] == val {
-			return true
-		}
-	}
-	return false
 }
