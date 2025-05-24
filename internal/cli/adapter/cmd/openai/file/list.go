@@ -78,29 +78,21 @@ func (a *ListAdapter) Validate(_ *cobra.Command, _ []string) error {
 	a.AddError(a.ValidateDateFlag(createdAfterFlagKey))
 	a.AddError(a.ValidateDateFlag(createdBeforeFlagKey))
 
-	return a.ErrorIfExist()
+	return a.ErrorIfExist("one or more arguments are invalid or missing")
 }
 
 func (a *ListAdapter) List(_ *cobra.Command, _ []string) error {
 	a.Request()
-	hasFiles, hasErrors := a.ExistFiles(), a.ExistErrors()
 
-	if hasFiles {
+	if a.ExistFiles() {
 		if err := a.PrintFiles(); err != nil {
 			return err
 		}
-	}
-	if !hasFiles && !hasErrors {
+	} else if !a.ExistErrors() {
 		return a.PrintMessage("No files found.")
 	}
-	if hasErrors {
-		if a.ShowErrors() {
-			return a.PrintErrors()
-		}
-		return a.PrintMessage("Failed to retrieve the file list from the OpenAI API.")
-	}
 
-	return nil
+	return a.ErrorIfExist("failed to retrieve files or data is unavailable")
 }
 
 func (a *ListAdapter) Request() {
