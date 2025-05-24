@@ -116,12 +116,11 @@ func (s *fileService) DeleteFile(
 
 func (s *fileService) filterFiles(files []*ctrsvc.File, req *ctrsvc.ListFilesRequest) []*ctrsvc.File {
 	var result []*ctrsvc.File
+
 	fileIDCount := len(req.FileIDs)
+	purposeCount := len(req.Purposes)
 
 	for i := range files {
-		if req.Purpose != "" && files[i].Purpose != req.Purpose {
-			continue
-		}
 		if req.Filename != "" && files[i].Filename != req.Filename {
 			continue
 		}
@@ -134,7 +133,10 @@ func (s *fileService) filterFiles(files []*ctrsvc.File, req *ctrsvc.ListFilesReq
 		if req.CreatedBefore > 0 && files[i].CreatedAt >= req.CreatedBefore {
 			continue
 		}
-		if fileIDCount > 0 && !s.containsFileID(files[i].ID, req.FileIDs) {
+		if fileIDCount > 0 && !s.containsStrValue(files[i].ID, req.FileIDs) {
+			continue
+		}
+		if purposeCount > 0 && !s.containsStrValue(files[i].Purpose, req.Purposes) {
 			continue
 		}
 
@@ -144,9 +146,9 @@ func (s *fileService) filterFiles(files []*ctrsvc.File, req *ctrsvc.ListFilesReq
 	return result
 }
 
-func (*fileService) containsFileID(id string, list []string) bool {
+func (*fileService) containsStrValue(val string, list []string) bool {
 	for i := range list {
-		if list[i] == id {
+		if list[i] == val {
 			return true
 		}
 	}
