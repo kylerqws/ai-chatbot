@@ -5,22 +5,20 @@ import (
 
 	action "github.com/kylerqws/chatbot/cmd/dev/db"
 	intapp "github.com/kylerqws/chatbot/internal/app"
-	hlppar "github.com/kylerqws/chatbot/internal/cli/helper/adapter/parent"
+	helper "github.com/kylerqws/chatbot/internal/cli/helper/adapter"
 
-	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
+	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
 )
 
 type DBAdapter struct {
-	*hlppar.ParentAdapterHelper
+	*helper.ParentAdapterHelper
 }
 
 func NewDBAdapter(app *intapp.App) ctr.ParentAdapter {
 	adp := &DBAdapter{}
 	cmd := &cobra.Command{}
 
-	adp.ParentAdapterHelper =
-		hlppar.NewParentAdapterHelper(app, cmd)
-
+	adp.ParentAdapterHelper = helper.NewParentAdapterHelper(app, cmd)
 	return adp
 }
 

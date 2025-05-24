@@ -5,22 +5,20 @@ import (
 
 	//action "github.com/kylerqws/chatbot/cmd/openai/chat"
 	intapp "github.com/kylerqws/chatbot/internal/app"
-	hlppar "github.com/kylerqws/chatbot/internal/cli/helper/adapter/parent"
+	helper "github.com/kylerqws/chatbot/internal/cli/helper/adapter"
 
-	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
+	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
 )
 
 type ChatAdapter struct {
-	*hlppar.ParentAdapterHelper
+	*helper.ParentAdapterHelper
 }
 
 func NewChatAdapter(app *intapp.App) ctr.ParentAdapter {
 	adp := &ChatAdapter{}
 	cmd := &cobra.Command{}
 
-	adp.ParentAdapterHelper =
-		hlppar.NewParentAdapterHelper(app, cmd)
-
+	adp.ParentAdapterHelper = helper.NewParentAdapterHelper(app, cmd)
 	return adp
 }
 
