@@ -1,16 +1,17 @@
 package file
 
 import (
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
-	"github.com/jedib0t/go-pretty/v6/table"
-	"github.com/jedib0t/go-pretty/v6/text"
-
 	intapp "github.com/kylerqws/chatbot/internal/app"
-	inthlp "github.com/kylerqws/chatbot/internal/cli/helper"
-	enmset "github.com/kylerqws/chatbot/internal/openai/enumset"
+	hlpfil "github.com/kylerqws/chatbot/internal/cli/helper/adapter/cmd/openai/file"
+	hlpcmd "github.com/kylerqws/chatbot/internal/cli/helper/adapter/command"
+	hlpdmt "github.com/kylerqws/chatbot/internal/cli/helper/adapter/datetime"
+	hlpfmt "github.com/kylerqws/chatbot/internal/cli/helper/adapter/format"
+	hlptbl "github.com/kylerqws/chatbot/internal/cli/helper/adapter/table"
 
-	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
+	ctradp "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 )
 
@@ -19,30 +20,28 @@ const (
 	purposeFlagKey       = "purpose"
 	createdAfterFlagKey  = "created-after"
 	createdBeforeFlagKey = "created-before"
-	fileIDTemplate       = "file-xxxxxx..."
-	dateTemplate         = "1970-01-01"
-	datetimeTemplate     = "1970-01-01 00:00:00"
+	fileIDExample        = "file-xxxxxx..."
+	dateExample          = "1970-01-01"
+	datetimeExample      = "1970-01-01 00:00:00"
 )
 
 type ListAdapter struct {
-	*inthlp.CommandAdapterHelper
-	*inthlp.FlagAdapterHelper
-	*inthlp.PrintAdapterHelper
-	*inthlp.TableAdapterHelper
-	*inthlp.DateTimeAdapterHelper
-	*inthlp.OpenAiFileAdapterHelper
+	*hlpcmd.CommandAdapterHelper
+	*hlptbl.TableAdapterHelper
+	*hlpfmt.FormatAdapterHelper
+	*hlpdmt.ValidateDateTimeAdapterHelper
+	*hlpfil.ValidateOpenAiFileAdapterHelper
 }
 
-func NewListAdapter(app *intapp.App) ctr.CommandAdapter {
+func NewListAdapter(app *intapp.App) ctradp.CommandAdapter {
 	adp := &ListAdapter{}
 	cmd := &cobra.Command{}
 
-	adp.CommandAdapterHelper = inthlp.NewCommandAdapterHelper(adp, app, cmd)
-	adp.FlagAdapterHelper = inthlp.NewFlagAdapterHelper(cmd)
-	adp.PrintAdapterHelper = inthlp.NewPrintAdapterHelper(cmd)
-	adp.TableAdapterHelper = inthlp.NewTableAdapterHelper(cmd)
-	adp.DateTimeAdapterHelper = inthlp.NewDateTimeAdapterHelper(cmd)
-	adp.OpenAiFileAdapterHelper = inthlp.NewOpenAiFileAdapterHelper(cmd)
+	adp.CommandAdapterHelper = hlpcmd.NewCommandAdapterHelper(app, cmd)
+	adp.TableAdapterHelper = hlptbl.NewTableAdapterHelper(cmd)
+	adp.FormatAdapterHelper = hlpfmt.NewFormatAdapterHelper(cmd)
+	adp.ValidateDateTimeAdapterHelper = hlpdmt.NewValidateDateTimeAdapterHelper(cmd)
+	adp.ValidateOpenAiFileAdapterHelper = hlpfil.NewValidateOpenAiFileAdapterHelper(cmd)
 
 	return adp
 }
@@ -50,47 +49,52 @@ func NewListAdapter(app *intapp.App) ctr.CommandAdapter {
 func (a *ListAdapter) Configure() *cobra.Command {
 	a.SetUse("list")
 	a.SetShort("List files in OpenAI account")
-	a.SetFuncRunE(a.FuncRunE)
 
-	a.AddFlags()
+	a.SetFuncArgs(a.Validate)
+	a.SetFuncRunE(a.List)
+
+	a.ConfigureFlags()
 	return a.MainConfigure()
 }
 
-func (a *ListAdapter) AddFlags() {
-	var desc string
+func (a *ListAdapter) ConfigureFlags() {
+	desc := "Filter by file ID (e.g. " + fileIDExample + ")"
+	a.AddStringSliceFlag(idFlagKey, "", []string{}, desc)
 
-	desc = "Filter by file ID (e.g. " + fileIDTemplate + ")"
-	a.AddStringSliceFlag(idFlagKey, []string{}, desc)
+	desc = "Filter by purpose (e.g. " + a.PurposeManager().JoinCodes(", ") + ")"
+	a.AddStringSliceFlag(purposeFlagKey, "", []string{}, desc)
 
-	desc = "Filter by purpose (e.g. " + enmset.NewPurposeManager().JoinCodes(", ") + ")"
-	a.AddStringFlag(purposeFlagKey, "", "", desc)
-
-	desc = "Filter by creation date after (e.g. " + dateTemplate + " or " + datetimeTemplate + ")"
+	desc = "Filter by creation date after (e.g. " + dateExample + " or " + datetimeExample + ")"
 	a.AddStringFlag(createdAfterFlagKey, "", a.DateTime(0, -1, 0), desc)
 
-	desc = "Filter by creation date before (e.g. " + dateTemplate + " or " + datetimeTemplate + ")"
+	desc = "Filter by creation date before (e.g. " + dateExample + " or " + datetimeExample + ")"
 	a.AddStringFlag(createdBeforeFlagKey, "", "", desc)
 }
 
-func (a *ListAdapter) FuncRunE(_ *cobra.Command, _ []string) error {
-	a.Request()
+func (a *ListAdapter) Validate(_ *cobra.Command, _ []string) error {
+	a.AddErrors(a.ValidateFileIDFlags(idFlagKey)...)
+	a.AddErrors(a.ValidatePurposeFlags(purposeFlagKey)...)
 
-	hasFiles := a.ExistFiles()
-	hasErrors := a.ExistErrors()
-	showErrors := a.ShowErrors()
+	a.AddError(a.ValidateDateFlag(createdAfterFlagKey))
+	a.AddError(a.ValidateDateFlag(createdBeforeFlagKey))
+
+	return a.ErrorIfExist()
+}
+
+func (a *ListAdapter) List(_ *cobra.Command, _ []string) error {
+	a.Request()
+	hasFiles, hasErrors := a.ExistFiles(), a.ExistErrors()
 
 	if hasFiles {
 		if err := a.PrintFiles(); err != nil {
 			return err
 		}
 	}
-
 	if !hasFiles && !hasErrors {
 		return a.PrintMessage("No files found.")
 	}
-
 	if hasErrors {
-		if showErrors {
+		if a.ShowErrors() {
 			return a.PrintErrors()
 		}
 		return a.PrintMessage("Failed to retrieve the file list from the OpenAI API.")
@@ -110,7 +114,7 @@ func (a *ListAdapter) Request() {
 		a.AddError(err)
 	}
 
-	purpose, err := fgs.GetString(purposeFlagKey)
+	purposes, err := fgs.GetStringSlice(purposeFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
@@ -127,7 +131,7 @@ func (a *ListAdapter) Request() {
 
 	resp, err := svc.ListFiles(ctx, &ctrsvc.ListFilesRequest{
 		FileIDs:       fileIDs,
-		Purpose:       purpose,
+		Purposes:      purposes,
 		CreatedAfter:  a.ParseDateTime(afterStr),
 		CreatedBefore: a.ParseDateTime(beforeStr),
 	})
@@ -143,21 +147,23 @@ func (a *ListAdapter) PrintFiles() error {
 
 	a.AppendTableHeader("File ID", "File Name", "Purpose", "Size", "Created")
 	a.SetColumnTableConfigs(
-		table.ColumnConfig{Number: 1, Align: text.AlignCenter, WidthMin: 27, Colors: text.Colors{text.Bold}},
-		table.ColumnConfig{Number: 2, Align: text.AlignRight, WidthMin: 19},
-		table.ColumnConfig{Number: 3, Align: text.AlignRight, WidthMin: 19},
-		table.ColumnConfig{Number: 4, Align: text.AlignRight, WidthMin: 10},
-		table.ColumnConfig{Number: 5, Align: text.AlignRight, WidthMin: 19},
+		a.ColumnConfig(1, text.AlignCenter, 27, text.Colors{text.Bold}),
+		a.ColumnConfig(2, text.AlignRight, 19, nil),
+		a.ColumnConfig(3, text.AlignRight, 19, nil),
+		a.ColumnConfig(4, text.AlignRight, 10, nil),
+		a.ColumnConfig(5, text.AlignRight, 19, nil),
 	)
 
-	doth := inthlp.EmptyTableColumn
-	for _, file := range a.Files() {
+	files := a.Files()
+	doth := hlptbl.EmptyTableColumn
+
+	for i := range files {
 		a.AppendTableRow(
-			a.FormatString(file.ID, &doth),
-			a.FormatString(file.Filename, &doth),
-			a.FormatString(file.Purpose, &doth),
-			a.FormatBytes(file.Bytes, &doth),
-			a.FormatTime(file.CreatedAt, &doth),
+			a.FormatString(files[i].ID, &doth),
+			a.FormatString(files[i].Filename, &doth),
+			a.FormatString(files[i].Purpose, &doth),
+			a.FormatBytes(files[i].Bytes, &doth),
+			a.FormatTime(files[i].CreatedAt, &doth),
 		)
 	}
 
