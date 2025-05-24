@@ -27,8 +27,8 @@ type ParentAdapter interface {
 	Children() []*cobra.Command
 	ExistChildren() bool
 
-	AddChildren(...*cobra.Command)
 	AddChild(*cobra.Command)
+	AddChildren(...*cobra.Command)
 }
 
 type RootAdapter interface {
@@ -42,11 +42,12 @@ type CommandAdapter interface {
 	GeneralAdapter
 
 	Errors() []error
-	AddErrors(...error)
+	ExistErrors() bool
+
 	AddError(error)
+	AddErrors(...error)
 
 	ShowErrors() bool
-	ExistErrors() bool
 	ErrorIfExist(string, ...any) error
 
 	PrintErrors() error
