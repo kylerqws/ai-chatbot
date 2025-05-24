@@ -64,7 +64,7 @@ func (*TableAdapterHelper) DefaultTableStyle() table.Style {
 	return style
 }
 
-func (h *TableAdapterHelper) ColumnConfig(
+func (*TableAdapterHelper) ColumnConfig(
 	index uint8, align text.Align, width uint8, colors text.Colors,
 ) table.ColumnConfig {
 	return table.ColumnConfig{Number: int(index), Align: align, WidthMin: int(width), Colors: colors}
