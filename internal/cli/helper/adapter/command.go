@@ -1,24 +1,25 @@
-package helper
+package adapter
 
 import (
 	"github.com/spf13/cobra"
 
-	intapp "github.com/kylerqws/chatbot/internal/app"
+	"github.com/kylerqws/chatbot/internal/app"
 	"github.com/kylerqws/chatbot/internal/cli/setup"
 
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
 )
 
 type CommandAdapterHelper struct {
-	*AdapterHelper
+	*GeneralAdapterHelper
 	*ErrorAdapterHelper
 	*PrintAdapterHelper
+	command *cobra.Command
 }
 
-func NewCommandAdapterHelper(app *intapp.App, cmd *cobra.Command) *CommandAdapterHelper {
-	hlp := &CommandAdapterHelper{}
+func NewCommandAdapterHelper(app *app.App, cmd *cobra.Command) *CommandAdapterHelper {
+	hlp := &CommandAdapterHelper{command: cmd}
 
-	hlp.AdapterHelper = NewAdapterHelper(app, cmd)
+	hlp.GeneralAdapterHelper = NewGeneralAdapterHelper(app, cmd)
 	hlp.ErrorAdapterHelper = NewErrorAdapterHelper(cmd)
 	hlp.PrintAdapterHelper = NewPrintAdapterHelper(cmd)
 
@@ -26,19 +27,19 @@ func NewCommandAdapterHelper(app *intapp.App, cmd *cobra.Command) *CommandAdapte
 }
 
 func (h *CommandAdapterHelper) FuncArgs() ctr.FuncArgs {
-	return ctr.FuncArgs(h.AdapterHelper.command.Args)
+	return ctr.FuncArgs(h.command.Args)
 }
 
 func (h *CommandAdapterHelper) SetFuncArgs(fn ctr.FuncArgs) {
-	h.AdapterHelper.command.Args = cobra.PositionalArgs(fn)
+	h.command.Args = cobra.PositionalArgs(fn)
 }
 
 func (h *CommandAdapterHelper) FuncRunE() ctr.FuncRunE {
-	return h.AdapterHelper.command.RunE
+	return h.command.RunE
 }
 
 func (h *CommandAdapterHelper) SetFuncRunE(fn ctr.FuncRunE) {
-	h.AdapterHelper.command.RunE = fn
+	h.command.RunE = fn
 }
 
 func (h *CommandAdapterHelper) MainConfigure() *cobra.Command {

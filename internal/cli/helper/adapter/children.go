@@ -20,9 +20,15 @@ func (h *ChildrenAdapterHelper) ExistChildren() bool {
 }
 
 func (h *ChildrenAdapterHelper) AddChild(cmd *cobra.Command) {
-	h.children = append(h.children, cmd)
+	if cmd != nil {
+		h.children = append(h.children, cmd)
+	}
 }
 
 func (h *ChildrenAdapterHelper) AddChildren(cmds ...*cobra.Command) {
-	h.children = append(h.children, cmds...)
+	for i := range cmds {
+		if cmds[i] != nil {
+			h.children = append(h.children, cmds[i])
+		}
+	}
 }

@@ -48,6 +48,7 @@ type CommandAdapter interface {
 	AddErrors(...error)
 
 	ShowErrors() bool
+	StringErrors() string
 	ErrorIfExist(string, ...any) error
 
 	PrintErrors() error
