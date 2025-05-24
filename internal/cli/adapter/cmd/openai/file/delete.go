@@ -1,38 +1,31 @@
 package file
 
 import (
-	"fmt"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
-	"github.com/jedib0t/go-pretty/v6/table"
-	"github.com/jedib0t/go-pretty/v6/text"
-
 	intapp "github.com/kylerqws/chatbot/internal/app"
-	inthlp "github.com/kylerqws/chatbot/internal/cli/helper"
+	hlptbl "github.com/kylerqws/chatbot/internal/cli/helper/adapter/table"
 
-	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
+	ctradp "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 )
 
-const (
-	allFlagKey = "all"
-)
+const allFlagKey = "all"
 
-var (
-	allFlagKeys = []string{
-		allFlagKey,
-		idFlagKey,
-		purposeFlagKey,
-		createdAfterFlagKey,
-		createdBeforeFlagKey,
-	}
-)
+var allFlagKeys = []string{
+	allFlagKey,
+	idFlagKey,
+	purposeFlagKey,
+	createdAfterFlagKey,
+	createdBeforeFlagKey,
+}
 
 type DeleteAdapter struct {
 	*ListAdapter
 }
 
-func NewDeleteAdapter(app *intapp.App) ctr.CommandAdapter {
+func NewDeleteAdapter(app *intapp.App) ctradp.CommandAdapter {
 	adp := &DeleteAdapter{}
 	adp.ListAdapter = NewListAdapter(app).(*ListAdapter)
 
@@ -40,57 +33,44 @@ func NewDeleteAdapter(app *intapp.App) ctr.CommandAdapter {
 }
 
 func (a *DeleteAdapter) Configure() *cobra.Command {
-	a.SetUse("delete <flag>")
+	a.SetUse("delete <filter-flag>")
 	a.SetShort("Delete one or more files by filter from OpenAI")
 
-	a.SetFuncArgs(a.FuncArgs)
-	a.SetFuncRunE(a.FuncRunE)
+	a.SetFuncArgs(a.Validate)
+	a.SetFuncRunE(a.Delete)
 
-	a.AddFlags()
+	a.ConfigureFlags()
 	return a.MainConfigure()
 }
 
-func (a *DeleteAdapter) AddFlags() {
-	var desc string
-
-	desc = "Delete all files in your OpenAI account\n"
+func (a *DeleteAdapter) ConfigureFlags() {
+	desc := "Delete all files in your OpenAI account\n"
 	a.AddBoolFlag(allFlagKey, "", false, desc)
 
-	a.ListAdapter.AddFlags()
+	a.ListAdapter.ConfigureFlags()
 }
 
-func (a *DeleteAdapter) FuncArgs(cmd *cobra.Command, _ []string) error {
-	if !a.HasAnyFlag(allFlagKeys...) {
-		return fmt.Errorf("at least one filter flag must be specified, usage: %s", cmd.UseLine())
+func (a *DeleteAdapter) Validate(cmd *cobra.Command, args []string) error {
+	a.AddErrors(a.ValidateHasAnyFlags(allFlagKeys...))
+	if err := a.ListAdapter.Validate(cmd, args); err != nil {
+		return err
 	}
-	return nil
+
+	return a.ErrorIfExist("one or more arguments are invalid or missing")
 }
 
-func (a *DeleteAdapter) FuncRunE(_ *cobra.Command, _ []string) error {
+func (a *DeleteAdapter) Delete(_ *cobra.Command, _ []string) error {
 	a.Request()
 
-	hasFiles := a.ExistFiles()
-	hasErrors := a.ExistErrors()
-	showErrors := a.ShowErrors()
-
-	if hasFiles {
+	if a.ExistFiles() {
 		if err := a.PrintFiles(); err != nil {
 			return err
 		}
-	}
-
-	if !hasFiles && !hasErrors {
+	} else if !a.ExistErrors() {
 		return a.PrintMessage("No files found.")
 	}
 
-	if hasErrors {
-		if showErrors {
-			return a.PrintErrors()
-		}
-		return a.PrintMessage("Failed to delete one or more files from the OpenAI API.")
-	}
-
-	return nil
+	return a.ErrorIfExist("failed to delete files or data is unavailable")
 }
 
 func (a *DeleteAdapter) Request() {
@@ -99,14 +79,17 @@ func (a *DeleteAdapter) Request() {
 	svc := app.OpenAI().FileService()
 
 	a.ListAdapter.Request()
-	for _, f := range a.Files() {
-		req := &ctrsvc.DeleteFileRequest{FileID: f.ID}
-		resp, err := svc.DeleteFile(ctx, req)
+	files := a.Files()
+
+	for i := range files {
+		resp, err := svc.DeleteFile(ctx, &ctrsvc.DeleteFileRequest{
+			FileID: files[i].ID,
+		})
 
 		if err != nil {
 			a.AddError(err)
 		}
-		f.ExecStatus = resp.Deleted
+		files[i].ExecStatus = resp.Deleted
 	}
 }
 
@@ -115,23 +98,25 @@ func (a *DeleteAdapter) PrintFiles() error {
 
 	a.AppendTableHeader("File ID", "File Name", "Purpose", "Size", "Created", "State")
 	a.SetColumnTableConfigs(
-		table.ColumnConfig{Number: 1, Align: text.AlignCenter, WidthMin: 27, Colors: text.Colors{text.Bold}},
-		table.ColumnConfig{Number: 2, Align: text.AlignRight, WidthMin: 19},
-		table.ColumnConfig{Number: 3, Align: text.AlignRight, WidthMin: 19},
-		table.ColumnConfig{Number: 4, Align: text.AlignRight, WidthMin: 10},
-		table.ColumnConfig{Number: 5, Align: text.AlignRight, WidthMin: 19},
-		table.ColumnConfig{Number: 6, Align: text.AlignCenter, WidthMin: 7, Colors: text.Colors{text.Bold}},
+		a.ColumnConfig(1, text.AlignCenter, 27, text.Colors{text.Bold}),
+		a.ColumnConfig(2, text.AlignRight, 19, nil),
+		a.ColumnConfig(3, text.AlignRight, 19, nil),
+		a.ColumnConfig(4, text.AlignRight, 10, nil),
+		a.ColumnConfig(5, text.AlignRight, 19, nil),
+		a.ColumnConfig(6, text.AlignCenter, 7, text.Colors{text.Bold}),
 	)
 
-	doth := inthlp.EmptyTableColumn
-	for _, file := range a.Files() {
+	files := a.Files()
+	doth := hlptbl.EmptyTableColumn
+
+	for i := range files {
 		a.AppendTableRow(
-			a.FormatString(file.ID, &doth),
-			a.FormatString(file.Filename, &doth),
-			a.FormatString(file.Purpose, &doth),
-			a.FormatBytes(file.Bytes, &doth),
-			a.FormatTime(file.CreatedAt, &doth),
-			a.FormatExecStatus(file.ExecStatus),
+			a.FormatString(files[i].ID, &doth),
+			a.FormatString(files[i].Filename, &doth),
+			a.FormatString(files[i].Purpose, &doth),
+			a.FormatBytes(files[i].Bytes, &doth),
+			a.FormatTime(files[i].CreatedAt, &doth),
+			a.FormatExecStatus(files[i].ExecStatus),
 		)
 	}
 
