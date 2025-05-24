@@ -1,4 +1,4 @@
-package helper
+package adapter
 
 import (
 	"fmt"
@@ -62,6 +62,12 @@ func (*TableAdapterHelper) DefaultTableStyle() table.Style {
 	style.Color.Header = text.Colors{text.Bold}
 
 	return style
+}
+
+func (h *TableAdapterHelper) ColumnConfig(
+	index uint8, align text.Align, width uint8, colors text.Colors,
+) table.ColumnConfig {
+	return table.ColumnConfig{Number: int(index), Align: align, WidthMin: int(width), Colors: colors}
 }
 
 func (h *TableAdapterHelper) SetColumnTableConfigs(configs ...table.ColumnConfig) {
