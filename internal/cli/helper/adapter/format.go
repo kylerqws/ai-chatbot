@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	execStatusSuccess = "✓"
-	execStatusFailed  = "✗"
+	ExecStatusSuccess = "✓"
+	ExecStatusFailed  = "✗"
 )
 
 type FormatAdapterHelper struct {
@@ -18,30 +18,30 @@ func NewFormatAdapterHelper(cmd *cobra.Command) *FormatAdapterHelper {
 	return &FormatAdapterHelper{command: cmd}
 }
 
-func (*FormatAdapterHelper) FormatBytes(b int64, empty *string) string {
-	if b == 0 && empty != nil {
+func (*FormatAdapterHelper) FormatBytes(val int64, empty *string) string {
+	if val == 0 && empty != nil {
 		return *empty
 	}
-	return helper.FormatBytes(b)
+	return helper.FormatBytes(val)
 }
 
-func (*FormatAdapterHelper) FormatTime(t int64, empty *string) string {
-	if t == 0 && empty != nil {
+func (*FormatAdapterHelper) FormatTime(val int64, empty *string) string {
+	if val == 0 && empty != nil {
 		return *empty
 	}
-	return helper.FormatTime(t)
+	return helper.FormatTime(val)
 }
 
-func (*FormatAdapterHelper) FormatExecStatus(v bool) string {
-	if v {
-		return execStatusSuccess
+func (*FormatAdapterHelper) FormatExecStatus(status bool) string {
+	if status {
+		return ExecStatusSuccess
 	}
-	return execStatusFailed
+	return ExecStatusFailed
 }
 
-func (*FormatAdapterHelper) FormatString(s string, empty *string) string {
-	if s == "" && empty != nil {
+func (*FormatAdapterHelper) FormatString(val string, empty *string) string {
+	if val == "" && empty != nil {
 		return *empty
 	}
-	return s
+	return val
 }
