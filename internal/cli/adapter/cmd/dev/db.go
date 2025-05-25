@@ -26,7 +26,7 @@ func (a *DBAdapter) Configure() *cobra.Command {
 	app := a.App()
 
 	a.SetUse("db")
-	a.SetShort("Manage database schema and data")
+	a.SetShort("Manage database schema and application data")
 
 	a.AddChildren(
 		action.MigrateCommand(app),
