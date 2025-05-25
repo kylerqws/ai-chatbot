@@ -53,8 +53,8 @@ func DisableSortingFlags(cmd *cobra.Command) {
 }
 
 func PrepareUseField(cmd *cobra.Command) {
-	if slices.ContainsFunc(cmd.Commands(), func(c *cobra.Command) bool {
-		return !c.Hidden
+	if slices.ContainsFunc(cmd.Commands(), func(cmd *cobra.Command) bool {
+		return !cmd.Hidden
 	}) {
 		cmd.Use += " [command]"
 	}
