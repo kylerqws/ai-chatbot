@@ -4,23 +4,21 @@ import (
 	"github.com/spf13/cobra"
 
 	intapp "github.com/kylerqws/chatbot/internal/app"
-	hlpcmd "github.com/kylerqws/chatbot/internal/cli/helper/adapter/command"
+	helper "github.com/kylerqws/chatbot/internal/cli/helper/adapter"
 	intmig "github.com/kylerqws/chatbot/internal/db/migrator"
 
-	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
+	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
 )
 
 type MigrateAdapter struct {
-	*hlpcmd.CommandAdapterHelper
+	*helper.CommandAdapterHelper
 }
 
 func NewMigrateAdapter(app *intapp.App) ctr.CommandAdapter {
 	adp := &MigrateAdapter{}
 	cmd := &cobra.Command{}
 
-	adp.CommandAdapterHelper =
-		hlpcmd.NewCommandAdapterHelper(app, cmd)
-
+	adp.CommandAdapterHelper = helper.NewCommandAdapterHelper(app, cmd)
 	return adp
 }
 
@@ -43,9 +41,5 @@ func (a *MigrateAdapter) Migrate(_ *cobra.Command, _ []string) error {
 	if !a.ExistErrors() {
 		return a.PrintMessage("Database migrations applied successfully.")
 	}
-	if !a.ShowErrors() {
-		return a.PrintMessage("Failed to apply database migrations.")
-	}
-
-	return a.PrintErrors()
+	return a.ErrorIfExist("failed to apply database migrations")
 }

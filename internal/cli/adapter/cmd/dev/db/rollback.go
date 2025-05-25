@@ -4,23 +4,21 @@ import (
 	"github.com/spf13/cobra"
 
 	intapp "github.com/kylerqws/chatbot/internal/app"
-	hlpcmd "github.com/kylerqws/chatbot/internal/cli/helper/adapter/command"
+	helper "github.com/kylerqws/chatbot/internal/cli/helper/adapter"
 	intmig "github.com/kylerqws/chatbot/internal/db/migrator"
 
-	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
+	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
 )
 
 type RollbackAdapter struct {
-	*hlpcmd.CommandAdapterHelper
+	*helper.CommandAdapterHelper
 }
 
 func NewRollbackAdapter(app *intapp.App) ctr.CommandAdapter {
 	adp := &RollbackAdapter{}
 	cmd := &cobra.Command{}
 
-	adp.CommandAdapterHelper =
-		hlpcmd.NewCommandAdapterHelper(app, cmd)
-
+	adp.CommandAdapterHelper = helper.NewCommandAdapterHelper(app, cmd)
 	return adp
 }
 
@@ -43,9 +41,5 @@ func (a *RollbackAdapter) Rollback(_ *cobra.Command, _ []string) error {
 	if !a.ExistErrors() {
 		return a.PrintMessage("Database rollback completed successfully.")
 	}
-	if !a.ShowErrors() {
-		return a.PrintMessage("Failed to complete database rollback.")
-	}
-
-	return a.PrintErrors()
+	return a.ErrorIfExist("failed to complete database rollback")
 }
