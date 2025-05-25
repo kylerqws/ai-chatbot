@@ -1,13 +1,10 @@
-package common
+package setup
 
 import (
 	"fmt"
 	"slices"
 
 	"github.com/spf13/cobra"
-
-	"github.com/kylerqws/chatbot/internal/cli/setup/flag"
-	"github.com/kylerqws/chatbot/internal/cli/setup/help"
 )
 
 func AddCommands(cmd *cobra.Command, children ...*cobra.Command) {
@@ -34,23 +31,25 @@ func FixVersionTemplate(cmd *cobra.Command, name string) {
 }
 
 func FixHelpFunc(cmd *cobra.Command) {
-	cmd.SetHelpFunc(help.FunctionHelp())
+	cmd.SetHelpFunc(HelpFunction())
 }
 
 func AddHelpFlag(cmd *cobra.Command) {
-	flag.AddBoolFlag(cmd, "help", "h", false, "Show help information", true)
+	AddBoolFlag(cmd, "help", "h", false, "Show help information", true)
 }
 
 func AddVersionFlag(cmd *cobra.Command) {
-	flag.AddBoolFlag(cmd, "version", "v", false, "Show application version", false)
+	AddBoolFlag(cmd, "version", "v", false, "Show application version", false)
 }
 
 func AddErrorFlag(cmd *cobra.Command) {
-	flag.AddBoolFlag(cmd, "error", "e", false, "Show execution errors", true)
+	AddBoolFlag(cmd, "error", "e", false, "Show execution errors", true)
 }
 
-func DisableSortingFlag(cmd *cobra.Command) {
-	flag.DisableSorting(cmd)
+func DisableSortingFlags(cmd *cobra.Command) {
+	cmd.Flags().SortFlags = false
+	cmd.PersistentFlags().SortFlags = false
+	cmd.InheritedFlags().SortFlags = false
 }
 
 func PrepareUseField(cmd *cobra.Command) {

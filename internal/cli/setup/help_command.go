@@ -1,4 +1,4 @@
-package help
+package setup
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
 )
 
-func FunctionHelp() ctr.FuncHelp {
+func HelpFunction() ctr.FuncHelp {
 	return func(cmd *cobra.Command, _ []string) {
 		if cmd.Deprecated != "" {
 			return

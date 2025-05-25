@@ -1,48 +1,45 @@
 package setup
 
 import (
-	"github.com/kylerqws/chatbot/internal/cli/setup/common"
-	"github.com/spf13/cobra"
-
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
-	ctradp "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
+	"github.com/spf13/cobra"
 )
 
-func GeneralConfigure(adp ctr.Adapter) *cobra.Command {
+func GeneralConfigure(adp ctr.GeneralAdapter) *cobra.Command {
 	cmd := adp.Command()
 
-	common.PrepareUseField(cmd)
-	common.DisableSortingFlag(cmd)
+	PrepareUseField(cmd)
+	DisableSortingFlags(cmd)
 
-	common.FixHelpFunc(cmd)
-	common.HideHelpCommand(cmd)
+	FixHelpFunc(cmd)
+	HideHelpCommand(cmd)
 
 	return cmd
 }
 
-func RootConfigure(adp ctradp.RootAdapter) *cobra.Command {
+func ParentConfigure(adp ctr.ParentAdapter) *cobra.Command {
 	cmd := adp.Command()
-	common.FixVersionTemplate(cmd, adp.App().Name())
-
-	common.HideCompletionCommand(cmd)
-	common.SilenceCommandOutput(cmd)
-
-	common.AddHelpFlag(cmd)
-	common.AddVersionFlag(cmd)
-
-	return ParentConfigure(adp)
-}
-
-func ParentConfigure(adp ctradp.ParentAdapter) *cobra.Command {
-	cmd := adp.Command()
-	common.AddCommands(cmd, adp.Children()...)
+	AddCommands(cmd, adp.Children()...)
 
 	return GeneralConfigure(adp)
 }
 
-func CommandConfigure(adp ctradp.CommandAdapter) *cobra.Command {
+func RootConfigure(adp ctr.RootAdapter) *cobra.Command {
 	cmd := adp.Command()
-	common.AddErrorFlag(cmd)
+	FixVersionTemplate(cmd, adp.App().Name())
+
+	HideCompletionCommand(cmd)
+	SilenceCommandOutput(cmd)
+
+	AddHelpFlag(cmd)
+	AddVersionFlag(cmd)
+
+	return ParentConfigure(adp)
+}
+
+func CommandConfigure(adp ctr.CommandAdapter) *cobra.Command {
+	cmd := adp.Command()
+	AddErrorFlag(cmd)
 
 	return GeneralConfigure(adp)
 }
