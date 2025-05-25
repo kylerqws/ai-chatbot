@@ -21,12 +21,12 @@ func NewTableAdapterHelper(cmd *cobra.Command) *TableAdapterHelper {
 }
 
 func (h *TableAdapterHelper) CreateTable() uint8 {
-	t := table.NewWriter()
+	tbl := table.NewWriter()
 
-	t.SetOutputMirror(h.command.OutOrStdout())
-	t.SetStyle(h.DefaultTableStyle())
+	tbl.SetOutputMirror(h.command.OutOrStdout())
+	tbl.SetStyle(h.DefaultTableStyle())
 
-	h.table = &t
+	h.table = &tbl
 	h.tables = append(h.tables, h.table)
 
 	id := len(h.tables) - 1
