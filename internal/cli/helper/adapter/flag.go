@@ -7,7 +7,6 @@ import (
 
 type FlagAdapterHelper struct {
 	command *cobra.Command
-	errors  []error
 }
 
 func NewFlagAdapterHelper(cmd *cobra.Command) *FlagAdapterHelper {
