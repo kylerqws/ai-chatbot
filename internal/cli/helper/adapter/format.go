@@ -10,36 +10,36 @@ const (
 	ExecStatusFailed  = "✗"
 )
 
-type FormatAdapterHelper struct {
+type FormatAdapter struct {
 	command *cobra.Command
 }
 
-func NewFormatAdapterHelper(cmd *cobra.Command) *FormatAdapterHelper {
-	return &FormatAdapterHelper{command: cmd}
+func NewFormatAdapter(cmd *cobra.Command) *FormatAdapter {
+	return &FormatAdapter{command: cmd}
 }
 
-func (*FormatAdapterHelper) FormatBytes(val int64, empty *string) string {
+func (*FormatAdapter) FormatBytes(val int64, empty *string) string {
 	if val == 0 && empty != nil {
 		return *empty
 	}
 	return helper.FormatBytes(val)
 }
 
-func (*FormatAdapterHelper) FormatTime(val int64, empty *string) string {
+func (*FormatAdapter) FormatTime(val int64, empty *string) string {
 	if val == 0 && empty != nil {
 		return *empty
 	}
 	return helper.FormatTime(val)
 }
 
-func (*FormatAdapterHelper) FormatExecStatus(status bool) string {
+func (*FormatAdapter) FormatExecStatus(status bool) string {
 	if status {
 		return ExecStatusSuccess
 	}
 	return ExecStatusFailed
 }
 
-func (*FormatAdapterHelper) FormatString(val string, empty *string) string {
+func (*FormatAdapter) FormatString(val string, empty *string) string {
 	if val == "" && empty != nil {
 		return *empty
 	}
