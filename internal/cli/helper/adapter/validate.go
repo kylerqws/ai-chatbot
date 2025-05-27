@@ -3,21 +3,19 @@ package adapter
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+
+	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
 )
 
-type ValidateFlagAdapter struct {
-	*FlagAdapter
+type ValidateAdapter struct {
 	command *cobra.Command
 }
 
-func NewValidateFlagAdapter(cmd *cobra.Command) *ValidateFlagAdapter {
-	hlp := &ValidateFlagAdapter{command: cmd}
-	hlp.FlagAdapter = NewFlagAdapter(cmd)
-
-	return hlp
+func NewValidateAdapter(cmd *cobra.Command) *ValidateAdapter {
+	return &ValidateAdapter{command: cmd}
 }
 
-func (h *FlagAdapter) HasAnyFlag(names ...string) bool {
+func (h *ValidateAdapter) HasAnyFlag(names ...string) bool {
 	fgs := h.command.Flags()
 	for i := range names {
 		if fgs.Changed(names[i]) {
@@ -27,41 +25,41 @@ func (h *FlagAdapter) HasAnyFlag(names ...string) bool {
 	return false
 }
 
-func (h *ValidateFlagAdapter) HasMoreArgsThan(count uint8) bool {
+func (h *ValidateAdapter) HasMoreArgsThan(count uint8) bool {
 	return len(h.command.Flags().Args()) > int(count)
 }
 
-func (h *ValidateFlagAdapter) IsFlagChanged(flagKey string) bool {
+func (h *ValidateAdapter) IsFlagChanged(flagKey string) bool {
 	return h.command.Flags().Changed(flagKey)
 }
 
-func (h *ValidateFlagAdapter) IsFlagRequired(flagKey string) bool {
+func (h *ValidateAdapter) IsFlagRequired(flagKey string) bool {
 	f := h.command.Flags().Lookup(flagKey)
 	return f != nil && f.Annotations != nil && f.Annotations[cobra.BashCompOneRequiredFlag] != nil
 }
 
-func (h *ValidateFlagAdapter) ValidateHasAnyFlags(flagKeys ...string) error {
-	if h.HasAnyFlag(flagKeys...) {
-		return nil
-	}
-	return fmt.Errorf("at least one flag must be specified")
-}
-
-func (h *ValidateFlagAdapter) ValidateHasMoreArgsThan(count uint8) error {
-	if h.HasMoreArgsThan(count) {
-		return nil
-	}
-	return fmt.Errorf("at least %d arguments must be specified", count)
-}
-
-func (h *ValidateFlagAdapter) ValidateRequireFlag(flagKey string) error {
+func (h *ValidateAdapter) ValidateRequireFlag(flagKey string) error {
 	if h.IsFlagChanged(flagKey) || !h.IsFlagRequired(flagKey) {
 		return nil
 	}
 	return fmt.Errorf("flag --%s is required", flagKey)
 }
 
-func (h *ValidateFlagAdapter) ValidateStringFlag(flagKey string, fn func(string) error) error {
+func (h *ValidateAdapter) ValidateHasAnyFlags(flagKeys ...string) error {
+	if h.HasAnyFlag(flagKeys...) {
+		return nil
+	}
+	return fmt.Errorf("at least one flag must be specified")
+}
+
+func (h *ValidateAdapter) ValidateHasMoreArgsThan(count uint8) error {
+	if h.HasMoreArgsThan(count) {
+		return nil
+	}
+	return fmt.Errorf("at least %d arguments must be specified", count)
+}
+
+func (h *ValidateAdapter) ValidateStringFlag(flagKey string, fn ctr.FuncValidateString) error {
 	if err := h.ValidateRequireFlag(flagKey); err != nil {
 		return err
 	}
@@ -78,7 +76,7 @@ func (h *ValidateFlagAdapter) ValidateStringFlag(flagKey string, fn func(string)
 	return nil
 }
 
-func (h *ValidateFlagAdapter) ValidateStringSliceFlag(flagKey string, fn func(string) error) []error {
+func (h *ValidateAdapter) ValidateStringSliceFlag(flagKey string, fn ctr.FuncValidateString) []error {
 	if err := h.ValidateRequireFlag(flagKey); err != nil {
 		return []error{err}
 	}
