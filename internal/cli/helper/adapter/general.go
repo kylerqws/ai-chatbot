@@ -7,43 +7,43 @@ import (
 	"github.com/kylerqws/chatbot/internal/cli/setup"
 )
 
-type GeneralAdapterHelper struct {
+type GeneralAdapter struct {
 	app     *app.App
 	command *cobra.Command
 }
 
-func NewGeneralAdapterHelper(app *app.App, cmd *cobra.Command) *GeneralAdapterHelper {
-	return &GeneralAdapterHelper{app: app, command: cmd}
+func NewGeneralAdapter(app *app.App, cmd *cobra.Command) *GeneralAdapter {
+	return &GeneralAdapter{app: app, command: cmd}
 }
 
-func (h *GeneralAdapterHelper) App() *app.App {
+func (h *GeneralAdapter) App() *app.App {
 	return h.app
 }
 
-func (h *GeneralAdapterHelper) Command() *cobra.Command {
+func (h *GeneralAdapter) Command() *cobra.Command {
 	return h.command
 }
 
-func (h *GeneralAdapterHelper) Use() string {
+func (h *GeneralAdapter) Use() string {
 	return h.command.Use
 }
 
-func (h *GeneralAdapterHelper) SetUse(use string) {
+func (h *GeneralAdapter) SetUse(use string) {
 	h.command.Use = use
 }
 
-func (h *GeneralAdapterHelper) Short() string {
+func (h *GeneralAdapter) Short() string {
 	return h.command.Short
 }
 
-func (h *GeneralAdapterHelper) SetShort(short string) {
+func (h *GeneralAdapter) SetShort(short string) {
 	h.command.Short = short
 }
 
-func (h *GeneralAdapterHelper) Configure() *cobra.Command {
+func (h *GeneralAdapter) Configure() *cobra.Command {
 	return h.MainConfigure()
 }
 
-func (h *GeneralAdapterHelper) MainConfigure() *cobra.Command {
+func (h *GeneralAdapter) MainConfigure() *cobra.Command {
 	return setup.GeneralConfigure(h)
 }
