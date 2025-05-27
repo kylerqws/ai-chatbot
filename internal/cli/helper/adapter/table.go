@@ -10,17 +10,17 @@ import (
 
 const EmptyTableColumn = "-"
 
-type TableAdapterHelper struct {
+type TableAdapter struct {
 	command *cobra.Command
 	table   *table.Writer
 	tables  []*table.Writer
 }
 
-func NewTableAdapterHelper(cmd *cobra.Command) *TableAdapterHelper {
-	return &TableAdapterHelper{command: cmd}
+func NewTableAdapter(cmd *cobra.Command) *TableAdapter {
+	return &TableAdapter{command: cmd}
 }
 
-func (h *TableAdapterHelper) CreateTable() uint8 {
+func (h *TableAdapter) CreateTable() uint8 {
 	tbl := table.NewWriter()
 
 	tbl.SetOutputMirror(h.command.OutOrStdout())
@@ -33,20 +33,20 @@ func (h *TableAdapterHelper) CreateTable() uint8 {
 	return uint8(id)
 }
 
-func (h *TableAdapterHelper) ResetTables() {
+func (h *TableAdapter) ResetTables() {
 	h.table = nil
 	h.tables = nil
 }
 
-func (h *TableAdapterHelper) Table() *table.Writer {
+func (h *TableAdapter) Table() *table.Writer {
 	return h.table
 }
 
-func (h *TableAdapterHelper) Tables() []*table.Writer {
+func (h *TableAdapter) Tables() []*table.Writer {
 	return h.tables
 }
 
-func (h *TableAdapterHelper) SwitchTable(id uint8) error {
+func (h *TableAdapter) SwitchTable(id uint8) error {
 	if id >= uint8(len(h.tables)) {
 		return fmt.Errorf("table with ID %d not found", id)
 	}
@@ -55,7 +55,7 @@ func (h *TableAdapterHelper) SwitchTable(id uint8) error {
 	return nil
 }
 
-func (*TableAdapterHelper) DefaultTableStyle() table.Style {
+func (*TableAdapter) DefaultTableStyle() table.Style {
 	style := table.StyleBold
 
 	style.Format.HeaderAlign = text.AlignCenter
@@ -64,24 +64,24 @@ func (*TableAdapterHelper) DefaultTableStyle() table.Style {
 	return style
 }
 
-func (*TableAdapterHelper) ColumnConfig(
+func (*TableAdapter) ColumnConfig(
 	index uint8, align text.Align, width uint8, colors text.Colors,
 ) table.ColumnConfig {
 	return table.ColumnConfig{Number: int(index), Align: align, WidthMin: int(width), Colors: colors}
 }
 
-func (h *TableAdapterHelper) SetColumnTableConfigs(configs ...table.ColumnConfig) {
+func (h *TableAdapter) SetColumnTableConfigs(configs ...table.ColumnConfig) {
 	(*h.table).SetColumnConfigs(configs)
 }
 
-func (h *TableAdapterHelper) AppendTableHeader(headers ...any) {
+func (h *TableAdapter) AppendTableHeader(headers ...any) {
 	(*h.table).AppendHeader(append(table.Row{}, headers...))
 }
 
-func (h *TableAdapterHelper) AppendTableRow(rows ...any) {
+func (h *TableAdapter) AppendTableRow(rows ...any) {
 	(*h.table).AppendRow(append(table.Row{}, rows...))
 }
 
-func (h *TableAdapterHelper) RenderTable() {
+func (h *TableAdapter) RenderTable() {
 	(*h.table).Render()
 }
