@@ -7,23 +7,23 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type PrintAdapterHelper struct {
+type PrintAdapter struct {
 	command *cobra.Command
 }
 
-func NewPrintAdapterHelper(cmd *cobra.Command) *PrintAdapterHelper {
-	return &PrintAdapterHelper{command: cmd}
+func NewPrintAdapter(cmd *cobra.Command) *PrintAdapter {
+	return &PrintAdapter{command: cmd}
 }
 
-func (h *PrintAdapterHelper) PrintMessage(args ...any) error {
+func (h *PrintAdapter) PrintMessage(args ...any) error {
 	return h.PrintMessageToWriter(h.command.OutOrStdout(), args...)
 }
 
-func (h *PrintAdapterHelper) PrintErrMessage(args ...any) error {
+func (h *PrintAdapter) PrintErrMessage(args ...any) error {
 	return h.PrintMessageToWriter(h.command.ErrOrStderr(), args...)
 }
 
-func (*PrintAdapterHelper) PrintMessageToWriter(w io.Writer, args ...any) error {
+func (*PrintAdapter) PrintMessageToWriter(w io.Writer, args ...any) error {
 	if _, err := fmt.Fprintln(w, args...); err != nil {
 		return err
 	}
