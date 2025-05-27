@@ -5,15 +5,15 @@ import (
 	"github.com/spf13/cobra"
 
 	intapp "github.com/kylerqws/chatbot/internal/app"
-	hlptbl "github.com/kylerqws/chatbot/internal/cli/helper/adapter/table"
+	helper "github.com/kylerqws/chatbot/internal/cli/helper/adapter"
 
-	ctradp "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
+	ctradp "github.com/kylerqws/chatbot/internal/cli/contract"
 	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 )
 
 const allFlagKey = "all"
 
-var allFlagKeys = []string{
+var filterFlagKeys = []string{
 	allFlagKey,
 	idFlagKey,
 	purposeFlagKey,
@@ -33,8 +33,8 @@ func NewDeleteAdapter(app *intapp.App) ctradp.CommandAdapter {
 }
 
 func (a *DeleteAdapter) Configure() *cobra.Command {
-	a.SetUse("delete <filter-flag>")
-	a.SetShort("Delete one or more files by filter from OpenAI")
+	a.SetUse("delete <filter-flag> [filter-flag...]")
+	a.SetShort("Delete one or more files from OpenAI account")
 
 	a.SetFuncArgs(a.Validate)
 	a.SetFuncRunE(a.Delete)
@@ -44,14 +44,14 @@ func (a *DeleteAdapter) Configure() *cobra.Command {
 }
 
 func (a *DeleteAdapter) ConfigureFlags() {
-	desc := "Delete all files in your OpenAI account\n"
+	desc := "Delete all files (highest priority)\n"
 	a.AddBoolFlag(allFlagKey, "", false, desc)
 
 	a.ListAdapter.ConfigureFlags()
 }
 
 func (a *DeleteAdapter) Validate(cmd *cobra.Command, args []string) error {
-	a.AddErrors(a.ValidateHasAnyFlags(allFlagKeys...))
+	a.AddErrors(a.ValidateHasAnyFlags(filterFlagKeys...))
 	if err := a.ListAdapter.Validate(cmd, args); err != nil {
 		return err
 	}
@@ -60,9 +60,7 @@ func (a *DeleteAdapter) Validate(cmd *cobra.Command, args []string) error {
 }
 
 func (a *DeleteAdapter) Delete(_ *cobra.Command, _ []string) error {
-	a.Request()
-
-	if a.ExistFiles() {
+	if a.Request() && a.ExistFiles() {
 		if err := a.PrintFiles(); err != nil {
 			return err
 		}
@@ -73,7 +71,7 @@ func (a *DeleteAdapter) Delete(_ *cobra.Command, _ []string) error {
 	return a.ErrorIfExist("failed to delete files or data is unavailable")
 }
 
-func (a *DeleteAdapter) Request() {
+func (a *DeleteAdapter) Request() bool {
 	app := a.App()
 	ctx := app.Context()
 	svc := app.OpenAI().FileService()
@@ -91,6 +89,8 @@ func (a *DeleteAdapter) Request() {
 		}
 		files[i].ExecStatus = resp.Deleted
 	}
+
+	return true
 }
 
 func (a *DeleteAdapter) PrintFiles() error {
@@ -107,7 +107,7 @@ func (a *DeleteAdapter) PrintFiles() error {
 	)
 
 	files := a.Files()
-	doth := hlptbl.EmptyTableColumn
+	doth := helper.EmptyTableColumn
 
 	for i := range files {
 		a.AppendTableRow(

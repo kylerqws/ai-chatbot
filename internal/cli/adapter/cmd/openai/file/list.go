@@ -5,13 +5,9 @@ import (
 	"github.com/spf13/cobra"
 
 	intapp "github.com/kylerqws/chatbot/internal/app"
-	hlpfil "github.com/kylerqws/chatbot/internal/cli/helper/adapter/cmd/openai/file"
-	hlpcmd "github.com/kylerqws/chatbot/internal/cli/helper/adapter/command"
-	hlpdmt "github.com/kylerqws/chatbot/internal/cli/helper/adapter/datetime"
-	hlpfmt "github.com/kylerqws/chatbot/internal/cli/helper/adapter/format"
-	hlptbl "github.com/kylerqws/chatbot/internal/cli/helper/adapter/table"
+	helper "github.com/kylerqws/chatbot/internal/cli/helper/adapter"
 
-	ctradp "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
+	ctradp "github.com/kylerqws/chatbot/internal/cli/contract"
 	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 )
 
@@ -26,29 +22,35 @@ const (
 )
 
 type ListAdapter struct {
-	*hlpcmd.CommandAdapterHelper
-	*hlptbl.TableAdapterHelper
-	*hlpfmt.FormatAdapterHelper
-	*hlpdmt.ValidateDateTimeAdapterHelper
-	*hlpfil.ValidateOpenAiFileAdapterHelper
+	*helper.CommandAdapter
+	*helper.OpenAiAdapter
+	*helper.OpenAiFileAdapter
+	*helper.FlagAdapter
+	*helper.ValidateAdapter
+	*helper.DateTimeAdapter
+	*helper.TableAdapter
+	*helper.FormatAdapter
 }
 
 func NewListAdapter(app *intapp.App) ctradp.CommandAdapter {
 	adp := &ListAdapter{}
 	cmd := &cobra.Command{}
 
-	adp.CommandAdapterHelper = hlpcmd.NewCommandAdapterHelper(app, cmd)
-	adp.TableAdapterHelper = hlptbl.NewTableAdapterHelper(cmd)
-	adp.FormatAdapterHelper = hlpfmt.NewFormatAdapterHelper(cmd)
-	adp.ValidateDateTimeAdapterHelper = hlpdmt.NewValidateDateTimeAdapterHelper(cmd)
-	adp.ValidateOpenAiFileAdapterHelper = hlpfil.NewValidateOpenAiFileAdapterHelper(cmd)
+	adp.CommandAdapter = helper.NewCommandAdapter(app, cmd)
+	adp.OpenAiAdapter = helper.NewOpenAiAdapter(cmd)
+	adp.OpenAiFileAdapter = helper.NewOpenAiFileAdapter(cmd)
+	adp.FlagAdapter = helper.NewFlagAdapter(cmd)
+	adp.ValidateAdapter = helper.NewValidateAdapter(cmd)
+	adp.DateTimeAdapter = helper.NewDateTimeAdapter(cmd)
+	adp.TableAdapter = helper.NewTableAdapter(cmd)
+	adp.FormatAdapter = helper.NewFormatAdapter(cmd)
 
 	return adp
 }
 
 func (a *ListAdapter) Configure() *cobra.Command {
-	a.SetUse("list")
-	a.SetShort("List files in OpenAI account")
+	a.SetUse("list [filter-flag...]")
+	a.SetShort("Display list files in OpenAI account")
 
 	a.SetFuncArgs(a.Validate)
 	a.SetFuncRunE(a.List)
@@ -72,19 +74,17 @@ func (a *ListAdapter) ConfigureFlags() {
 }
 
 func (a *ListAdapter) Validate(_ *cobra.Command, _ []string) error {
-	a.AddErrors(a.ValidateFileIDFlags(idFlagKey)...)
-	a.AddErrors(a.ValidatePurposeFlags(purposeFlagKey)...)
+	a.AddErrors(a.ValidateStringSliceFlag(idFlagKey, a.ValidateFileID)...)
+	a.AddErrors(a.ValidateStringSliceFlag(purposeFlagKey, a.ValidatePurposeCode)...)
 
-	a.AddError(a.ValidateDateFlag(createdAfterFlagKey))
-	a.AddError(a.ValidateDateFlag(createdBeforeFlagKey))
+	a.AddError(a.ValidateStringFlag(createdAfterFlagKey, a.ValidateDateFormat))
+	a.AddError(a.ValidateStringFlag(createdBeforeFlagKey, a.ValidateDateFormat))
 
 	return a.ErrorIfExist("one or more arguments are invalid or missing")
 }
 
 func (a *ListAdapter) List(_ *cobra.Command, _ []string) error {
-	a.Request()
-
-	if a.ExistFiles() {
+	if a.Request() && a.ExistFiles() {
 		if err := a.PrintFiles(); err != nil {
 			return err
 		}
@@ -95,7 +95,7 @@ func (a *ListAdapter) List(_ *cobra.Command, _ []string) error {
 	return a.ErrorIfExist("failed to retrieve files or data is unavailable")
 }
 
-func (a *ListAdapter) Request() {
+func (a *ListAdapter) Request() bool {
 	app := a.App()
 	ctx := app.Context()
 	svc := app.OpenAI().FileService()
@@ -131,7 +131,9 @@ func (a *ListAdapter) Request() {
 	if err != nil {
 		a.AddError(err)
 	}
-	a.AddFiles(resp.Files...)
+	a.AddFiles(a.WrapOpenAIFiles(resp.Files...)...)
+
+	return true
 }
 
 func (a *ListAdapter) PrintFiles() error {
@@ -147,7 +149,7 @@ func (a *ListAdapter) PrintFiles() error {
 	)
 
 	files := a.Files()
-	doth := hlptbl.EmptyTableColumn
+	doth := helper.EmptyTableColumn
 
 	for i := range files {
 		a.AppendTableRow(

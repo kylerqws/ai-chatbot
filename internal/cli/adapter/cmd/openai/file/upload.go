@@ -8,12 +8,9 @@ import (
 	"github.com/spf13/cobra"
 
 	intapp "github.com/kylerqws/chatbot/internal/app"
-	hlpfil "github.com/kylerqws/chatbot/internal/cli/helper/adapter/cmd/openai/file"
-	hlpcmd "github.com/kylerqws/chatbot/internal/cli/helper/adapter/command"
-	hlpfmt "github.com/kylerqws/chatbot/internal/cli/helper/adapter/format"
-	hlptbl "github.com/kylerqws/chatbot/internal/cli/helper/adapter/table"
+	helper "github.com/kylerqws/chatbot/internal/cli/helper/adapter"
 
-	ctradp "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
+	ctradp "github.com/kylerqws/chatbot/internal/cli/contract"
 	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 )
 
@@ -23,27 +20,33 @@ const (
 )
 
 type UploadAdapter struct {
-	*hlpcmd.CommandAdapterHelper
-	*hlptbl.TableAdapterHelper
-	*hlpfmt.FormatAdapterHelper
-	*hlpfil.ValidateOpenAiFileAdapterHelper
+	*helper.CommandAdapter
+	*helper.OpenAiAdapter
+	*helper.OpenAiFileAdapter
+	*helper.FlagAdapter
+	*helper.ValidateAdapter
+	*helper.TableAdapter
+	*helper.FormatAdapter
 }
 
 func NewUploadAdapter(app *intapp.App) ctradp.CommandAdapter {
 	adp := &UploadAdapter{}
 	cmd := &cobra.Command{}
 
-	adp.CommandAdapterHelper = hlpcmd.NewCommandAdapterHelper(app, cmd)
-	adp.TableAdapterHelper = hlptbl.NewTableAdapterHelper(cmd)
-	adp.FormatAdapterHelper = hlpfmt.NewFormatAdapterHelper(cmd)
-	adp.ValidateOpenAiFileAdapterHelper = hlpfil.NewValidateOpenAiFileAdapterHelper(cmd)
+	adp.CommandAdapter = helper.NewCommandAdapter(app, cmd)
+	adp.OpenAiAdapter = helper.NewOpenAiAdapter(cmd)
+	adp.OpenAiFileAdapter = helper.NewOpenAiFileAdapter(cmd)
+	adp.FlagAdapter = helper.NewFlagAdapter(cmd)
+	adp.ValidateAdapter = helper.NewValidateAdapter(cmd)
+	adp.TableAdapter = helper.NewTableAdapter(cmd)
+	adp.FormatAdapter = helper.NewFormatAdapter(cmd)
 
 	return adp
 }
 
 func (a *UploadAdapter) Configure() *cobra.Command {
 	a.SetUse("upload <file-path[:purpose]> [file-path[:purpose]...]")
-	a.SetShort("Upload one or more files to OpenAI")
+	a.SetShort("Upload one or more files to OpenAI account")
 
 	a.SetFuncArgs(a.Validate)
 	a.SetFuncRunE(a.Upload)
@@ -53,29 +56,29 @@ func (a *UploadAdapter) Configure() *cobra.Command {
 }
 
 func (a *UploadAdapter) ConfigureFlags() {
-	desc := "Default purpose for files without :purpose suffix"
+	desc := "Default purpose for files without ':purpose' suffix"
 	a.AddStringFlag(defaultPurposeFlagKey, "", "", desc)
 }
 
-func (a *UploadAdapter) Validate(cmd *cobra.Command, args []string) error {
-	a.AddError(a.ValidateHasAnyArgsMore(0))
-	a.AddErrors(a.ValidatePurposes()...)
+func (a *UploadAdapter) Validate(_ *cobra.Command, _ []string) error {
+	a.AddError(a.ValidateHasMoreArgsThan(0))
+	a.AddErrors(a.ValidatePurposeCodes()...)
 
 	return a.ErrorIfExist("one or more arguments are invalid or missing")
 }
 
-func (a *UploadAdapter) ValidatePurposes() []error {
+func (a *UploadAdapter) ValidatePurposeCodes() []error {
 	var errs []error
 	args := a.Command().Flags().Args()
 
 	for i := range args {
-		_, prpCode := a.SeparateArg(args[i])
+		_, prpCode := a.separateArg(args[i])
 		if err := a.ValidatePurposeCode(prpCode); err != nil {
 			errs = append(errs, err)
 		}
 	}
 
-	if err := a.ValidatePurposeFlag(defaultPurposeFlagKey); err != nil {
+	if err := a.ValidateStringFlag(defaultPurposeFlagKey, a.ValidatePurposeCode); err != nil {
 		errs = append(errs, err)
 	}
 
@@ -83,9 +86,7 @@ func (a *UploadAdapter) ValidatePurposes() []error {
 }
 
 func (a *UploadAdapter) Upload(_ *cobra.Command, _ []string) error {
-	a.Request()
-
-	if a.ExistFiles() {
+	if a.Request() && a.ExistFiles() {
 		if err := a.PrintFiles(); err != nil {
 			return err
 		}
@@ -94,11 +95,10 @@ func (a *UploadAdapter) Upload(_ *cobra.Command, _ []string) error {
 	return a.ErrorIfExist("failed to upload files or data is unavailable")
 }
 
-func (a *UploadAdapter) Request() {
+func (a *UploadAdapter) Request() bool {
 	app := a.App()
 	ctx := app.Context()
 	svc := app.OpenAI().FileService()
-	mng := a.PurposeManager()
 	fgs := a.Command().Flags()
 	args := fgs.Args()
 
@@ -108,15 +108,14 @@ func (a *UploadAdapter) Request() {
 	}
 
 	for i := range args {
-		filePath, prpCode := a.SeparateArg(args[i])
+		filePath, prpCode := a.separateArg(args[i])
 		if prpCode == "" {
 			prpCode = defaultPrpCode
 		}
 
-		prp, _ := mng.Resolve(prpCode)
 		resp, err := svc.UploadFile(ctx, &ctrsvc.UploadFileRequest{
 			FilePath: filePath,
-			Purpose:  prp.Code,
+			Purpose:  prpCode,
 		})
 
 		if err != nil {
@@ -124,16 +123,18 @@ func (a *UploadAdapter) Request() {
 
 			resp.File = &ctrsvc.File{
 				Filename: filepath.Base(filePath),
-				Purpose:  prp.Code,
+				Purpose:  prpCode,
 				Bytes:    a.FileSize(filePath),
 			}
 		}
 
-		file := a.AddFile(resp.File)
-		if err == nil {
-			file.ExecStatus = true
-		}
+		file := a.WrapOpenAIFile(resp.File)
+		file.ExecStatus = err == nil
+
+		a.AddFile(file)
 	}
+
+	return true
 }
 
 func (a *UploadAdapter) PrintFiles() error {
@@ -150,7 +151,7 @@ func (a *UploadAdapter) PrintFiles() error {
 	)
 
 	files := a.Files()
-	doth := hlptbl.EmptyTableColumn
+	doth := helper.EmptyTableColumn
 
 	for i := range files {
 		a.AppendTableRow(
@@ -167,7 +168,7 @@ func (a *UploadAdapter) PrintFiles() error {
 	return nil
 }
 
-func (*UploadAdapter) SeparateArg(arg string) (string, string) {
+func (*UploadAdapter) separateArg(arg string) (string, string) {
 	parts := strings.SplitN(arg, argumentSeparatorSymbol, 2)
 	if len(parts) == 2 && parts[1] != "" {
 		return parts[0], parts[1]
