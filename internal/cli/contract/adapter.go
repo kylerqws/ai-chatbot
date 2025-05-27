@@ -64,3 +64,13 @@ type CommandAdapter interface {
 	FuncRunE() FuncRunE
 	SetFuncRunE(FuncRunE)
 }
+
+type ValidateAdapter interface {
+	ValidateRequireFlag(string) error
+
+	ValidateHasAnyFlags(...string) error
+	ValidateHasMoreArgsThan(uint8) error
+
+	ValidateStringFlag(string, FuncValidateString) error
+	ValidateStringSliceFlag(string, FuncValidateString) []error
+}
