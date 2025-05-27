@@ -5,22 +5,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type FlagAdapterHelper struct {
+type FlagAdapter struct {
 	command *cobra.Command
 }
 
-func NewFlagAdapterHelper(cmd *cobra.Command) *FlagAdapterHelper {
-	return &FlagAdapterHelper{command: cmd}
+func NewFlagAdapter(cmd *cobra.Command) *FlagAdapter {
+	return &FlagAdapter{command: cmd}
 }
 
-func (h *FlagAdapterHelper) AddStringFlag(name, shorthand, value, desc string) {
+func (h *FlagAdapter) AddStringFlag(name, shorthand, value, desc string) {
 	setup.AddStringFlag(h.command, name, shorthand, value, desc, false)
 }
 
-func (h *FlagAdapterHelper) AddStringSliceFlag(name, shorthand string, value []string, desc string) {
+func (h *FlagAdapter) AddStringSliceFlag(name, shorthand string, value []string, desc string) {
 	setup.AddStringSliceFlag(h.command, name, shorthand, value, desc, false)
 }
 
-func (h *FlagAdapterHelper) AddBoolFlag(name, shorthand string, value bool, desc string) {
+func (h *FlagAdapter) AddBoolFlag(name, shorthand string, value bool, desc string) {
 	setup.AddBoolFlag(h.command, name, shorthand, value, desc, false)
 }
