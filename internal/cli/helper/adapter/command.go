@@ -9,39 +9,39 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
 )
 
-type CommandAdapterHelper struct {
-	*GeneralAdapterHelper
-	*ErrorAdapterHelper
-	*PrintAdapterHelper
+type CommandAdapter struct {
+	*GeneralAdapter
+	*ErrorAdapter
+	*PrintAdapter
 	command *cobra.Command
 }
 
-func NewCommandAdapterHelper(app *app.App, cmd *cobra.Command) *CommandAdapterHelper {
-	hlp := &CommandAdapterHelper{command: cmd}
+func NewCommandAdapter(app *app.App, cmd *cobra.Command) *CommandAdapter {
+	hlp := &CommandAdapter{command: cmd}
 
-	hlp.GeneralAdapterHelper = NewGeneralAdapterHelper(app, cmd)
-	hlp.ErrorAdapterHelper = NewErrorAdapterHelper(cmd)
-	hlp.PrintAdapterHelper = NewPrintAdapterHelper(cmd)
+	hlp.GeneralAdapter = NewGeneralAdapter(app, cmd)
+	hlp.ErrorAdapter = NewErrorAdapter(cmd)
+	hlp.PrintAdapter = NewPrintAdapter(cmd)
 
 	return hlp
 }
 
-func (h *CommandAdapterHelper) FuncArgs() ctr.FuncArgs {
+func (h *CommandAdapter) FuncArgs() ctr.FuncArgs {
 	return ctr.FuncArgs(h.command.Args)
 }
 
-func (h *CommandAdapterHelper) SetFuncArgs(fn ctr.FuncArgs) {
+func (h *CommandAdapter) SetFuncArgs(fn ctr.FuncArgs) {
 	h.command.Args = cobra.PositionalArgs(fn)
 }
 
-func (h *CommandAdapterHelper) FuncRunE() ctr.FuncRunE {
+func (h *CommandAdapter) FuncRunE() ctr.FuncRunE {
 	return h.command.RunE
 }
 
-func (h *CommandAdapterHelper) SetFuncRunE(fn ctr.FuncRunE) {
+func (h *CommandAdapter) SetFuncRunE(fn ctr.FuncRunE) {
 	h.command.RunE = fn
 }
 
-func (h *CommandAdapterHelper) MainConfigure() *cobra.Command {
+func (h *CommandAdapter) MainConfigure() *cobra.Command {
 	return setup.CommandConfigure(h)
 }
