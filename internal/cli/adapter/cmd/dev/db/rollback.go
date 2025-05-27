@@ -11,14 +11,14 @@ import (
 )
 
 type RollbackAdapter struct {
-	*helper.CommandAdapterHelper
+	*helper.CommandAdapter
 }
 
 func NewRollbackAdapter(app *intapp.App) ctr.CommandAdapter {
 	adp := &RollbackAdapter{}
 	cmd := &cobra.Command{}
 
-	adp.CommandAdapterHelper = helper.NewCommandAdapterHelper(app, cmd)
+	adp.CommandAdapter = helper.NewCommandAdapter(app, cmd)
 	return adp
 }
 

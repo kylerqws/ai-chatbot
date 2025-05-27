@@ -11,14 +11,14 @@ import (
 )
 
 type MigrateAdapter struct {
-	*helper.CommandAdapterHelper
+	*helper.CommandAdapter
 }
 
 func NewMigrateAdapter(app *intapp.App) ctr.CommandAdapter {
 	adp := &MigrateAdapter{}
 	cmd := &cobra.Command{}
 
-	adp.CommandAdapterHelper = helper.NewCommandAdapterHelper(app, cmd)
+	adp.CommandAdapter = helper.NewCommandAdapter(app, cmd)
 	return adp
 }
 
