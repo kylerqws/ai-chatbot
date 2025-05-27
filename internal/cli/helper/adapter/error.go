@@ -8,43 +8,41 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type ErrorAdapterHelper struct {
+type ErrorAdapter struct {
 	command *cobra.Command
 	errors  []error
 }
 
-func NewErrorAdapterHelper(cmd *cobra.Command) *ErrorAdapterHelper {
-	return &ErrorAdapterHelper{command: cmd}
+func NewErrorAdapter(cmd *cobra.Command) *ErrorAdapter {
+	return &ErrorAdapter{command: cmd}
 }
 
-func (h *ErrorAdapterHelper) Errors() []error {
+func (h *ErrorAdapter) Errors() []error {
 	return h.errors
 }
 
-func (h *ErrorAdapterHelper) ExistErrors() bool {
+func (h *ErrorAdapter) ExistErrors() bool {
 	return len(h.errors) > 0
 }
 
-func (h *ErrorAdapterHelper) AddError(err error) {
+func (h *ErrorAdapter) AddError(err error) {
 	if err != nil {
 		h.errors = append(h.errors, err)
 	}
 }
 
-func (h *ErrorAdapterHelper) AddErrors(errs ...error) {
+func (h *ErrorAdapter) AddErrors(errs ...error) {
 	for i := range errs {
-		if errs[i] != nil {
-			h.errors = append(h.errors, errs[i])
-		}
+		h.AddError(errs[i])
 	}
 }
 
-func (h *ErrorAdapterHelper) ShowErrors() bool {
+func (h *ErrorAdapter) ShowErrors() bool {
 	show, err := h.command.Flags().GetBool("error")
 	return show && err == nil
 }
 
-func (h *ErrorAdapterHelper) StringErrors() string {
+func (h *ErrorAdapter) StringErrors() string {
 	var buf strings.Builder
 	if err := h.PrintErrorsToWriter(&buf); err != nil {
 		return err.Error()
@@ -53,22 +51,22 @@ func (h *ErrorAdapterHelper) StringErrors() string {
 	return buf.String()
 }
 
-func (h *ErrorAdapterHelper) ErrorIfExist(format string, args ...any) error {
-	if !h.ExistErrors() {
-		return nil
-	}
-	if !h.ShowErrors() {
+func (h *ErrorAdapter) ErrorIfExist(format string, args ...any) error {
+	if h.ExistErrors() {
+		if h.ShowErrors() {
+			return fmt.Errorf("%s", h.StringErrors())
+		}
 		return fmt.Errorf(format, args...)
 	}
 
-	return fmt.Errorf("%s", h.StringErrors())
+	return nil
 }
 
-func (h *ErrorAdapterHelper) PrintErrors() error {
+func (h *ErrorAdapter) PrintErrors() error {
 	return h.PrintErrorsToWriter(h.command.ErrOrStderr())
 }
 
-func (h *ErrorAdapterHelper) PrintErrorsToWriter(w io.Writer) error {
+func (h *ErrorAdapter) PrintErrorsToWriter(w io.Writer) error {
 	count := len(h.errors) - 1
 
 	for i := range h.errors {
