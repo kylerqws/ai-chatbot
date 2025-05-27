@@ -11,14 +11,14 @@ import (
 )
 
 type ChatAdapter struct {
-	*helper.ParentAdapterHelper
+	*helper.ParentAdapter
 }
 
 func NewChatAdapter(app *intapp.App) ctr.ParentAdapter {
 	adp := &ChatAdapter{}
 	cmd := &cobra.Command{}
 
-	adp.ParentAdapterHelper = helper.NewParentAdapterHelper(app, cmd)
+	adp.ParentAdapter = helper.NewParentAdapter(app, cmd)
 	return adp
 }
 
@@ -26,7 +26,7 @@ func (a *ChatAdapter) Configure() *cobra.Command {
 	//app := a.App()
 
 	a.SetUse("chat")
-	a.SetShort("Manage chats via the OpenAI API")
+	a.SetShort("Operations on chat management")
 
 	a.AddChildren()
 

@@ -11,14 +11,14 @@ import (
 )
 
 type DBAdapter struct {
-	*helper.ParentAdapterHelper
+	*helper.ParentAdapter
 }
 
 func NewDBAdapter(app *intapp.App) ctr.ParentAdapter {
 	adp := &DBAdapter{}
 	cmd := &cobra.Command{}
 
-	adp.ParentAdapterHelper = helper.NewParentAdapterHelper(app, cmd)
+	adp.ParentAdapter = helper.NewParentAdapter(app, cmd)
 	return adp
 }
 

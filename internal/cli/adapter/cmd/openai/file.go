@@ -11,14 +11,14 @@ import (
 )
 
 type FileAdapter struct {
-	*helper.ParentAdapterHelper
+	*helper.ParentAdapter
 }
 
 func NewFileAdapter(app *intapp.App) ctr.ParentAdapter {
 	adp := &FileAdapter{}
 	cmd := &cobra.Command{}
 
-	adp.ParentAdapterHelper = helper.NewParentAdapterHelper(app, cmd)
+	adp.ParentAdapter = helper.NewParentAdapter(app, cmd)
 	return adp
 }
 
@@ -26,7 +26,7 @@ func (a *FileAdapter) Configure() *cobra.Command {
 	app := a.App()
 
 	a.SetUse("file")
-	a.SetShort("Manage files via the OpenAI API")
+	a.SetShort("Operations on file management")
 
 	a.AddChildren(
 		action.ListCommand(app),

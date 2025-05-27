@@ -12,14 +12,14 @@ import (
 )
 
 type RootAdapter struct {
-	*helper.RootAdapterHelper
+	*helper.RootAdapter
 }
 
 func NewRootAdapter(app *intapp.App) ctr.RootAdapter {
 	adp := &RootAdapter{}
 	cmd := &cobra.Command{}
 
-	adp.RootAdapterHelper = helper.NewRootAdapterHelper(app, cmd)
+	adp.RootAdapter = helper.NewRootAdapter(app, cmd)
 	return adp
 }
 

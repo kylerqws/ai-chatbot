@@ -11,14 +11,14 @@ import (
 )
 
 type DevAdapter struct {
-	*helper.ParentAdapterHelper
+	*helper.ParentAdapter
 }
 
 func NewDevAdapter(app *intapp.App) ctr.ParentAdapter {
 	adp := &DevAdapter{}
 	cmd := &cobra.Command{}
 
-	adp.ParentAdapterHelper = helper.NewParentAdapterHelper(app, cmd)
+	adp.ParentAdapter = helper.NewParentAdapter(app, cmd)
 	return adp
 }
 
