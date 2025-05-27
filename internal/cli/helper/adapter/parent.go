@@ -7,21 +7,21 @@ import (
 	"github.com/kylerqws/chatbot/internal/cli/setup"
 )
 
-type ParentAdapterHelper struct {
-	*GeneralAdapterHelper
-	*ChildrenAdapterHelper
+type ParentAdapter struct {
+	*GeneralAdapter
+	*ChildrenAdapter
 	command *cobra.Command
 }
 
-func NewParentAdapterHelper(app *app.App, cmd *cobra.Command) *ParentAdapterHelper {
-	hlp := &ParentAdapterHelper{command: cmd}
+func NewParentAdapter(app *app.App, cmd *cobra.Command) *ParentAdapter {
+	hlp := &ParentAdapter{command: cmd}
 
-	hlp.GeneralAdapterHelper = NewGeneralAdapterHelper(app, cmd)
-	hlp.ChildrenAdapterHelper = NewChildrenAdapterHelper(cmd)
+	hlp.GeneralAdapter = NewGeneralAdapter(app, cmd)
+	hlp.ChildrenAdapter = NewChildrenAdapter(cmd)
 
 	return hlp
 }
 
-func (h *ParentAdapterHelper) MainConfigure() *cobra.Command {
+func (h *ParentAdapter) MainConfigure() *cobra.Command {
 	return setup.ParentConfigure(h)
 }
