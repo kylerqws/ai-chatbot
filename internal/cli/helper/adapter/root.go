@@ -7,26 +7,26 @@ import (
 	"github.com/kylerqws/chatbot/internal/cli/setup"
 )
 
-type RootAdapterHelper struct {
-	*ParentAdapterHelper
+type RootAdapter struct {
+	*ParentAdapter
 	command *cobra.Command
 }
 
-func NewRootAdapterHelper(app *app.App, cmd *cobra.Command) *RootAdapterHelper {
-	hlp := &RootAdapterHelper{command: cmd}
-	hlp.ParentAdapterHelper = NewParentAdapterHelper(app, cmd)
+func NewRootAdapter(app *app.App, cmd *cobra.Command) *RootAdapter {
+	hlp := &RootAdapter{command: cmd}
+	hlp.ParentAdapter = NewParentAdapter(app, cmd)
 
 	return hlp
 }
 
-func (h *RootAdapterHelper) Version() string {
+func (h *RootAdapter) Version() string {
 	return h.command.Version
 }
 
-func (h *RootAdapterHelper) SetVersion(version string) {
+func (h *RootAdapter) SetVersion(version string) {
 	h.command.Version = version
 }
 
-func (h *RootAdapterHelper) MainConfigure() *cobra.Command {
+func (h *RootAdapter) MainConfigure() *cobra.Command {
 	return setup.RootConfigure(h)
 }
