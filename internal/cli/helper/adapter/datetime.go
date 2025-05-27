@@ -1,8 +1,10 @@
 package adapter
 
 import (
-	"github.com/spf13/cobra"
+	"fmt"
 	"time"
+
+	"github.com/spf13/cobra"
 )
 
 var DateFormats = []string{time.DateOnly, time.DateTime}
@@ -31,4 +33,14 @@ func (*DateTimeAdapter) ParseDateTime(dateStr string) int64 {
 
 func (*DateTimeAdapter) DateTime(years, months, days int) string {
 	return time.Now().AddDate(years, months, days).UTC().Format(time.DateTime)
+}
+
+func (*DateTimeAdapter) ValidateDateFormat(dateStr string) error {
+	var err error
+	for i := range DateFormats {
+		if _, err = time.Parse(DateFormats[i], dateStr); err == nil {
+			return nil
+		}
+	}
+	return fmt.Errorf("invalid date format in %q: %w", dateStr, err)
 }
