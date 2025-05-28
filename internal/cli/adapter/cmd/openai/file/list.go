@@ -80,7 +80,7 @@ func (a *ListAdapter) Validate(_ *cobra.Command, _ []string) error {
 	a.AddError(a.ValidateStringFlag(createdAfterFlagKey, a.ValidateDateFormat))
 	a.AddError(a.ValidateStringFlag(createdBeforeFlagKey, a.ValidateDateFormat))
 
-	return a.ErrorIfExist("one or more arguments are invalid or missing")
+	return a.ErrorIfExist("One or more arguments/flags are invalid or missing.")
 }
 
 func (a *ListAdapter) List(_ *cobra.Command, _ []string) error {
@@ -92,7 +92,7 @@ func (a *ListAdapter) List(_ *cobra.Command, _ []string) error {
 		return a.PrintMessage("No files found.")
 	}
 
-	return a.ErrorIfExist("failed to retrieve files or data is unavailable")
+	return a.ErrorIfExist("Failed to retrieve files or data is unavailable.")
 }
 
 func (a *ListAdapter) Request() bool {

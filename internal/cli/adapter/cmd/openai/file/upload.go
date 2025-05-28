@@ -64,7 +64,7 @@ func (a *UploadAdapter) Validate(_ *cobra.Command, _ []string) error {
 	a.AddError(a.ValidateHasMoreArgsThan(0))
 	a.AddErrors(a.ValidatePurposeCodes()...)
 
-	return a.ErrorIfExist("one or more arguments are invalid or missing")
+	return a.ErrorIfExist("One or more arguments/flags are invalid or missing.")
 }
 
 func (a *UploadAdapter) ValidatePurposeCodes() []error {
@@ -92,7 +92,7 @@ func (a *UploadAdapter) Upload(_ *cobra.Command, _ []string) error {
 		}
 	}
 
-	return a.ErrorIfExist("failed to upload files or data is unavailable")
+	return a.ErrorIfExist("Failed to upload files or data is unavailable.")
 }
 
 func (a *UploadAdapter) Request() bool {

@@ -41,5 +41,5 @@ func (a *RollbackAdapter) Rollback(_ *cobra.Command, _ []string) error {
 	if !a.ExistErrors() {
 		return a.PrintMessage("Database rollback completed successfully.")
 	}
-	return a.ErrorIfExist("failed to complete database rollback")
+	return a.ErrorIfExist("Failed to complete database rollback.")
 }

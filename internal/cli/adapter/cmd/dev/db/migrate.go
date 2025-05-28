@@ -41,5 +41,5 @@ func (a *MigrateAdapter) Migrate(_ *cobra.Command, _ []string) error {
 	if !a.ExistErrors() {
 		return a.PrintMessage("Database migrations applied successfully.")
 	}
-	return a.ErrorIfExist("failed to apply database migrations")
+	return a.ErrorIfExist("Failed to apply database migrations.")
 }

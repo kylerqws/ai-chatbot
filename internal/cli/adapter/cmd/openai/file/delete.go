@@ -56,7 +56,7 @@ func (a *DeleteAdapter) Validate(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return a.ErrorIfExist("one or more arguments are invalid or missing")
+	return a.ErrorIfExist("One or more arguments/flags are invalid or missing.")
 }
 
 func (a *DeleteAdapter) Delete(_ *cobra.Command, _ []string) error {
@@ -68,7 +68,7 @@ func (a *DeleteAdapter) Delete(_ *cobra.Command, _ []string) error {
 		return a.PrintMessage("No files found.")
 	}
 
-	return a.ErrorIfExist("failed to delete files or data is unavailable")
+	return a.ErrorIfExist("Failed to delete files or data is unavailable.")
 }
 
 func (a *DeleteAdapter) Request() bool {
