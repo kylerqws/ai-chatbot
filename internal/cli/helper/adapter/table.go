@@ -46,6 +46,10 @@ func (h *TableAdapter) Tables() []*table.Writer {
 	return h.tables
 }
 
+func (h *TableAdapter) ExistTables() bool {
+	return len(h.tables) > 0
+}
+
 func (h *TableAdapter) SwitchTable(id uint8) error {
 	if id >= uint8(len(h.tables)) {
 		return fmt.Errorf("table with ID %d not found", id)

@@ -36,7 +36,7 @@ func main() {
 
 	err = intcli.Execute(app)
 	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "Failed to execute command: %v\n", err)
+		_, _ = fmt.Fprintf(os.Stderr, "%v", err)
 		os.Exit(1)
 	}
 }

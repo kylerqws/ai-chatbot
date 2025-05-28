@@ -56,7 +56,7 @@ func (h *ErrorAdapter) ErrorIfExist(format string, args ...any) error {
 		if !h.ShowErrors() {
 			return fmt.Errorf(format, args...)
 		}
-		return fmt.Errorf("%s", h.StringErrors())
+		return fmt.Errorf("Failed to execute command: %s\n", h.StringErrors())
 	}
 
 	return nil
