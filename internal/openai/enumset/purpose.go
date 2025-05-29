@@ -17,3 +17,7 @@ func (*PurposeManager) Resolve(code string) (*base.Purpose, error) {
 func (*PurposeManager) JoinCodes(sep string) string {
 	return base.JoinCodes(sep)
 }
+
+func (*PurposeManager) Default() *base.Purpose {
+	return base.FineTune
+}

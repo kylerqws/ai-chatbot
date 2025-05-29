@@ -56,11 +56,11 @@ func (h *ErrorAdapter) StringErrors() string {
 func (h *ErrorAdapter) ErrorIfExist(format string, args ...any) error {
 	if h.ExistErrors() {
 		if !h.ShowErrors() {
-			return fmt.Errorf(format+"\n", args...)
+			return fmt.Errorf(format, args...)
 		}
 
 		call := fmt.Sprintf("%s %s", filepath.Base(os.Args[0]), strings.Join(os.Args[1:], " "))
-		return fmt.Errorf("Failed to execute command: '%s'\n%s\n", call, h.StringErrors())
+		return fmt.Errorf("Failed to execute command: '%s'\n%s", call, h.StringErrors())
 	}
 
 	return nil
@@ -71,10 +71,18 @@ func (h *ErrorAdapter) PrintErrors() error {
 }
 
 func (h *ErrorAdapter) PrintErrorsToWriter(w io.Writer) error {
+	count := len(h.errors) - 1
+
 	for i := range h.errors {
 		msg := fmt.Errorf("- error: %w", h.errors[i])
 		if _, err := fmt.Fprint(w, msg); err != nil {
 			return err
+		}
+
+		if i < count {
+			if _, err := fmt.Fprintln(w); err != nil {
+				return err
+			}
 		}
 	}
 

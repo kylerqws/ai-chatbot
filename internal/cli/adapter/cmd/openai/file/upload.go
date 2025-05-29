@@ -56,8 +56,11 @@ func (a *UploadAdapter) Configure() *cobra.Command {
 }
 
 func (a *UploadAdapter) ConfigureFlags() {
-	desc := "Default purpose for files without ':purpose' suffix"
-	a.AddStringFlag(defaultPurposeFlagKey, "", "", desc)
+	prpManager := a.PurposeManager()
+
+	desc := "Default purpose for files without ':purpose' suffix\n" +
+		"\t\t\t(e.g. " + prpManager.JoinCodes(", ") + ")"
+	a.AddStringFlag(defaultPurposeFlagKey, "", prpManager.Default().Code, desc)
 }
 
 func (a *UploadAdapter) Validate(_ *cobra.Command, _ []string) error {

@@ -17,3 +17,7 @@ func (*ModelManager) Resolve(code string) (*base.Model, error) {
 func (*ModelManager) JoinCodes(sep string) string {
 	return base.JoinCodes(sep)
 }
+
+func (*ModelManager) Default() *base.Model {
+	return base.GPT35
+}

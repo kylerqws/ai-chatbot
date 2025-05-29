@@ -42,5 +42,5 @@ func (*DateTimeAdapter) ValidateDateFormat(dateStr string) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("invalid date format in %q: %w", dateStr, err)
+	return fmt.Errorf("invalid date format in '%s': %w", dateStr, err)
 }

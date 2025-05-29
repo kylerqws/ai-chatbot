@@ -25,7 +25,7 @@ func (h *OpenAiAdapter) PurposeManager() *enumset.PurposeManager {
 
 func (h *OpenAiAdapter) ValidatePurposeCode(prpCode string) error {
 	if _, err := h.prpManager.Resolve(prpCode); err != nil {
-		return fmt.Errorf("invalid purpose code %q: %w", prpCode, err)
+		return fmt.Errorf("invalid purpose code '%s': %w", prpCode, err)
 	}
 	return nil
 }
