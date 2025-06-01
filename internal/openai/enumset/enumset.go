@@ -9,9 +9,9 @@ import (
 
 type ManagerSet struct {
 	chatRole  *chatrole.Manager
-	purpose   *purpose.Manager
-	model     *model.Manager
 	jobStatus *jobstatus.Manager
+	model     *model.Manager
+	purpose   *purpose.Manager
 }
 
 func NewManagerSet() *ManagerSet {
@@ -25,11 +25,11 @@ func (s *ManagerSet) ChatRole() *chatrole.Manager {
 	return s.chatRole
 }
 
-func (s *ManagerSet) Purpose() *purpose.Manager {
-	if s.purpose == nil {
-		s.purpose = purpose.NewManager()
+func (s *ManagerSet) JobStatus() *jobstatus.Manager {
+	if s.jobStatus == nil {
+		s.jobStatus = jobstatus.NewManager()
 	}
-	return s.purpose
+	return s.jobStatus
 }
 
 func (s *ManagerSet) Model() *model.Manager {
@@ -39,9 +39,9 @@ func (s *ManagerSet) Model() *model.Manager {
 	return s.model
 }
 
-func (s *ManagerSet) JobStatus() *jobstatus.Manager {
-	if s.jobStatus == nil {
-		s.jobStatus = jobstatus.NewManager()
+func (s *ManagerSet) Purpose() *purpose.Manager {
+	if s.purpose == nil {
+		s.purpose = purpose.NewManager()
 	}
-	return s.jobStatus
+	return s.purpose
 }
