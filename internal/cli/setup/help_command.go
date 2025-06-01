@@ -12,8 +12,9 @@ import (
 )
 
 const (
-	oldFlagsSuffix = "[flags]"
-	newFlagsSuffix = "[flag...]"
+	oldFlagsSuffix   = "[flags]"
+	newFlagsSuffix   = "[flag...]"
+	deprecatedSuffix = "[DEPRECATED]"
 )
 
 func HelpFunction() ctr.FuncHelp {
@@ -169,7 +170,7 @@ func printCommandLine(w io.Writer, cmd *cobra.Command) error {
 
 	cmdPart, cmdShort := fmt.Sprintf("  %s", cmd.Name()), cmd.Short
 	if cmd.Deprecated != "" {
-		cmdShort += " [DEPRECATED]"
+		cmdShort += " " + deprecatedSuffix
 	}
 
 	if _, err := fmt.Fprintf(w, "%-20s\t%s\n", cmdPart, cmdShort); err != nil {
