@@ -2,7 +2,7 @@ package jobstatus
 
 import base "github.com/kylerqws/chatbot/pkg/openai/domain/jobstatus"
 
-type StatusCodes struct {
+type Codes struct {
 	Validating string `json:"validating"`
 	Running    string `json:"running"`
 	Succeeded  string `json:"succeeded"`
@@ -12,13 +12,13 @@ type StatusCodes struct {
 
 type Manager struct {
 	List  map[string]*base.JobStatus
-	Codes *StatusCodes
+	Codes *Codes
 }
 
 func NewManager() *Manager {
 	return &Manager{
 		List: base.AllJobStatuses,
-		Codes: &StatusCodes{
+		Codes: &Codes{
 			Validating: base.ValidatingCode,
 			Running:    base.RunningCode,
 			Succeeded:  base.SucceededCode,

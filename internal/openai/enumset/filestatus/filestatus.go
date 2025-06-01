@@ -2,7 +2,7 @@ package filestatus
 
 import base "github.com/kylerqws/chatbot/pkg/openai/domain/filestatus"
 
-type StatusCodes struct {
+type Codes struct {
 	Uploaded  string `json:"uploaded"`
 	Processed string `json:"processed"`
 	Deleted   string `json:"deleted"`
@@ -11,13 +11,13 @@ type StatusCodes struct {
 
 type Manager struct {
 	List  map[string]*base.FileStatus
-	Codes *StatusCodes
+	Codes *Codes
 }
 
 func NewManager() *Manager {
 	return &Manager{
 		List: base.AllFileStatuses,
-		Codes: &StatusCodes{
+		Codes: &Codes{
 			Uploaded:  base.UploadedCode,
 			Processed: base.ProcessedCode,
 			Deleted:   base.DeletedCode,
