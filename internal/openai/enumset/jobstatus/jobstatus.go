@@ -6,8 +6,8 @@ type StatusCodes struct {
 	Validating string `json:"validating"`
 	Running    string `json:"running"`
 	Succeeded  string `json:"succeeded"`
-	Failed     string `json:"failed"`
 	Cancelled  string `json:"cancelled"`
+	Failed     string `json:"failed"`
 }
 
 type Manager struct {
@@ -22,8 +22,8 @@ func NewManager() *Manager {
 			Validating: base.ValidatingCode,
 			Running:    base.RunningCode,
 			Succeeded:  base.SucceededCode,
-			Failed:     base.FailedCode,
 			Cancelled:  base.CancelledCode,
+			Failed:     base.FailedCode,
 		},
 	}
 }
