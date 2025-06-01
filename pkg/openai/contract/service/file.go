@@ -31,9 +31,9 @@ type GetFileInfoResponse struct {
 
 type ListFilesRequest struct {
 	FileIDs       []string `json:"file_ids,omitempty"`
+	Statuses      []string `json:"statuses,omitempty"`
 	Purposes      []string `json:"purposes,omitempty"`
 	Filenames     []string `json:"filenames,omitempty"`
-	Statuses      []string `json:"statuses,omitempty"`
 	CreatedAfter  int64    `json:"created_after,omitempty"`
 	CreatedBefore int64    `json:"created_before,omitempty"`
 }
