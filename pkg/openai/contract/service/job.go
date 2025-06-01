@@ -35,12 +35,17 @@ type GetJobInfoResponse struct {
 }
 
 type ListJobsRequest struct {
-	JobIDs        []string `json:"job_ids,omitempty"`
-	After         string   `json:"after,omitempty"`
-	Model         string   `json:"model,omitempty"`
-	Status        string   `json:"status,omitempty"`
-	CreatedAfter  int64    `json:"created_after,omitempty"`
-	CreatedBefore int64    `json:"created_before,omitempty"`
+	JobIDs          []string `json:"job_ids,omitempty"`
+	Models          []string `json:"models,omitempty"`
+	FineTunedModels []string `json:"fine_tuned_models,omitempty"`
+	Statuses        []string `json:"statuses,omitempty"`
+	TrainingFiles   []string `json:"training_files,omitempty"`
+	ValidationFiles []string `json:"validation_files,omitempty"`
+	AfterJobID      string   `json:"after_job_id,omitempty"`
+	CreatedAfter    int64    `json:"created_after,omitempty"`
+	CreatedBefore   int64    `json:"created_before,omitempty"`
+	FinishedAfter   int64    `json:"finished_after,omitempty"`
+	FinishedBefore  int64    `json:"finished_before,omitempty"`
 }
 
 type ListJobsResponse struct {
