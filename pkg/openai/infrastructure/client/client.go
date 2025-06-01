@@ -44,7 +44,7 @@ func (c *Client) RequestMultipart(ctx context.Context, path string, body map[str
 	}(file)
 
 	reader := io.Reader(file)
-	if strings.HasSuffix(strings.ToLower(filePath), ".json") {
+	if jsonl.HasJSONSuffix(filePath) {
 		prp := body["purpose"]
 		if prp == purpose.FineTune.Code {
 			reader, err = jsonl.ConvertToReader(filePath)

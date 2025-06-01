@@ -11,7 +11,7 @@ import (
 )
 
 func ConvertToReader(path string) (reader io.Reader, err error) {
-	if !strings.HasSuffix(strings.ToLower(path), ".json") {
+	if !HasJSONSuffix(path) {
 		return nil, fmt.Errorf("unsupported file extension (expected .json): %s", path)
 	}
 
@@ -40,6 +40,10 @@ func ConvertToReader(path string) (reader io.Reader, err error) {
 
 	reader = bytes.NewReader(jsonl)
 	return reader, err
+}
+
+func HasJSONSuffix(path string) bool {
+	return strings.HasSuffix(strings.ToLower(path), ".json")
 }
 
 func decodeJSON(reader io.Reader) ([]map[string]any, error) {
