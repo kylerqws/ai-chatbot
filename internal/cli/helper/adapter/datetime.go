@@ -35,6 +35,10 @@ func (*DateTimeAdapter) DateTime(years, months, days int) string {
 	return time.Now().AddDate(years, months, days).UTC().Format(time.DateTime)
 }
 
+func (*DateTimeAdapter) Date(years, months, days int) string {
+	return time.Now().AddDate(years, months, days).UTC().Format(time.DateOnly)
+}
+
 func (*DateTimeAdapter) ValidateDateFormat(dateStr string) error {
 	var err error
 	for i := range DateFormats {
