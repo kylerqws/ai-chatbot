@@ -14,8 +14,8 @@ const (
 	ValidatingCode = "validating"
 	RunningCode    = "running"
 	SucceededCode  = "succeeded"
-	FailedCode     = "failed"
 	CancelledCode  = "cancelled"
+	FailedCode     = "failed"
 )
 
 var (
@@ -31,13 +31,13 @@ var (
 		Code:        SucceededCode,
 		Description: "The job completed successfully.",
 	}
-	Failed = &JobStatus{
-		Code:        FailedCode,
-		Description: "The job failed to complete.",
-	}
 	Cancelled = &JobStatus{
 		Code:        CancelledCode,
 		Description: "The job was cancelled.",
+	}
+	Failed = &JobStatus{
+		Code:        FailedCode,
+		Description: "The job failed to complete.",
 	}
 )
 
@@ -45,8 +45,8 @@ var AllJobStatuses = map[string]*JobStatus{
 	ValidatingCode: Validating,
 	RunningCode:    Running,
 	SucceededCode:  Succeeded,
-	FailedCode:     Failed,
 	CancelledCode:  Cancelled,
+	FailedCode:     Failed,
 }
 
 func Resolve(code string) (*JobStatus, error) {
