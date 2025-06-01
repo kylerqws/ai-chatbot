@@ -2,27 +2,30 @@ package jobstatus
 
 import base "github.com/kylerqws/chatbot/pkg/openai/domain/jobstatus"
 
-type Codes struct {
-	ValidatingCode string `json:"validating_code"`
-	RunningCode    string `json:"running_code"`
-	SucceededCode  string `json:"succeeded_code"`
-	FailedCode     string `json:"failed_code"`
-	CancelledCode  string `json:"cancelled_code"`
+type StatusCodes struct {
+	Validating string `json:"validating"`
+	Running    string `json:"running"`
+	Succeeded  string `json:"succeeded"`
+	Failed     string `json:"failed"`
+	Cancelled  string `json:"cancelled"`
 }
 
 type Manager struct {
 	List  map[string]*base.JobStatus
-	Codes *Codes
+	Codes *StatusCodes
 }
 
 func NewManager() *Manager {
-	return &Manager{List: base.AllJobStatuses, Codes: &Codes{
-		ValidatingCode: base.ValidatingCode,
-		RunningCode:    base.RunningCode,
-		SucceededCode:  base.SucceededCode,
-		FailedCode:     base.FailedCode,
-		CancelledCode:  base.CancelledCode,
-	}}
+	return &Manager{
+		List: base.AllJobStatuses,
+		Codes: &StatusCodes{
+			Validating: base.ValidatingCode,
+			Running:    base.RunningCode,
+			Succeeded:  base.SucceededCode,
+			Failed:     base.FailedCode,
+			Cancelled:  base.CancelledCode,
+		},
+	}
 }
 
 func (*Manager) Resolve(code string) (*base.JobStatus, error) {

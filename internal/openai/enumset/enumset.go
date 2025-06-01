@@ -1,38 +1,47 @@
 package enumset
 
 import (
+	"github.com/kylerqws/chatbot/internal/openai/enumset/chatrole"
 	"github.com/kylerqws/chatbot/internal/openai/enumset/jobstatus"
 	"github.com/kylerqws/chatbot/internal/openai/enumset/model"
 	"github.com/kylerqws/chatbot/internal/openai/enumset/purpose"
 )
 
-type Set struct {
-	purposeManager   *purpose.Manager
-	modelManager     *model.Manager
-	jobStatusManager *jobstatus.Manager
+type ManagerSet struct {
+	chatRole  *chatrole.Manager
+	purpose   *purpose.Manager
+	model     *model.Manager
+	jobStatus *jobstatus.Manager
 }
 
-func NewSet() *Set {
-	return &Set{}
+func NewManagerSet() *ManagerSet {
+	return &ManagerSet{}
 }
 
-func (s *Set) PurposeManager() *purpose.Manager {
-	if s.purposeManager == nil {
-		s.purposeManager = purpose.NewManager()
+func (s *ManagerSet) ChatRole() *chatrole.Manager {
+	if s.chatRole == nil {
+		s.chatRole = chatrole.NewManager()
 	}
-	return s.purposeManager
+	return s.chatRole
 }
 
-func (s *Set) ModelManager() *model.Manager {
-	if s.modelManager == nil {
-		s.modelManager = model.NewManager()
+func (s *ManagerSet) Purpose() *purpose.Manager {
+	if s.purpose == nil {
+		s.purpose = purpose.NewManager()
 	}
-	return s.modelManager
+	return s.purpose
 }
 
-func (s *Set) JobStatusManager() *jobstatus.Manager {
-	if s.jobStatusManager == nil {
-		s.jobStatusManager = jobstatus.NewManager()
+func (s *ManagerSet) Model() *model.Manager {
+	if s.model == nil {
+		s.model = model.NewManager()
 	}
-	return s.jobStatusManager
+	return s.model
+}
+
+func (s *ManagerSet) JobStatus() *jobstatus.Manager {
+	if s.jobStatus == nil {
+		s.jobStatus = jobstatus.NewManager()
+	}
+	return s.jobStatus
 }
