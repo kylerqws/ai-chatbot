@@ -3,11 +3,17 @@ package setup
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
+)
+
+const (
+	oldFlagsSuffix = "[flags]"
+	newFlagsSuffix = "[flag...]"
 )
 
 func HelpFunction() ctr.FuncHelp {
@@ -36,7 +42,7 @@ func HelpFunction() ctr.FuncHelp {
 		if _, err := fmt.Fprintln(w, "Usage:"); err != nil {
 			return
 		}
-		if _, err := fmt.Fprintf(w, "  %s\n", cmd.UseLine()); err != nil {
+		if _, err := fmt.Fprintf(w, "  %s\n", useLine(cmd)); err != nil {
 			return
 		}
 
@@ -76,6 +82,15 @@ func HelpFunction() ctr.FuncHelp {
 			}
 		}
 	}
+}
+
+func useLine(cmd *cobra.Command) string {
+	cmdUseLine := cmd.UseLine()
+	if !strings.HasSuffix(cmdUseLine, oldFlagsSuffix) {
+		return cmdUseLine
+	}
+
+	return strings.TrimSuffix(cmdUseLine, oldFlagsSuffix) + newFlagsSuffix
 }
 
 func localFlags(cmd *cobra.Command) []*pflag.Flag {
