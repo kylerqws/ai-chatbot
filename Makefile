@@ -20,3 +20,6 @@ migrate:
 
 rollback:
 	- $(GO_RUN) dev db rollback
+
+%:
+	@:
