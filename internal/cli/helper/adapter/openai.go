@@ -25,7 +25,8 @@ func (h *OpenAiAdapter) FileStatusManager() *filestatus.Manager {
 }
 
 func (h *OpenAiAdapter) ValidateFileStatusCode(code string) error {
-	if _, err := h.FileStatusManager().Resolve(code); err != nil {
+	_, err := h.FileStatusManager().Resolve(code)
+	if err != nil {
 		return fmt.Errorf("invalid file status code '%s': %w", code, err)
 	}
 	return nil
@@ -36,7 +37,8 @@ func (h *OpenAiAdapter) JobStatusManager() *jobstatus.Manager {
 }
 
 func (h *OpenAiAdapter) ValidateJobStatusCode(code string) error {
-	if _, err := h.JobStatusManager().Resolve(code); err != nil {
+	_, err := h.JobStatusManager().Resolve(code)
+	if err != nil {
 		return fmt.Errorf("invalid job status code '%s': %w", code, err)
 	}
 	return nil
@@ -47,7 +49,8 @@ func (h *OpenAiAdapter) ModelManager() *model.Manager {
 }
 
 func (h *OpenAiAdapter) ValidateModelCode(code string) error {
-	if _, err := h.ModelManager().Resolve(code); err != nil {
+	_, err := h.ModelManager().Resolve(code)
+	if err != nil {
 		return fmt.Errorf("invalid model code '%s': %w", code, err)
 	}
 	return nil
@@ -58,7 +61,8 @@ func (h *OpenAiAdapter) PurposeManager() *purpose.Manager {
 }
 
 func (h *OpenAiAdapter) ValidatePurposeCode(code string) error {
-	if _, err := h.PurposeManager().Resolve(code); err != nil {
+	_, err := h.PurposeManager().Resolve(code)
+	if err != nil {
 		return fmt.Errorf("invalid purpose code '%s': %w", code, err)
 	}
 	return nil
