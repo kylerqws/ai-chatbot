@@ -37,7 +37,8 @@ func NewDeleteAdapter(app *intapp.App) ctradp.CommandAdapter {
 func (a *DeleteAdapter) Configure() *cobra.Command {
 	a.SetUse("delete <filter-flag> [filter-flag...]")
 	a.SetShort("Delete one or more files from OpenAI account")
-	a.SetLong("Repeat flags to filter by multiple values, e.g.:\n  " + a.exampleString())
+	a.SetLong("Use flags to filter files by multiple values.\n" +
+		"You can repeat flags to provide more than one value, e.g.:\n  " + a.exampleString())
 
 	a.SetFuncArgs(a.Validate)
 	a.SetFuncRunE(a.Delete)
@@ -47,7 +48,7 @@ func (a *DeleteAdapter) Configure() *cobra.Command {
 }
 
 func (a *DeleteAdapter) ConfigureFlags() {
-	desc := "Delete all files (highest priority)\n"
+	desc := "Delete all files (has highest priority over filters)\n"
 	a.AddBoolFlag(allFlagKey, "", false, desc)
 
 	a.ListAdapter.ConfigureFlags()

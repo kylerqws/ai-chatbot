@@ -60,7 +60,8 @@ func NewListAdapter(app *intapp.App) ctradp.CommandAdapter {
 func (a *ListAdapter) Configure() *cobra.Command {
 	a.SetUse("list [filter-flag...]")
 	a.SetShort("Display files in OpenAI account")
-	a.SetLong("Repeat flags to filter by multiple values, e.g.:\n  " + a.exampleString())
+	a.SetLong("Use flags to filter files by multiple values.\n" +
+		"You can repeat flags to provide more than one value, e.g.:\n  " + a.exampleString())
 
 	a.SetFuncArgs(a.Validate)
 	a.SetFuncRunE(a.List)
@@ -205,7 +206,11 @@ func (a *ListAdapter) exampleString() string {
 	cmdName := a.Command().Name()
 	prpManager := a.PurposeManager()
 
-	return fmt.Sprintf("%s --%s %s --%s %s --%s %s", cmdName,
-		purposeFlagKey, prpManager.Codes.FineTune, purposeFlagKey, prpManager.Codes.Evals,
-		createdAfterFlagKey, a.Date(0, -3, 0))
+	return fmt.Sprintf(
+		"%s --%s %s --%s %s --%s %s",
+		cmdName,
+		purposeFlagKey, prpManager.Codes.FineTune,
+		purposeFlagKey, prpManager.Codes.Evals,
+		createdAfterFlagKey, a.Date(0, -3, 0),
+	)
 }
