@@ -64,7 +64,7 @@ func (*OpenAiFileAdapter) FileSize(path string) int64 {
 }
 
 func (*OpenAiFileAdapter) ValidateFileID(fileID string) error {
-	if !regexp.MustCompile(`^file-[a-zA-Z0-9]{22}$`).MatchString(fileID) {
+	if !regexp.MustCompile(`^file-[a-zA-Z0-9]{22,}$`).MatchString(fileID) {
 		return fmt.Errorf("invalid file ID '%s'", fileID)
 	}
 	return nil
