@@ -40,6 +40,14 @@ func (h *GeneralAdapter) SetShort(short string) {
 	h.command.Short = short
 }
 
+func (h *GeneralAdapter) Long() string {
+	return h.command.Long
+}
+
+func (h *GeneralAdapter) SetLong(long string) {
+	h.command.Long = long
+}
+
 func (h *GeneralAdapter) Configure() *cobra.Command {
 	return h.MainConfigure()
 }

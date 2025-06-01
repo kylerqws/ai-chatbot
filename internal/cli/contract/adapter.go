@@ -17,6 +17,9 @@ type GeneralAdapter interface {
 	Short() string
 	SetShort(string)
 
+	Long() string
+	SetLong(string)
+
 	Configure() *cobra.Command
 	MainConfigure() *cobra.Command
 }
