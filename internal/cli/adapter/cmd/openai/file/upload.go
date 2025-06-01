@@ -1,6 +1,7 @@
 package file
 
 import (
+	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -44,6 +45,7 @@ func NewUploadAdapter(app *intapp.App) ctradp.CommandAdapter {
 func (a *UploadAdapter) Configure() *cobra.Command {
 	a.SetUse("upload <file-path[:purpose]> [file-path[:purpose]...]")
 	a.SetShort("Upload one or more files to OpenAI account")
+	a.SetLong(a.info())
 
 	a.SetFuncArgs(a.Validate)
 	a.SetFuncRunE(a.Upload)
@@ -170,6 +172,15 @@ func (a *UploadAdapter) PrintFiles() error {
 
 	a.RenderTable()
 	return nil
+}
+
+func (a *UploadAdapter) info() string {
+	return "Each file argument can optionally specify a purpose by appending ':purpose' suffix.\n" +
+		fmt.Sprintf(
+			"Defaults to '%s' if --%s is not provided.",
+			a.PurposeManager().Default().Code,
+			defaultPurposeFlagKey,
+		)
 }
 
 func (*UploadAdapter) separateArg(arg string) (string, string) {
