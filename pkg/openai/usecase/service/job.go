@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"strconv"
 
 	"github.com/kylerqws/chatbot/pkg/openai/domain/model"
 	"github.com/kylerqws/chatbot/pkg/openai/infrastructure/client"
@@ -77,13 +78,7 @@ func (s *jobService) ListJobs(
 ) (*ctrsvc.ListJobsResponse, error) {
 	result := &ctrsvc.ListJobsResponse{}
 
-	path := "/fine_tuning/jobs"
-	if req.AfterJobID != "" {
-		params := url.Values{}
-		params.Set("after", req.AfterJobID)
-		path += "?" + params.Encode()
-	}
-
+	path := "/fine_tuning/jobs" + s.buildListJobsQuery(req)
 	resp, err := s.client.Request(ctx, "GET", path)
 	if err != nil {
 		return result, fmt.Errorf("failed to send request: %w", err)
@@ -98,7 +93,7 @@ func (s *jobService) ListJobs(
 		return result, fmt.Errorf("failed to unmarshal response: %w", err)
 	}
 
-	result.Jobs = s.filterJobs(parsed.Data, req)
+	result.Jobs = s.applyListJobsFilter(parsed.Data, req)
 	result.HasMore = parsed.HasMore
 
 	return result, nil
@@ -125,32 +120,59 @@ func (s *jobService) CancelJob(
 	return result, nil
 }
 
-func (s *jobService) filterJobs(jobs []*ctrsvc.Job, req *ctrsvc.ListJobsRequest) []*ctrsvc.Job {
+func (*jobService) buildListJobsQuery(req *ctrsvc.ListJobsRequest) string {
+	params := url.Values{}
+
+	if req.AfterJobID != "" {
+		params.Set("after", req.AfterJobID)
+	}
+	if req.LimitJobCount != 0 {
+		params.Set("limit", strconv.Itoa(int(req.LimitJobCount)))
+	}
+
+	if query := params.Encode(); query != "" {
+		return "?" + query
+	}
+	return ""
+}
+
+func (*jobService) hasAnyListJobsFilter(req *ctrsvc.ListJobsRequest) bool {
+	return req.CreatedAfter != 0 || req.CreatedBefore != 0 ||
+		req.FinishedAfter != 0 || req.FinishedBefore != 0 ||
+		len(req.JobIDs) > 0 || len(req.Statuses) > 0 ||
+		len(req.Models) > 0 || len(req.FineTunedModels) > 0 ||
+		len(req.TrainingFiles) > 0 || len(req.ValidationFiles) > 0
+}
+
+func (s *jobService) applyListJobsFilter(jobs []*ctrsvc.Job, req *ctrsvc.ListJobsRequest) []*ctrsvc.Job {
 	var result []*ctrsvc.Job
+	if !s.hasAnyListJobsFilter(req) {
+		return jobs
+	}
 
 	for i := range jobs {
-		if filter.CheckDateValue(jobs[i].CreatedAt, req.CreatedAfter, req.CreatedBefore) {
+		if !filter.MatchDateValue(jobs[i].CreatedAt, req.CreatedAfter, req.CreatedBefore) {
 			continue
 		}
-		if filter.CheckDateValue(jobs[i].FinishedAt, req.FinishedAfter, req.FinishedBefore) {
+		if !filter.MatchDateValue(jobs[i].FinishedAt, req.FinishedAfter, req.FinishedBefore) {
 			continue
 		}
-		if filter.CheckStrValue(jobs[i].ID, req.JobIDs) {
+		if !filter.MatchStrValue(jobs[i].ID, req.JobIDs) {
 			continue
 		}
-		if filter.CheckStrValue(jobs[i].Status, req.Statuses) {
+		if !filter.MatchStrValue(jobs[i].Status, req.Statuses) {
 			continue
 		}
-		if filter.CheckStrValue(jobs[i].Model, req.Models) {
+		if !filter.MatchStrValue(jobs[i].Model, req.Models) {
 			continue
 		}
-		if filter.CheckStrValue(jobs[i].FineTunedModel, req.FineTunedModels) {
+		if !filter.MatchStrValue(jobs[i].FineTunedModel, req.FineTunedModels) {
 			continue
 		}
-		if filter.CheckStrValue(jobs[i].TrainingFile, req.TrainingFiles) {
+		if !filter.MatchStrValue(jobs[i].TrainingFile, req.TrainingFiles) {
 			continue
 		}
-		if filter.CheckStrValue(jobs[i].ValidationFile, req.ValidationFiles) {
+		if !filter.MatchStrValue(jobs[i].ValidationFile, req.ValidationFiles) {
 			continue
 		}
 

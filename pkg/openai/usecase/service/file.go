@@ -89,7 +89,7 @@ func (s *fileService) ListFiles(
 		return result, fmt.Errorf("failed to unmarshal response: %w", err)
 	}
 
-	result.Files = s.filterFiles(parsed.Data, req)
+	result.Files = s.applyListFilesFilter(parsed.Data, req)
 	return result, nil
 }
 
@@ -115,23 +115,32 @@ func (s *fileService) DeleteFile(
 	return result, nil
 }
 
-func (s *fileService) filterFiles(files []*ctrsvc.File, req *ctrsvc.ListFilesRequest) []*ctrsvc.File {
+func (*fileService) hasAnyListFilesFilter(req *ctrsvc.ListFilesRequest) bool {
+	return req.CreatedAfter != 0 || req.CreatedBefore != 0 ||
+		len(req.FileIDs) > 0 || len(req.Statuses) > 0 ||
+		len(req.Purposes) > 0 || len(req.Filenames) > 0
+}
+
+func (s *fileService) applyListFilesFilter(files []*ctrsvc.File, req *ctrsvc.ListFilesRequest) []*ctrsvc.File {
 	var result []*ctrsvc.File
+	if !s.hasAnyListFilesFilter(req) {
+		return files
+	}
 
 	for i := range files {
-		if filter.CheckDateValue(files[i].CreatedAt, req.CreatedAfter, req.CreatedBefore) {
+		if !filter.MatchDateValue(files[i].CreatedAt, req.CreatedAfter, req.CreatedBefore) {
 			continue
 		}
-		if filter.CheckStrValue(files[i].ID, req.FileIDs) {
+		if !filter.MatchStrValue(files[i].ID, req.FileIDs) {
 			continue
 		}
-		if filter.CheckStrValue(files[i].Status, req.Statuses) {
+		if !filter.MatchStrValue(files[i].Status, req.Statuses) {
 			continue
 		}
-		if filter.CheckStrValue(files[i].Purpose, req.Purposes) {
+		if !filter.MatchStrValue(files[i].Purpose, req.Purposes) {
 			continue
 		}
-		if filter.CheckStrValue(files[i].Filename, req.Filenames) {
+		if !filter.MatchStrValue(files[i].Filename, req.Filenames) {
 			continue
 		}
 

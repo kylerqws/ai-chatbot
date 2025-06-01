@@ -42,6 +42,7 @@ type ListJobsRequest struct {
 	TrainingFiles   []string `json:"training_files,omitempty"`
 	ValidationFiles []string `json:"validation_files,omitempty"`
 	AfterJobID      string   `json:"after_job_id,omitempty"`
+	LimitJobCount   uint8    `json:"limit_job_count,omitempty"`
 	CreatedAfter    int64    `json:"created_after,omitempty"`
 	CreatedBefore   int64    `json:"created_before,omitempty"`
 	FinishedAfter   int64    `json:"finished_after,omitempty"`

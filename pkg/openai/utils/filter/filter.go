@@ -1,11 +1,25 @@
 package filter
 
-import "github.com/kylerqws/chatbot/pkg/openai/utils/filter/contains"
+import "slices"
 
-func CheckStrValue(val string, list []string) bool {
-	return len(list) > 0 && !contains.StrValue(val, list)
+func MatchStrValue(val string, list []string) bool {
+	if len(list) == 0 {
+		return true
+	}
+	return slices.Contains(list, val)
 }
 
-func CheckDateValue(date, after, before int64) bool {
-	return date > 0 && ((after > 0 && date <= after) || (before > 0 && date >= before))
+func MatchDateValue(date, after, before int64) bool {
+	if date <= 0 {
+		return true
+	}
+
+	if after > 0 && date <= after {
+		return false
+	}
+	if before > 0 && date >= before {
+		return false
+	}
+
+	return true
 }
