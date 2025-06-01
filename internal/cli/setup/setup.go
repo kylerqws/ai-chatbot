@@ -7,8 +7,6 @@ import (
 
 func GeneralConfigure(adp ctr.GeneralAdapter) *cobra.Command {
 	cmd := adp.Command()
-
-	PrepareUseField(cmd)
 	DisableSortingFlags(cmd)
 
 	FixHelpFunc(cmd)

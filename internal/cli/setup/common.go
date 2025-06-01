@@ -2,8 +2,6 @@ package setup
 
 import (
 	"fmt"
-	"slices"
-
 	"github.com/spf13/cobra"
 )
 
@@ -50,12 +48,4 @@ func DisableSortingFlags(cmd *cobra.Command) {
 	cmd.Flags().SortFlags = false
 	cmd.PersistentFlags().SortFlags = false
 	cmd.InheritedFlags().SortFlags = false
-}
-
-func PrepareUseField(cmd *cobra.Command) {
-	if slices.ContainsFunc(cmd.Commands(), func(cmd *cobra.Command) bool {
-		return !cmd.Hidden
-	}) {
-		cmd.Use += " [command]"
-	}
 }

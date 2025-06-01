@@ -12,9 +12,10 @@ import (
 )
 
 const (
-	oldFlagsSuffix   = "[flags]"
-	newFlagsSuffix   = "[flag...]"
-	deprecatedSuffix = "[DEPRECATED]"
+	defaultFlagSuffix    = "[flags]"
+	customFlagSuffix     = "[flag...]"
+	defaultCommandSuffix = "[command]"
+	deprecatedMarker     = "[DEPRECATED]"
 )
 
 func HelpFunction() ctr.FuncHelp {
@@ -24,15 +25,23 @@ func HelpFunction() ctr.FuncHelp {
 		}
 		w := cmd.OutOrStdout()
 
-		if cmd.Long != "" {
-			if _, err := fmt.Fprintln(w, cmd.Long); err != nil {
+		sub, loc, glob := cmd.Commands(), localFlags(cmd), globalFlags(cmd)
+		hasLoc, hasGlob := existFlags(loc), existFlags(glob)
+		hasCmds, hasFlags := existCommands(sub), hasLoc || hasGlob
+
+		cmdUseLine := useLine(cmd, hasCmds, hasFlags)
+		hasShort, hasLong := cmd.Short != "", cmd.Long != ""
+
+		if hasShort {
+			if _, err := fmt.Fprintln(w, cmd.Short); err != nil {
 				return
 			}
 			if _, err := fmt.Fprintln(w); err != nil {
 				return
 			}
-		} else if cmd.Short != "" {
-			if _, err := fmt.Fprintln(w, cmd.Short); err != nil {
+		}
+		if hasLong {
+			if _, err := fmt.Fprintln(w, cmd.Long); err != nil {
 				return
 			}
 			if _, err := fmt.Fprintln(w); err != nil {
@@ -43,12 +52,11 @@ func HelpFunction() ctr.FuncHelp {
 		if _, err := fmt.Fprintln(w, "Usage:"); err != nil {
 			return
 		}
-		if _, err := fmt.Fprintf(w, "  %s\n", useLine(cmd)); err != nil {
+		if _, err := fmt.Fprintf(w, "  %s\n", cmdUseLine); err != nil {
 			return
 		}
 
-		sub := cmd.Commands()
-		if existCommands(sub) {
+		if hasCmds {
 			if _, err := fmt.Fprintln(w, "\nCommands:"); err != nil {
 				return
 			}
@@ -59,10 +67,7 @@ func HelpFunction() ctr.FuncHelp {
 			}
 		}
 
-		loc, glob := localFlags(cmd), globalFlags(cmd)
-		hasLoc, hasGlob := existFlags(loc), existFlags(glob)
-
-		if hasLoc || hasGlob {
+		if hasFlags {
 			if _, err := fmt.Fprintln(w, "\nFlags:"); err != nil {
 				return
 			}
@@ -85,13 +90,18 @@ func HelpFunction() ctr.FuncHelp {
 	}
 }
 
-func useLine(cmd *cobra.Command) string {
-	cmdUseLine := cmd.UseLine()
-	if !strings.HasSuffix(cmdUseLine, oldFlagsSuffix) {
-		return cmdUseLine
+func useLine(cmd *cobra.Command, existCommands, existFlags bool) string {
+	cmdUseLine := strings.TrimSuffix(cmd.UseLine(), defaultFlagSuffix)
+	cmdUseLine = strings.TrimSpace(cmdUseLine)
+
+	if existCommands {
+		cmdUseLine += " " + defaultCommandSuffix
+	}
+	if existFlags {
+		cmdUseLine += " " + customFlagSuffix
 	}
 
-	return strings.TrimSuffix(cmdUseLine, oldFlagsSuffix) + newFlagsSuffix
+	return cmdUseLine
 }
 
 func localFlags(cmd *cobra.Command) []*pflag.Flag {
@@ -170,7 +180,7 @@ func printCommandLine(w io.Writer, cmd *cobra.Command) error {
 
 	cmdPart, cmdShort := fmt.Sprintf("  %s", cmd.Name()), cmd.Short
 	if cmd.Deprecated != "" {
-		cmdShort += " " + deprecatedSuffix
+		cmdShort += " " + deprecatedMarker
 	}
 
 	if _, err := fmt.Fprintf(w, "%-20s\t%s\n", cmdPart, cmdShort); err != nil {
