@@ -16,7 +16,9 @@ const allFlagKey = "all"
 var filterFlagKeys = []string{
 	allFlagKey,
 	idFlagKey,
+	statusFlagKey,
 	purposeFlagKey,
+	filenameFlagKey,
 	createdAfterFlagKey,
 	createdBeforeFlagKey,
 }
@@ -35,6 +37,7 @@ func NewDeleteAdapter(app *intapp.App) ctradp.CommandAdapter {
 func (a *DeleteAdapter) Configure() *cobra.Command {
 	a.SetUse("delete <filter-flag> [filter-flag...]")
 	a.SetShort("Delete one or more files from OpenAI account")
+	a.SetLong("Repeat flags to filter by multiple values, e.g.:\n  " + a.exampleString())
 
 	a.SetFuncArgs(a.Validate)
 	a.SetFuncRunE(a.Delete)
@@ -96,26 +99,30 @@ func (a *DeleteAdapter) Request() bool {
 func (a *DeleteAdapter) PrintFiles() error {
 	_ = a.CreateTable()
 
-	a.AppendTableHeader("File ID", "File Name", "Purpose", "Size", "Created", "State")
+	a.AppendTableHeader("File ID", "File Name", "Purpose",
+		"Size", "Status", "Created", "State")
+
 	a.SetColumnTableConfigs(
 		a.ColumnConfig(1, text.AlignCenter, 27, text.Colors{text.Bold}),
 		a.ColumnConfig(2, text.AlignRight, 19, nil),
 		a.ColumnConfig(3, text.AlignRight, 19, nil),
 		a.ColumnConfig(4, text.AlignRight, 10, nil),
-		a.ColumnConfig(5, text.AlignRight, 19, nil),
-		a.ColumnConfig(6, text.AlignCenter, 7, text.Colors{text.Bold}),
+		a.ColumnConfig(5, text.AlignRight, 10, nil),
+		a.ColumnConfig(6, text.AlignRight, 19, nil),
+		a.ColumnConfig(7, text.AlignCenter, 7, text.Colors{text.Bold}),
 	)
 
 	files := a.Files()
-	doth := helper.EmptyTableColumn
+	empty := helper.EmptyTableColumn
 
 	for i := range files {
 		a.AppendTableRow(
-			a.FormatString(files[i].ID, &doth),
-			a.FormatString(files[i].Filename, &doth),
-			a.FormatString(files[i].Purpose, &doth),
-			a.FormatBytes(files[i].Bytes, &doth),
-			a.FormatTime(files[i].CreatedAt, &doth),
+			a.FormatString(files[i].ID, &empty),
+			a.FormatString(files[i].Filename, &empty),
+			a.FormatString(files[i].Purpose, &empty),
+			a.FormatBytes(files[i].Bytes, &empty),
+			a.FormatString(files[i].Status, &empty),
+			a.FormatTime(files[i].CreatedAt, &empty),
 			a.FormatExecStatus(files[i].ExecStatus),
 		)
 	}
