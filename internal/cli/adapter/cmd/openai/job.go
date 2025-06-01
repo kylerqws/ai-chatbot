@@ -3,7 +3,7 @@ package openai
 import (
 	"github.com/spf13/cobra"
 
-	//action "github.com/kylerqws/chatbot/cmd/openai/job"
+	action "github.com/kylerqws/chatbot/cmd/openai/job"
 	intapp "github.com/kylerqws/chatbot/internal/app"
 	helper "github.com/kylerqws/chatbot/internal/cli/helper/adapter"
 
@@ -23,12 +23,16 @@ func NewJobAdapter(app *intapp.App) ctr.ParentAdapter {
 }
 
 func (a *JobAdapter) Configure() *cobra.Command {
-	//app := a.App()
+	app := a.App()
 
 	a.SetUse("job")
 	a.SetShort("Operations on job management")
 
-	a.AddChildren()
+	a.AddChildren(
+		action.ListCommand(app),
+		action.CreateCommand(app),
+		action.CancelCommand(app),
+	)
 
 	return a.MainConfigure()
 }
