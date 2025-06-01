@@ -56,7 +56,7 @@ func (h *ValidateAdapter) ValidateHasMoreArgsThan(count uint8) error {
 	if h.HasMoreArgsThan(count) {
 		return nil
 	}
-	return fmt.Errorf("at least %d arguments must be specified", count+1)
+	return fmt.Errorf("at least %d argument(s) must be specified", count+1)
 }
 
 func (h *ValidateAdapter) ValidateStringFlag(flagKey string, fn ctr.FuncValidateString) error {
