@@ -8,7 +8,7 @@ import (
 
 	"github.com/kylerqws/chatbot/pkg/openai/domain/model"
 	"github.com/kylerqws/chatbot/pkg/openai/infrastructure/client"
-	"github.com/kylerqws/chatbot/pkg/openai/utils/contains"
+	"github.com/kylerqws/chatbot/pkg/openai/utils/filter"
 
 	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
@@ -78,9 +78,9 @@ func (s *jobService) ListJobs(
 	result := &ctrsvc.ListJobsResponse{}
 
 	path := "/fine_tuning/jobs"
-	if req.After != "" {
+	if req.AfterJobID != "" {
 		params := url.Values{}
-		params.Set("after", req.After)
+		params.Set("after", req.AfterJobID)
 		path += "?" + params.Encode()
 	}
 
@@ -127,22 +127,30 @@ func (s *jobService) CancelJob(
 
 func (s *jobService) filterJobs(jobs []*ctrsvc.Job, req *ctrsvc.ListJobsRequest) []*ctrsvc.Job {
 	var result []*ctrsvc.Job
-	jobIDCount := len(req.JobIDs)
 
 	for i := range jobs {
-		if req.Model != "" && jobs[i].Model != req.Model {
+		if filter.CheckDateValue(jobs[i].CreatedAt, req.CreatedAfter, req.CreatedBefore) {
 			continue
 		}
-		if req.Status != "" && jobs[i].Status != req.Status {
+		if filter.CheckDateValue(jobs[i].FinishedAt, req.FinishedAfter, req.FinishedBefore) {
 			continue
 		}
-		if req.CreatedAfter > 0 && jobs[i].CreatedAt <= req.CreatedAfter {
+		if filter.CheckStrValue(jobs[i].ID, req.JobIDs) {
 			continue
 		}
-		if req.CreatedBefore > 0 && jobs[i].CreatedAt >= req.CreatedBefore {
+		if filter.CheckStrValue(jobs[i].Status, req.Statuses) {
 			continue
 		}
-		if jobIDCount > 0 && !contains.StrValue(jobs[i].ID, req.JobIDs) {
+		if filter.CheckStrValue(jobs[i].Model, req.Models) {
+			continue
+		}
+		if filter.CheckStrValue(jobs[i].FineTunedModel, req.FineTunedModels) {
+			continue
+		}
+		if filter.CheckStrValue(jobs[i].TrainingFile, req.TrainingFiles) {
+			continue
+		}
+		if filter.CheckStrValue(jobs[i].ValidationFile, req.ValidationFiles) {
 			continue
 		}
 

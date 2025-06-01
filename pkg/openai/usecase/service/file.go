@@ -7,7 +7,7 @@ import (
 
 	"github.com/kylerqws/chatbot/pkg/openai/domain/purpose"
 	"github.com/kylerqws/chatbot/pkg/openai/infrastructure/client"
-	"github.com/kylerqws/chatbot/pkg/openai/utils/contains"
+	"github.com/kylerqws/chatbot/pkg/openai/utils/filter"
 
 	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
@@ -118,26 +118,20 @@ func (s *fileService) DeleteFile(
 func (s *fileService) filterFiles(files []*ctrsvc.File, req *ctrsvc.ListFilesRequest) []*ctrsvc.File {
 	var result []*ctrsvc.File
 
-	fileIDCount := len(req.FileIDs)
-	purposeCount := len(req.Purposes)
-
 	for i := range files {
-		if req.Filename != "" && files[i].Filename != req.Filename {
+		if filter.CheckDateValue(files[i].CreatedAt, req.CreatedAfter, req.CreatedBefore) {
 			continue
 		}
-		if req.Status != "" && files[i].Status != req.Status {
+		if filter.CheckStrValue(files[i].ID, req.FileIDs) {
 			continue
 		}
-		if req.CreatedAfter > 0 && files[i].CreatedAt <= req.CreatedAfter {
+		if filter.CheckStrValue(files[i].Status, req.Statuses) {
 			continue
 		}
-		if req.CreatedBefore > 0 && files[i].CreatedAt >= req.CreatedBefore {
+		if filter.CheckStrValue(files[i].Purpose, req.Purposes) {
 			continue
 		}
-		if fileIDCount > 0 && !contains.StrValue(files[i].ID, req.FileIDs) {
-			continue
-		}
-		if purposeCount > 0 && !contains.StrValue(files[i].Purpose, req.Purposes) {
+		if filter.CheckStrValue(files[i].Filename, req.Filenames) {
 			continue
 		}
 
