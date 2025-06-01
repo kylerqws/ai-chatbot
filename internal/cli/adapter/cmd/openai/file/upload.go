@@ -14,10 +14,7 @@ import (
 	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 )
 
-const (
-	defaultPurposeFlagKey   = "default-purpose"
-	argumentSeparatorSymbol = ":"
-)
+const defaultPurposeFlagKey = "default-purpose"
 
 type UploadAdapter struct {
 	*helper.CommandAdapter
@@ -143,26 +140,30 @@ func (a *UploadAdapter) Request() bool {
 func (a *UploadAdapter) PrintFiles() error {
 	_ = a.CreateTable()
 
-	a.AppendTableHeader("File ID", "File Name", "Purpose", "Size", "Created", "State")
+	a.AppendTableHeader("File ID", "File Name", "Purpose",
+		"Size", "Status", "Created", "State")
+
 	a.SetColumnTableConfigs(
 		a.ColumnConfig(1, text.AlignCenter, 27, text.Colors{text.Bold}),
 		a.ColumnConfig(2, text.AlignRight, 19, nil),
 		a.ColumnConfig(3, text.AlignRight, 19, nil),
 		a.ColumnConfig(4, text.AlignRight, 10, nil),
-		a.ColumnConfig(5, text.AlignRight, 19, nil),
-		a.ColumnConfig(6, text.AlignCenter, 7, text.Colors{text.Bold}),
+		a.ColumnConfig(5, text.AlignRight, 10, nil),
+		a.ColumnConfig(6, text.AlignRight, 19, nil),
+		a.ColumnConfig(7, text.AlignCenter, 7, text.Colors{text.Bold}),
 	)
 
 	files := a.Files()
-	doth := helper.EmptyTableColumn
+	empty := helper.EmptyTableColumn
 
 	for i := range files {
 		a.AppendTableRow(
-			a.FormatString(files[i].ID, &doth),
-			a.FormatString(files[i].Filename, &doth),
-			a.FormatString(files[i].Purpose, &doth),
-			a.FormatBytes(files[i].Bytes, &doth),
-			a.FormatTime(files[i].CreatedAt, &doth),
+			a.FormatString(files[i].ID, &empty),
+			a.FormatString(files[i].Filename, &empty),
+			a.FormatString(files[i].Purpose, &empty),
+			a.FormatBytes(files[i].Bytes, &empty),
+			a.FormatString(files[i].Status, &empty),
+			a.FormatTime(files[i].CreatedAt, &empty),
 			a.FormatExecStatus(files[i].ExecStatus),
 		)
 	}
@@ -172,7 +173,7 @@ func (a *UploadAdapter) PrintFiles() error {
 }
 
 func (*UploadAdapter) separateArg(arg string) (string, string) {
-	parts := strings.SplitN(arg, argumentSeparatorSymbol, 2)
+	parts := strings.SplitN(arg, ":", 2)
 	if len(parts) == 2 && parts[1] != "" {
 		return parts[0], parts[1]
 	}
