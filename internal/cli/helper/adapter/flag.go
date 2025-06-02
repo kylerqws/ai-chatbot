@@ -21,6 +21,18 @@ func (h *FlagAdapter) AddStringSliceFlag(name, shorthand string, value []string,
 	setup.AddStringSliceFlag(h.command, name, shorthand, value, desc, false)
 }
 
+func (h *FlagAdapter) AddUint8Flag(name, shorthand string, value uint8, desc string) {
+	setup.AddUint8Flag(h.command, name, shorthand, value, desc, false)
+}
+
+func (h *FlagAdapter) AddUintFlag(name, shorthand string, value uint, desc string) {
+	setup.AddUintFlag(h.command, name, shorthand, value, desc, false)
+}
+
+func (h *FlagAdapter) AddUintSliceFlag(name, shorthand string, value []uint, desc string) {
+	setup.AddUintSliceFlag(h.command, name, shorthand, value, desc, false)
+}
+
 func (h *FlagAdapter) AddBoolFlag(name, shorthand string, value bool, desc string) {
 	setup.AddBoolFlag(h.command, name, shorthand, value, desc, false)
 }
