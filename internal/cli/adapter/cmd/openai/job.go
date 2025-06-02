@@ -26,7 +26,7 @@ func (a *JobAdapter) Configure() *cobra.Command {
 	app := a.App()
 
 	a.SetUse("job")
-	a.SetShort("Operations on job management")
+	a.SetShort("Operations on jobs management")
 
 	a.AddChildren(
 		action.ListCommand(app),

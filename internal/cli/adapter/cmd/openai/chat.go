@@ -26,7 +26,7 @@ func (a *ChatAdapter) Configure() *cobra.Command {
 	//app := a.App()
 
 	a.SetUse("chat")
-	a.SetShort("Operations on chat management")
+	a.SetShort("Operations on chats management")
 
 	a.AddChildren()
 

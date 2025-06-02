@@ -26,7 +26,7 @@ func (a *FileAdapter) Configure() *cobra.Command {
 	app := a.App()
 
 	a.SetUse("file")
-	a.SetShort("Operations on file management")
+	a.SetShort("Operations on files management")
 
 	a.AddChildren(
 		action.ListCommand(app),
