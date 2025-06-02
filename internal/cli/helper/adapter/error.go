@@ -59,8 +59,8 @@ func (h *ErrorAdapter) ErrorIfExist(format string, args ...any) error {
 			return fmt.Errorf(format, args...)
 		}
 
-		call := fmt.Sprintf("%s %s", filepath.Base(os.Args[0]), strings.Join(os.Args[1:], " "))
-		return fmt.Errorf("Failed to execute command: '%s'\n%s", call, h.StringErrors())
+		exec := fmt.Sprintf("%s %s", filepath.Base(os.Args[0]), strings.Join(os.Args[1:], " "))
+		return fmt.Errorf("Failed to execute command: `%s`\n%s", exec, h.StringErrors())
 	}
 
 	return nil
