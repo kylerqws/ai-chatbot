@@ -28,127 +28,160 @@ func (h *ValidateAdapter) HasMoreArgsThan(count uint8) bool {
 	return len(h.command.Flags().Args()) > int(count)
 }
 
-func (h *ValidateAdapter) IsFlagChanged(flagKey string) bool {
-	return h.command.Flags().Changed(flagKey)
+func (h *ValidateAdapter) IsFlagChanged(key string) bool {
+	return h.command.Flags().Changed(key)
 }
 
-func (h *ValidateAdapter) IsFlagRequired(flagKey string) bool {
-	f := h.command.Flags().Lookup(flagKey)
+func (h *ValidateAdapter) IsFlagRequired(key string) bool {
+	f := h.command.Flags().Lookup(key)
 	return f != nil && f.Annotations != nil && f.Annotations[cobra.BashCompOneRequiredFlag] != nil
 }
 
-func (h *ValidateAdapter) ValidateRequireFlag(flagKey string) error {
-	if h.IsFlagChanged(flagKey) || !h.IsFlagRequired(flagKey) {
+func (h *ValidateAdapter) ValidateRequireFlag(key string) error {
+	if h.IsFlagChanged(key) || !h.IsFlagRequired(key) {
 		return nil
 	}
-	return fmt.Errorf("flag --%s is required", flagKey)
+	return h.errorRequiredFlag(key)
 }
 
-func (h *ValidateAdapter) ValidateHasChangedAnyFlag(flagKeys ...string) error {
-	if h.HasChangedAnyFlag(flagKeys...) {
+func (h *ValidateAdapter) ValidateHasChangedAnyFlag(keys ...string) error {
+	if h.HasChangedAnyFlag(keys...) {
 		return nil
 	}
-	return fmt.Errorf("at least one flag must be specified")
+	return h.errorMustBeSpecifiedOneFlag()
 }
 
 func (h *ValidateAdapter) ValidateHasMoreArgsThan(count uint8) error {
 	if h.HasMoreArgsThan(count) {
 		return nil
 	}
-	return fmt.Errorf("at least %d argument(s) must be specified", count+1)
+	return h.errorMustBeSpecifiedArgsThan(count)
 }
 
-func (h *ValidateAdapter) ValidateStringFlag(flagKey string, fn ctr.FuncValidateString) error {
-	if err := h.ValidateRequireFlag(flagKey); err != nil {
+func (h *ValidateAdapter) ValidateStringFlag(key string, fn ctr.FuncValidateString) error {
+	if err := h.ValidateRequireFlag(key); err != nil {
 		return err
 	}
-	if !h.IsFlagChanged(flagKey) {
+	if !h.IsFlagChanged(key) {
 		return nil
 	}
 
-	if val, err := h.command.Flags().GetString(flagKey); err != nil {
-		return fmt.Errorf("failed to get --%s flag value: %w", flagKey, err)
-	} else if err = fn(val); err != nil {
-		return fmt.Errorf("invalid value in --%s flag: %w", flagKey, err)
+	val, err := h.command.Flags().GetString(key)
+	if err != nil {
+		return h.errorFailedToGetFlag(key, err)
+	}
+	if err = fn(val); err != nil {
+		return h.errorInvalidValueFlag(key, err)
 	}
 
 	return nil
 }
 
-func (h *ValidateAdapter) ValidateStringSliceFlag(flagKey string, fn ctr.FuncValidateString) []error {
-	if err := h.ValidateRequireFlag(flagKey); err != nil {
+func (h *ValidateAdapter) ValidateStringSliceFlag(key string, fn ctr.FuncValidateString) []error {
+	if err := h.ValidateRequireFlag(key); err != nil {
 		return []error{err}
 	}
-	if !h.IsFlagChanged(flagKey) {
+	if !h.IsFlagChanged(key) {
 		return nil
 	}
 
+	vals, err := h.command.Flags().GetStringSlice(key)
+	if err != nil {
+		return []error{h.errorFailedToGetFlag(key, err)}
+	}
+
 	var errs []error
-	if vals, err := h.command.Flags().GetStringSlice(flagKey); err != nil {
-		errs = append(errs, fmt.Errorf("failed to get --%s flag value: %w", flagKey, err))
-	} else {
-		for i := range vals {
-			if err = fn(vals[i]); err != nil {
-				errs = append(errs, fmt.Errorf("invalid value in --%s flag: %w", flagKey, err))
-			}
+	for i := range vals {
+		if err = fn(vals[i]); err != nil {
+			errs = append(errs, h.errorInvalidValueFlag(key, err))
 		}
 	}
 
 	return errs
 }
 
-func (h *ValidateAdapter) ValidateUint8Flag(flagKey string, fn ctr.FuncValidateUint8) error {
-	if err := h.ValidateRequireFlag(flagKey); err != nil {
+func (h *ValidateAdapter) ValidateUint8Flag(key string, fn ctr.FuncValidateUint8) error {
+	if err := h.ValidateRequireFlag(key); err != nil {
 		return err
 	}
-	if !h.IsFlagChanged(flagKey) {
+	if !h.IsFlagChanged(key) {
 		return nil
 	}
 
-	if val, err := h.command.Flags().GetUint8(flagKey); err != nil {
-		return fmt.Errorf("failed to get --%s flag value: %w", flagKey, err)
-	} else if err = fn(val); err != nil {
-		return fmt.Errorf("invalid value in --%s flag: %w", flagKey, err)
+	val, err := h.command.Flags().GetUint8(key)
+	if err != nil {
+		return h.errorFailedToGetFlag(key, err)
+	}
+	if err = fn(val); err != nil {
+		return h.errorInvalidValueFlag(key, err)
 	}
 
 	return nil
 }
 
-func (h *ValidateAdapter) ValidateUintFlag(flagKey string, fn ctr.FuncValidateUint) error {
-	if err := h.ValidateRequireFlag(flagKey); err != nil {
+func (h *ValidateAdapter) ValidateUint8SliceFlag(_ string, _ ctr.FuncValidateUint8) []error {
+	// TODO: need to implement because not implemented in cobra package
+	return []error{fmt.Errorf("method 'ValidateUint8SliceFlag' is not implemented")}
+}
+
+func (h *ValidateAdapter) ValidateUintFlag(key string, fn ctr.FuncValidateUint) error {
+	if err := h.ValidateRequireFlag(key); err != nil {
 		return err
 	}
-	if !h.IsFlagChanged(flagKey) {
+	if !h.IsFlagChanged(key) {
 		return nil
 	}
 
-	if val, err := h.command.Flags().GetUint(flagKey); err != nil {
-		return fmt.Errorf("failed to get --%s flag value: %w", flagKey, err)
-	} else if err = fn(val); err != nil {
-		return fmt.Errorf("invalid value in --%s flag: %w", flagKey, err)
+	val, err := h.command.Flags().GetUint(key)
+	if err != nil {
+		return h.errorFailedToGetFlag(key, err)
+	}
+	if err = fn(val); err != nil {
+		return h.errorInvalidValueFlag(key, err)
 	}
 
 	return nil
 }
 
-func (h *ValidateAdapter) ValidateUintSliceFlag(flagKey string, fn ctr.FuncValidateUint) []error {
-	if err := h.ValidateRequireFlag(flagKey); err != nil {
+func (h *ValidateAdapter) ValidateUintSliceFlag(key string, fn ctr.FuncValidateUint) []error {
+	if err := h.ValidateRequireFlag(key); err != nil {
 		return []error{err}
 	}
-	if !h.IsFlagChanged(flagKey) {
+	if !h.IsFlagChanged(key) {
 		return nil
+	}
+
+	vals, err := h.command.Flags().GetUintSlice(key)
+	if err != nil {
+		return []error{h.errorFailedToGetFlag(key, err)}
 	}
 
 	var errs []error
-	if vals, err := h.command.Flags().GetUintSlice(flagKey); err != nil {
-		errs = append(errs, fmt.Errorf("failed to get --%s flag value: %w", flagKey, err))
-	} else {
-		for i := range vals {
-			if err = fn(vals[i]); err != nil {
-				errs = append(errs, fmt.Errorf("invalid value in --%s flag: %w", flagKey, err))
-			}
+	for i := range vals {
+		if err = fn(vals[i]); err != nil {
+			errs = append(errs, h.errorInvalidValueFlag(key, err))
 		}
 	}
 
 	return errs
+}
+
+func (*ValidateAdapter) errorRequiredFlag(key string) error {
+	return fmt.Errorf("flag --%s is required", key)
+}
+
+func (*ValidateAdapter) errorMustBeSpecifiedOneFlag() error {
+	return fmt.Errorf("at least one flag must be specified")
+}
+
+func (*ValidateAdapter) errorMustBeSpecifiedArgsThan(count uint8) error {
+	return fmt.Errorf("at least %d argument(s) must be specified", count)
+}
+
+func (*ValidateAdapter) errorFailedToGetFlag(key string, err error) error {
+	return fmt.Errorf("failed to get --%s flag: %w", key, err)
+}
+
+func (*ValidateAdapter) errorInvalidValueFlag(key string, err error) error {
+	return fmt.Errorf("invalid value in --%s flag: %w", key, err)
 }

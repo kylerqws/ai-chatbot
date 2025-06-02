@@ -71,15 +71,14 @@ type CommandAdapter interface {
 type ValidateAdapter interface {
 	ValidateRequireFlag(string) error
 
-	ValidateHasAnyFlags(...string) error
+	ValidateHasChangedAnyFlag(...string) error
 	ValidateHasMoreArgsThan(uint8) error
 
 	ValidateStringFlag(string, FuncValidateString) error
 	ValidateStringSliceFlag(string, FuncValidateString) []error
 
 	ValidateUint8Flag(string, FuncValidateUint8) error
-	// TODO: need to implement because not implemented in cobra package
-	//ValidateUint8SliceFlag(string, FuncValidateUint8) []error
+	ValidateUint8SliceFlag(string, FuncValidateUint8) []error
 
 	ValidateUintFlag(string, FuncValidateUint) error
 	ValidateUintSliceFlag(string, FuncValidateUint) []error
