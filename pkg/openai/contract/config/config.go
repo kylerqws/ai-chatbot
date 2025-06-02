@@ -10,5 +10,5 @@ type Config interface {
 	SetAPIKey(string) error
 
 	GetTimeout() time.Duration
-	SetTimeout(int) error
+	SetTimeout(uint64) error
 }

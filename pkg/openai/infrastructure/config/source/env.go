@@ -22,7 +22,7 @@ func NewEnvConfig(_ context.Context) (ctrcfg.Config, error) {
 	apiKey := os.Getenv("OPENAI_API_KEY")
 	timeoutStr := os.Getenv("OPENAI_API_TIMEOUT")
 
-	timeout, err := strconv.Atoi(timeoutStr)
+	timeout, err := strconv.ParseUint(timeoutStr, 10, 64)
 	if err != nil {
 		timeout = DefaultTimeout
 	}
@@ -73,11 +73,7 @@ func (c *envConfig) GetTimeout() time.Duration {
 	return c.timeout
 }
 
-func (c *envConfig) SetTimeout(seconds int) error {
-	if seconds <= 0 {
-		seconds = DefaultTimeout
-	}
-
+func (c *envConfig) SetTimeout(seconds uint64) error {
 	c.timeout = time.Duration(seconds) * time.Second
 	return nil
 }
