@@ -5,11 +5,11 @@ import "context"
 type File struct {
 	ID        string `json:"id"`
 	Object    string `json:"object"`
+	Status    string `json:"status,omitempty"`
+	Purpose   string `json:"purpose"`
+	Filename  string `json:"filename"`
 	Bytes     int64  `json:"bytes"`
 	CreatedAt int64  `json:"created_at"`
-	Filename  string `json:"filename"`
-	Purpose   string `json:"purpose"`
-	Status    string `json:"status,omitempty"`
 }
 
 type UploadFileRequest struct {
@@ -36,6 +36,8 @@ type ListFilesRequest struct {
 	Filenames     []string `json:"filenames,omitempty"`
 	CreatedAfter  int64    `json:"created_after,omitempty"`
 	CreatedBefore int64    `json:"created_before,omitempty"`
+	AfterFileID   string   `json:"after_file_id,omitempty"`
+	LimitFiles    uint8    `json:"limit_files,omitempty"`
 }
 
 type ListFilesResponse struct {

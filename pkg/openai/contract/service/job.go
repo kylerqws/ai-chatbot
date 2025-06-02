@@ -5,13 +5,13 @@ import "context"
 type Job struct {
 	ID              string   `json:"id"`
 	Object          string   `json:"object"`
-	CreatedAt       int64    `json:"created_at"`
-	FinishedAt      int64    `json:"finished_at,omitempty"`
+	Status          string   `json:"status"`
 	Model           string   `json:"model"`
 	FineTunedModel  string   `json:"fine_tuned_model,omitempty"`
 	TrainingFile    string   `json:"training_file"`
 	ValidationFile  string   `json:"validation_file,omitempty"`
-	Status          string   `json:"status"`
+	CreatedAt       int64    `json:"created_at"`
+	FinishedAt      int64    `json:"finished_at,omitempty"`
 	Hyperparameters any      `json:"hyperparameters,omitempty"`
 	ResultFiles     []string `json:"result_files,omitempty"`
 }
@@ -41,12 +41,12 @@ type ListJobsRequest struct {
 	FineTunedModels []string `json:"fine_tuned_models,omitempty"`
 	TrainingFiles   []string `json:"training_files,omitempty"`
 	ValidationFiles []string `json:"validation_files,omitempty"`
-	AfterJobID      string   `json:"after_job_id,omitempty"`
-	LimitJobCount   uint8    `json:"limit_job_count,omitempty"`
 	CreatedAfter    int64    `json:"created_after,omitempty"`
 	CreatedBefore   int64    `json:"created_before,omitempty"`
 	FinishedAfter   int64    `json:"finished_after,omitempty"`
 	FinishedBefore  int64    `json:"finished_before,omitempty"`
+	AfterJobID      string   `json:"after_job_id,omitempty"`
+	LimitJobs       uint8    `json:"limit_jobs,omitempty"`
 }
 
 type ListJobsResponse struct {
