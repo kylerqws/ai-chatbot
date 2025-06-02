@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/url"
+	"strconv"
 
 	"github.com/kylerqws/chatbot/pkg/openai/domain/purpose"
 	"github.com/kylerqws/chatbot/pkg/openai/infrastructure/client"
@@ -76,7 +78,8 @@ func (s *fileService) ListFiles(
 ) (*ctrsvc.ListFilesResponse, error) {
 	result := &ctrsvc.ListFilesResponse{}
 
-	resp, err := s.client.Request(ctx, "GET", "/files")
+	path := "/files" + s.buildListFilesQuery(req)
+	resp, err := s.client.Request(ctx, "GET", path)
 	if err != nil {
 		return result, fmt.Errorf("failed to send request: %w", err)
 	}
@@ -121,12 +124,28 @@ func (*fileService) hasAnyListFilesFilter(req *ctrsvc.ListFilesRequest) bool {
 		len(req.Purposes) > 0 || len(req.Filenames) > 0
 }
 
+func (*fileService) buildListFilesQuery(req *ctrsvc.ListFilesRequest) string {
+	params := url.Values{}
+
+	if req.AfterFileID != "" {
+		params.Set("after", req.AfterFileID)
+	}
+	if req.LimitFiles != 0 {
+		params.Set("limit", strconv.FormatUint(uint64(req.LimitFiles), 10))
+	}
+
+	if query := params.Encode(); query != "" {
+		return "?" + query
+	}
+	return ""
+}
+
 func (s *fileService) applyListFilesFilter(files []*ctrsvc.File, req *ctrsvc.ListFilesRequest) []*ctrsvc.File {
-	var result []*ctrsvc.File
 	if !s.hasAnyListFilesFilter(req) {
 		return files
 	}
 
+	var result []*ctrsvc.File
 	for i := range files {
 		if !filter.MatchDateValue(files[i].CreatedAt, req.CreatedAfter, req.CreatedBefore) {
 			continue

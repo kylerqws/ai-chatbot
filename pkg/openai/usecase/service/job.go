@@ -126,8 +126,8 @@ func (*jobService) buildListJobsQuery(req *ctrsvc.ListJobsRequest) string {
 	if req.AfterJobID != "" {
 		params.Set("after", req.AfterJobID)
 	}
-	if req.LimitJobCount != 0 {
-		params.Set("limit", strconv.Itoa(int(req.LimitJobCount)))
+	if req.LimitJobs != 0 {
+		params.Set("limit", strconv.FormatUint(uint64(req.LimitJobs), 10))
 	}
 
 	if query := params.Encode(); query != "" {
@@ -145,11 +145,11 @@ func (*jobService) hasAnyListJobsFilter(req *ctrsvc.ListJobsRequest) bool {
 }
 
 func (s *jobService) applyListJobsFilter(jobs []*ctrsvc.Job, req *ctrsvc.ListJobsRequest) []*ctrsvc.Job {
-	var result []*ctrsvc.Job
 	if !s.hasAnyListJobsFilter(req) {
 		return jobs
 	}
 
+	var result []*ctrsvc.Job
 	for i := range jobs {
 		if !filter.MatchDateValue(jobs[i].CreatedAt, req.CreatedAfter, req.CreatedBefore) {
 			continue
