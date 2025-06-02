@@ -2,9 +2,15 @@ package adapter
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
+)
+
+const (
+	DateExample     = "1970-01-01"
+	DatetimeExample = "1970-01-01 00:00:00"
 )
 
 var DateFormats = []string{time.DateOnly, time.DateTime}
@@ -18,6 +24,10 @@ func NewDateTimeAdapter(cmd *cobra.Command) *DateTimeAdapter {
 }
 
 func (*DateTimeAdapter) ParseDateTime(dateStr string) int64 {
+	if strings.TrimSpace(dateStr) == "" {
+		return 0
+	}
+
 	now := time.Now()
 	loc := now.Location()
 
