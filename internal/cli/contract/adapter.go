@@ -76,4 +76,11 @@ type ValidateAdapter interface {
 
 	ValidateStringFlag(string, FuncValidateString) error
 	ValidateStringSliceFlag(string, FuncValidateString) []error
+
+	ValidateUint8Flag(string, FuncValidateUint8) error
+	// TODO: need to implement because not implemented in cobra package
+	//ValidateUint8SliceFlag(string, FuncValidateUint8) []error
+
+	ValidateUintFlag(string, FuncValidateUint) error
+	ValidateUintSliceFlag(string, FuncValidateUint) []error
 }

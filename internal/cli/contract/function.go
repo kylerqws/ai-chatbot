@@ -8,4 +8,6 @@ type (
 	FuncHelp func(*cobra.Command, []string)
 
 	FuncValidateString func(string) error
+	FuncValidateUint8  func(uint8) error
+	FuncValidateUint   func(uint) error
 )
