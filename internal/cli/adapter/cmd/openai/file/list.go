@@ -75,10 +75,10 @@ func (a *ListAdapter) ConfigureFlags() {
 	desc := "Filter by file ID (e.g. " + helper.FileIDExample + ")"
 	a.AddStringSliceFlag(helper.IdFlagKey, "", []string{}, desc)
 
-	desc = "Filter by status (e.g. " + a.FileStatusManager().JoinCodes(", ") + ")"
+	desc = "Filter by status (" + a.FileStatusManager().JoinCodes(", ") + ")"
 	a.AddStringSliceFlag(helper.StatusFlagKey, "", []string{}, desc)
 
-	desc = "Filter by purpose (e.g. " + a.PurposeManager().JoinCodes(", ") + ")"
+	desc = "Filter by purpose (" + a.PurposeManager().JoinCodes(", ") + ")"
 	a.AddStringSliceFlag(helper.PurposeFlagKey, "", []string{}, desc)
 
 	desc = "Filter by file name (e.g. " + helper.Filename1Example + ", " + helper.Filename2Example + "...)"
