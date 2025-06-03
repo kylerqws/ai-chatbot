@@ -3,6 +3,7 @@ package adapter
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -13,9 +14,9 @@ const (
 )
 
 const (
+	DefaultLimit = 20
 	MinimumLimit = 1
 	MaximumLimit = 100
-	DefaultLimit = 20
 )
 
 type PaginationAdapter struct {
@@ -30,12 +31,20 @@ func (*FormatAdapter) LimitToString(limit uint8) string {
 	return strconv.Itoa(int(limit))
 }
 
+func (h *FormatAdapter) JoinLimits(sep string) string {
+	return strings.Join([]string{
+		"default " + h.LimitToString(DefaultLimit),
+		"minimum " + h.LimitToString(MinimumLimit),
+		"maximum " + h.LimitToString(MaximumLimit),
+	}, sep)
+}
+
 func (*PaginationAdapter) ValidateLimit(limit uint8) error {
-	if limit > MaximumLimit {
-		return fmt.Errorf("limit must be ≤ %d", MaximumLimit)
-	}
 	if limit < MinimumLimit {
 		return fmt.Errorf("limit must be ≥ %d", MinimumLimit)
+	}
+	if limit > MaximumLimit {
+		return fmt.Errorf("limit must be ≤ %d", MaximumLimit)
 	}
 
 	return nil
