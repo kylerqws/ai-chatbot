@@ -1,10 +1,6 @@
 package file
 
 import (
-	"fmt"
-	"path/filepath"
-	"strings"
-
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
@@ -15,12 +11,11 @@ import (
 	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 )
 
-const defaultPurposeFlagKey = "default-purpose"
-
 type UploadAdapter struct {
 	*helper.CommandAdapter
 	*helper.OpenAiAdapter
 	*helper.OpenAiFileAdapter
+	*helper.ArgumentAdapter
 	*helper.FlagAdapter
 	*helper.ValidateAdapter
 	*helper.TableAdapter
@@ -34,6 +29,7 @@ func NewUploadAdapter(app *intapp.App) ctradp.CommandAdapter {
 	adp.CommandAdapter = helper.NewCommandAdapter(app, cmd)
 	adp.OpenAiAdapter = helper.NewOpenAiAdapter(cmd)
 	adp.OpenAiFileAdapter = helper.NewOpenAiFileAdapter(cmd)
+	adp.ArgumentAdapter = helper.NewArgumentAdapter(cmd)
 	adp.FlagAdapter = helper.NewFlagAdapter(cmd)
 	adp.ValidateAdapter = helper.NewValidateAdapter(cmd)
 	adp.TableAdapter = helper.NewTableAdapter(cmd)
@@ -43,9 +39,10 @@ func NewUploadAdapter(app *intapp.App) ctradp.CommandAdapter {
 }
 
 func (a *UploadAdapter) Configure() *cobra.Command {
-	a.SetUse("upload <file-path[:purpose]> [file-path[:purpose]...]")
+	argExample := "file-path[:purpose]"
+	a.SetUse("upload <" + argExample + "> [" + argExample + "...]")
 	a.SetShort("Upload one or more files to OpenAI account")
-	a.SetLong(a.info())
+	a.SetLong(a.FileUploadHelpInfo(a.OpenAiAdapter))
 
 	a.SetFuncArgs(a.Validate)
 	a.SetFuncRunE(a.Upload)
@@ -58,29 +55,40 @@ func (a *UploadAdapter) ConfigureFlags() {
 	prpManager := a.PurposeManager()
 
 	desc := "Default purpose for files without ':purpose' suffix\n" +
-		"\t\t\t(e.g. " + prpManager.JoinCodes(", ") + ")"
-	a.AddStringFlag(defaultPurposeFlagKey, "", prpManager.Default().Code, desc)
+		"\t\t\t(" + prpManager.JoinCodes(", ") + ")"
+	a.AddStringFlag(helper.DefaultPurposeFlagKey, "", prpManager.Default().Code, desc)
 }
 
 func (a *UploadAdapter) Validate(_ *cobra.Command, _ []string) error {
 	a.AddError(a.ValidateHasMoreArgsThan(0))
-	a.AddErrors(a.ValidatePurposeCodes()...)
+
+	a.AddErrors(a.ValidateArgs()...)
+	a.AddErrors(a.ValidateFlags()...)
 
 	return a.ErrorIfExist("One or more arguments/flags are invalid or missing.")
 }
 
-func (a *UploadAdapter) ValidatePurposeCodes() []error {
+func (a *UploadAdapter) ValidateArgs() []error {
 	var errs []error
 	args := a.Command().Flags().Args()
 
 	for i := range args {
-		_, prpCode := a.separateArg(args[i])
-		if err := a.ValidatePurposeCode(prpCode); err != nil {
+		_, prpCode := a.SplitArg(args[i])
+
+		err := a.ValidatePurposeCode(prpCode)
+		if err != nil {
 			errs = append(errs, err)
 		}
 	}
 
-	if err := a.ValidateStringFlag(defaultPurposeFlagKey, a.ValidatePurposeCode); err != nil {
+	return errs
+}
+
+func (a *UploadAdapter) ValidateFlags() []error {
+	var errs []error
+
+	err := a.ValidateStringFlag(helper.DefaultPurposeFlagKey, a.ValidatePurposeCode)
+	if err != nil {
 		errs = append(errs, err)
 	}
 
@@ -104,16 +112,13 @@ func (a *UploadAdapter) Request() bool {
 	fgs := a.Command().Flags()
 	args := fgs.Args()
 
-	defaultPrpCode, err := fgs.GetString(defaultPurposeFlagKey)
+	defaultPrpCode, err := fgs.GetString(helper.DefaultPurposeFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
 
 	for i := range args {
-		filePath, prpCode := a.separateArg(args[i])
-		if prpCode == "" {
-			prpCode = defaultPrpCode
-		}
+		filePath, prpCode := a.SplitArg(args[i], defaultPrpCode)
 
 		resp, err := svc.UploadFile(ctx, &ctrsvc.UploadFileRequest{
 			FilePath: filePath,
@@ -124,7 +129,7 @@ func (a *UploadAdapter) Request() bool {
 			a.AddError(err)
 
 			resp.File = &ctrsvc.File{
-				Filename: filepath.Base(filePath),
+				Filename: a.FileName(filePath),
 				Purpose:  prpCode,
 				Bytes:    a.FileSize(filePath),
 			}
@@ -143,15 +148,15 @@ func (a *UploadAdapter) PrintFiles() error {
 	_ = a.CreateTable()
 
 	a.AppendTableHeader("File ID", "File Name", "Purpose",
-		"Size", "Status", "Created", "State")
+		"Size", "Created", "Status", "State")
 
 	a.SetColumnTableConfigs(
 		a.ColumnConfig(1, text.AlignCenter, 27, text.Colors{text.Bold}),
 		a.ColumnConfig(2, text.AlignRight, 19, nil),
 		a.ColumnConfig(3, text.AlignRight, 19, nil),
 		a.ColumnConfig(4, text.AlignRight, 10, nil),
-		a.ColumnConfig(5, text.AlignRight, 10, nil),
-		a.ColumnConfig(6, text.AlignRight, 19, nil),
+		a.ColumnConfig(5, text.AlignRight, 19, nil),
+		a.ColumnConfig(6, text.AlignRight, 10, nil),
 		a.ColumnConfig(7, text.AlignCenter, 7, text.Colors{text.Bold}),
 	)
 
@@ -164,8 +169,8 @@ func (a *UploadAdapter) PrintFiles() error {
 			a.FormatString(files[i].Filename, &empty),
 			a.FormatString(files[i].Purpose, &empty),
 			a.FormatBytes(files[i].Bytes, &empty),
-			a.FormatString(files[i].Status, &empty),
 			a.FormatTime(files[i].CreatedAt, &empty),
+			a.FormatString(files[i].Status, &empty),
 			a.FormatExecStatus(files[i].ExecStatus),
 		)
 	}
@@ -174,19 +179,13 @@ func (a *UploadAdapter) PrintFiles() error {
 	return nil
 }
 
-func (a *UploadAdapter) info() string {
-	return "Each file argument can optionally specify a purpose by appending ':purpose' suffix.\n" +
-		fmt.Sprintf(
-			"Defaults to '%s' if --%s is not provided.",
-			a.PurposeManager().Default().Code,
-			defaultPurposeFlagKey,
-		)
-}
+func (a *UploadAdapter) SplitArg(arg string, defaults ...string) (string, string) {
+	filePath, prpCode := a.SplitDoubleArg(arg)
+	defCount := len(defaults)
 
-func (*UploadAdapter) separateArg(arg string) (string, string) {
-	parts := strings.SplitN(arg, ":", 2)
-	if len(parts) == 2 && parts[1] != "" {
-		return parts[0], parts[1]
+	if prpCode == "" && defCount > 0 {
+		prpCode = defaults[0]
 	}
-	return parts[0], ""
+
+	return filePath, prpCode
 }
