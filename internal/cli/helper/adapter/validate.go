@@ -122,7 +122,7 @@ func (h *ValidateAdapter) ValidateUint8Flag(key string, fn ctr.FuncValidateUint8
 
 func (*ValidateAdapter) ValidateUint8SliceFlag(_ string, _ ctr.FuncValidateUint8) []error {
 	// TODO: need to implement GetUint8Slice as it is not implemented in the Cobra package
-	log.Fatalf("method 'ValidateUint8SliceFlag' is not implemented")
+	log.Fatalf("validation uint8 slice flag is not implemented")
 
 	return []error{}
 }

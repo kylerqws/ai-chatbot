@@ -25,7 +25,7 @@ func (p *dbProvider) Writer() io.Writer {
 	return &dbWriter{config: p.config}
 }
 
-// TODO: need to implement for storing logs in the database
 func (*dbWriter) Write(p []byte) (int, error) {
+	// TODO: need to implement for storing logs in the database
 	return len(p), fmt.Errorf("database writer is not implemented")
 }
