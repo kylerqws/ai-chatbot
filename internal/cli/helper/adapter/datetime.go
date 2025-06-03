@@ -13,17 +13,16 @@ const (
 	DatetimeExample = "1970-01-01 00:00:00"
 )
 
-var DateFormats = []string{time.DateOnly, time.DateTime}
-
 type DateTimeAdapter struct {
-	command *cobra.Command
+	command         *cobra.Command
+	datetimeFormats []string
 }
 
 func NewDateTimeAdapter(cmd *cobra.Command) *DateTimeAdapter {
-	return &DateTimeAdapter{command: cmd}
+	return &DateTimeAdapter{command: cmd, datetimeFormats: []string{time.DateOnly, time.DateTime}}
 }
 
-func (*DateTimeAdapter) ParseDateTime(dateStr string) int64 {
+func (h *DateTimeAdapter) ParseDateTime(dateStr string) int64 {
 	if strings.TrimSpace(dateStr) == "" {
 		return 0
 	}
@@ -31,8 +30,8 @@ func (*DateTimeAdapter) ParseDateTime(dateStr string) int64 {
 	now := time.Now()
 	loc := now.Location()
 
-	for i := range DateFormats {
-		t, err := time.ParseInLocation(DateFormats[i], dateStr, loc)
+	for i := range h.datetimeFormats {
+		t, err := time.ParseInLocation(h.datetimeFormats[i], dateStr, loc)
 		if err == nil {
 			return t.UTC().Unix()
 		}
@@ -57,10 +56,10 @@ func (*DateTimeAdapter) DateTime(years, months, days int) string {
 	return time.Now().AddDate(years, months, days).UTC().Format(time.DateTime)
 }
 
-func (*DateTimeAdapter) ValidateDateFormat(dateStr string) error {
+func (h *DateTimeAdapter) ValidateDateFormat(dateStr string) error {
 	var err error
-	for i := range DateFormats {
-		if _, err = time.Parse(DateFormats[i], dateStr); err == nil {
+	for i := range h.datetimeFormats {
+		if _, err = time.Parse(h.datetimeFormats[i], dateStr); err == nil {
 			return nil
 		}
 	}
