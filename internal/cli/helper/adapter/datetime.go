@@ -41,8 +41,16 @@ func (*DateTimeAdapter) ParseDateTime(dateStr string) int64 {
 	return now.UTC().Unix()
 }
 
+func (*DateTimeAdapter) NowDate() string {
+	return time.Now().UTC().Format(time.DateOnly)
+}
+
 func (*DateTimeAdapter) Date(years, months, days int) string {
 	return time.Now().AddDate(years, months, days).UTC().Format(time.DateOnly)
+}
+
+func (*DateTimeAdapter) NowDateTime() string {
+	return time.Now().UTC().Format(time.DateTime)
 }
 
 func (*DateTimeAdapter) DateTime(years, months, days int) string {

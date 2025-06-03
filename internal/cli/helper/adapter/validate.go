@@ -2,9 +2,10 @@ package adapter
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
+	"log"
 
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
+	"github.com/spf13/cobra"
 )
 
 type ValidateAdapter struct {
@@ -119,9 +120,11 @@ func (h *ValidateAdapter) ValidateUint8Flag(key string, fn ctr.FuncValidateUint8
 	return nil
 }
 
-func (h *ValidateAdapter) ValidateUint8SliceFlag(_ string, _ ctr.FuncValidateUint8) []error {
-	// TODO: need to implement because not implemented in cobra package
-	return []error{fmt.Errorf("method 'ValidateUint8SliceFlag' is not implemented")}
+func (*ValidateAdapter) ValidateUint8SliceFlag(_ string, _ ctr.FuncValidateUint8) []error {
+	// TODO: need to implement GetUint8Slice as it is not implemented in the Cobra package
+	log.Fatalf("method 'ValidateUint8SliceFlag' is not implemented")
+
+	return []error{}
 }
 
 func (h *ValidateAdapter) ValidateUintFlag(key string, fn ctr.FuncValidateUint) error {

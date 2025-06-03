@@ -1,6 +1,9 @@
 package setup
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/spf13/cobra"
+	"log"
+)
 
 func AddStringFlag(cmd *cobra.Command, name, shorthand, value, desc string, inherited bool) {
 	if inherited {
@@ -24,6 +27,11 @@ func AddUint8Flag(cmd *cobra.Command, name, shorthand string, value uint8, desc 
 	} else {
 		cmd.Flags().Uint8P(name, shorthand, value, desc)
 	}
+}
+
+func AddUint8SliceFlag(_ *cobra.Command, _, _ string, _ []uint8, _ string, _ bool) {
+	// TODO: need to implemented Uint8P and Uint8SliceP as they are not implemented in the Cobra package
+	log.Fatalf("method 'AddUint8SliceFlag' is not implemented")
 }
 
 func AddUintFlag(cmd *cobra.Command, name, shorthand string, value uint, desc string, inherited bool) {
