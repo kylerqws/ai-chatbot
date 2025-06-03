@@ -8,6 +8,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const UnknownFileName = "unknown"
+
 type File struct {
 	*service.File
 	ExecStatus bool
@@ -64,7 +66,7 @@ func (*OpenAiFileAdapter) FileSize(path string) int64 {
 
 func (*OpenAiFileAdapter) FileName(path string) string {
 	if path == "" {
-		return "unknown"
+		return UnknownFileName
 	}
 	return filepath.Base(path)
 }
