@@ -1,9 +1,6 @@
 package adapter
 
 import (
-	"fmt"
-	"regexp"
-
 	"github.com/kylerqws/chatbot/pkg/openai/contract/service"
 	"github.com/spf13/cobra"
 )
@@ -52,11 +49,4 @@ func (h *OpenAiJobAdapter) AddJobs(jobs ...*Job) {
 	for i := range jobs {
 		h.AddJob(jobs[i])
 	}
-}
-
-func (*OpenAiJobAdapter) ValidateJobID(jobID string) error {
-	if !regexp.MustCompile(`^ftjob-[a-zA-Z0-9]{24,}$`).MatchString(jobID) {
-		return fmt.Errorf("invalid job ID '%s'", jobID)
-	}
-	return nil
 }
