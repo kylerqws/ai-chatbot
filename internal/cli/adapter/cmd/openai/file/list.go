@@ -1,8 +1,6 @@
 package file
 
 import (
-	"fmt"
-
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
@@ -47,7 +45,7 @@ func NewListAdapter(app *intapp.App) ctradp.CommandAdapter {
 func (a *ListAdapter) Configure() *cobra.Command {
 	a.SetUse("list [filter-flag...]")
 	a.SetShort("Display files in OpenAI account")
-	a.SetLong(a.HelpInfo())
+	a.SetLong(a.FileListHelpInfo(a.OpenAiAdapter))
 
 	a.SetFuncArgs(a.Validate)
 	a.SetFuncRunE(a.List)
@@ -78,7 +76,7 @@ func (a *ListAdapter) ConfigureFlags() {
 	desc = "Filter by status (" + a.FileStatusManager().JoinCodes(", ") + ")"
 	a.AddStringSliceFlag(helper.StatusFlagKey, "", []string{}, desc)
 
-	desc = "Filter by purpose (" + a.PurposeManager().JoinCodes(", ") + ")"
+	desc = "Filter by purpose (e.g. " + a.PurposeManager().JoinCodes(", ") + "...)"
 	a.AddStringSliceFlag(helper.PurposeFlagKey, "", []string{}, desc)
 
 	desc = "Filter by file name (e.g. " + helper.Filename1Example + ", " + helper.Filename2Example + "...)"
@@ -222,18 +220,4 @@ func (a *ListAdapter) PrintFiles() error {
 
 	a.RenderTable()
 	return nil
-}
-
-func (a *ListAdapter) HelpInfo() string {
-	cmdName := a.Command().Name()
-	prpManager := a.PurposeManager()
-
-	return "You can repeat flags to provide more than one value, e.g.:\n" +
-		fmt.Sprintf(
-			"  %s --%s %s --%s %s --%s %s",
-			cmdName,
-			helper.PurposeFlagKey, prpManager.Codes.FineTune,
-			helper.PurposeFlagKey, prpManager.Codes.Evals,
-			helper.CreatedAfterFlagKey, a.Date(0, 0, -7),
-		)
 }

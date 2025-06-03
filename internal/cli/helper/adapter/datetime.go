@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	DateExample     = "1970-01-01"
-	DatetimeExample = "1970-01-01 00:00:00"
+	DateExample     = "2025-03-17"
+	DatetimeExample = "2025-03-17 14:45:00"
 )
 
 type DateTimeAdapter struct {
