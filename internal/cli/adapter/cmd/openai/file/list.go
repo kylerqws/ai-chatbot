@@ -203,7 +203,7 @@ func (a *ListAdapter) PrintFiles() error {
 		a.ColumnConfig(3, text.AlignRight, 19, nil),
 		a.ColumnConfig(4, text.AlignRight, 10, nil),
 		a.ColumnConfig(5, text.AlignRight, 19, nil),
-		a.ColumnConfig(6, text.AlignRight, 10, text.Colors{text.Bold}),
+		a.ColumnConfig(6, text.AlignRight, 10, nil),
 	)
 
 	files := a.Files()
