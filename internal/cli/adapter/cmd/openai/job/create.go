@@ -190,7 +190,7 @@ func (a *CreateAdapter) PrintJobs() error {
 		a.ColumnConfig(5, text.AlignRight, 19, nil),
 		a.ColumnConfig(6, text.AlignRight, 19, nil),
 		a.ColumnConfig(7, text.AlignRight, 19, nil),
-		a.ColumnConfig(8, text.AlignRight, 10, text.Colors{text.Bold}),
+		a.ColumnConfig(8, text.AlignRight, 10, nil),
 		a.ColumnConfig(9, text.AlignCenter, 7, text.Colors{text.Bold}),
 	)
 
