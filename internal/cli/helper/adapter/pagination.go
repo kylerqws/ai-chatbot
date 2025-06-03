@@ -26,28 +26,8 @@ func NewPaginationAdapter(cmd *cobra.Command) *PaginationAdapter {
 	return &PaginationAdapter{command: cmd}
 }
 
-func (*PaginationAdapter) MaximumLimit() uint8 {
-	return MaximumLimit
-}
-
-func (*PaginationAdapter) StrMaximumLimit() string {
-	return strconv.FormatUint(uint64(MaximumLimit), 10)
-}
-
-func (*PaginationAdapter) MinimumLimit() uint8 {
-	return MinimumLimit
-}
-
-func (*PaginationAdapter) StrMinimumLimit() string {
-	return strconv.FormatUint(uint64(MinimumLimit), 10)
-}
-
-func (*PaginationAdapter) DefaultLimit() uint8 {
-	return DefaultLimit
-}
-
-func (*PaginationAdapter) StrDefaultLimit() string {
-	return strconv.FormatUint(uint64(DefaultLimit), 10)
+func (*FormatAdapter) LimitToString(num uint8) string {
+	return strconv.Itoa(int(num))
 }
 
 func (*PaginationAdapter) ValidateLimit(limit uint8) error {
