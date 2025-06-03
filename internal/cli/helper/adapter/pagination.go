@@ -8,84 +8,54 @@ import (
 )
 
 const (
+	AfterFlagKey = "after"
+	LimitFlagKey = "limit"
+)
+
+const (
 	MinimumLimit = 1
 	MaximumLimit = 100
 	DefaultLimit = 20
 )
 
-type limitValue struct {
-	val uint8
-	str string
-}
-
-type limit struct {
-	max *limitValue
-	min *limitValue
-	def *limitValue
-}
-
 type PaginationAdapter struct {
 	command *cobra.Command
-	limit   *limit
 }
 
 func NewPaginationAdapter(cmd *cobra.Command) *PaginationAdapter {
-	return &PaginationAdapter{
-		command: cmd,
-		limit:   &limit{max: &limitValue{}, min: &limitValue{}, def: &limitValue{}},
-	}
+	return &PaginationAdapter{command: cmd}
 }
 
-func (a *PaginationAdapter) MaximumLimit() uint8 {
-	if a.limit.max.val == 0 {
-		a.limit.max.val = MaximumLimit
-	}
-	return a.limit.max.val
+func (*PaginationAdapter) MaximumLimit() uint8 {
+	return MaximumLimit
 }
 
-func (a *PaginationAdapter) StrMaximumLimit() string {
-	if a.limit.max.str == "" {
-		a.limit.max.str = strconv.FormatUint(uint64(a.MaximumLimit()), 10)
-	}
-	return a.limit.max.str
+func (*PaginationAdapter) StrMaximumLimit() string {
+	return strconv.FormatUint(uint64(MaximumLimit), 10)
 }
 
-func (a *PaginationAdapter) MinimumLimit() uint8 {
-	if a.limit.min.val == 0 {
-		a.limit.min.val = MinimumLimit
-	}
-	return a.limit.min.val
+func (*PaginationAdapter) MinimumLimit() uint8 {
+	return MinimumLimit
 }
 
-func (a *PaginationAdapter) StrMinimumLimit() string {
-	if a.limit.min.str == "" {
-		a.limit.min.str = strconv.FormatUint(uint64(a.MinimumLimit()), 10)
-	}
-	return a.limit.min.str
+func (*PaginationAdapter) StrMinimumLimit() string {
+	return strconv.FormatUint(uint64(MinimumLimit), 10)
 }
 
-func (a *PaginationAdapter) DefaultLimit() uint8 {
-	if a.limit.def.val == 0 {
-		a.limit.def.val = DefaultLimit
-	}
-	return a.limit.def.val
+func (*PaginationAdapter) DefaultLimit() uint8 {
+	return DefaultLimit
 }
 
-func (a *PaginationAdapter) StrDefaultLimit() string {
-	if a.limit.def.str == "" {
-		a.limit.def.str = strconv.FormatUint(uint64(a.DefaultLimit()), 10)
-	}
-	return a.limit.def.str
+func (*PaginationAdapter) StrDefaultLimit() string {
+	return strconv.FormatUint(uint64(DefaultLimit), 10)
 }
 
-func (a *PaginationAdapter) ValidateLimit(limit uint8) error {
-	maxLimit, minLimit := a.MaximumLimit(), a.MinimumLimit()
-
-	if limit > maxLimit {
-		return fmt.Errorf("limit must be ≤ %d", maxLimit)
+func (*PaginationAdapter) ValidateLimit(limit uint8) error {
+	if limit > MaximumLimit {
+		return fmt.Errorf("limit must be ≤ %d", MaximumLimit)
 	}
-	if limit < minLimit {
-		return fmt.Errorf("limit must be ≥ %d", minLimit)
+	if limit < MinimumLimit {
+		return fmt.Errorf("limit must be ≥ %d", MinimumLimit)
 	}
 
 	return nil
