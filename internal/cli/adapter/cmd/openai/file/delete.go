@@ -11,18 +11,6 @@ import (
 	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 )
 
-const allFlagKey = "all"
-
-var filterFlagKeys = []string{
-	allFlagKey,
-	idFlagKey,
-	statusFlagKey,
-	purposeFlagKey,
-	filenameFlagKey,
-	createdAfterFlagKey,
-	createdBeforeFlagKey,
-}
-
 type DeleteAdapter struct {
 	*ListAdapter
 }
@@ -37,24 +25,31 @@ func NewDeleteAdapter(app *intapp.App) ctradp.CommandAdapter {
 func (a *DeleteAdapter) Configure() *cobra.Command {
 	a.SetUse("delete <filter-flag> [filter-flag...]")
 	a.SetShort("Delete one or more files from OpenAI account")
-	a.SetLong(a.info())
+	a.SetLong(a.FileDeleteHelpInfo(a.OpenAiAdapter))
 
 	a.SetFuncArgs(a.Validate)
 	a.SetFuncRunE(a.Delete)
 
+	a.ConfigureFilters()
 	a.ConfigureFlags()
+
 	return a.MainConfigure()
+}
+
+func (a *DeleteAdapter) ConfigureFilters() {
+	a.AddFilterKey(helper.AllFlagKey)
+	a.ListAdapter.ConfigureFilters()
 }
 
 func (a *DeleteAdapter) ConfigureFlags() {
 	desc := "Delete all files (overrides other filters)\n"
-	a.AddBoolFlag(allFlagKey, "", false, desc)
+	a.AddBoolFlag(helper.AllFlagKey, "", false, desc)
 
 	a.ListAdapter.ConfigureFlags()
 }
 
 func (a *DeleteAdapter) Validate(cmd *cobra.Command, args []string) error {
-	a.AddErrors(a.ValidateHasAnyFlags(filterFlagKeys...))
+	a.AddErrors(a.ValidateHasChangedAnyFlag(a.FilterKeys()...))
 	if err := a.ListAdapter.Validate(cmd, args); err != nil {
 		return err
 	}
@@ -79,7 +74,9 @@ func (a *DeleteAdapter) Request() bool {
 	ctx := app.Context()
 	svc := app.OpenAI().FileService()
 
-	a.ListAdapter.Request()
+	if !a.ListAdapter.Request() {
+		return false
+	}
 	files := a.Files()
 
 	for i := range files {
@@ -100,15 +97,15 @@ func (a *DeleteAdapter) PrintFiles() error {
 	_ = a.CreateTable()
 
 	a.AppendTableHeader("File ID", "File Name", "Purpose",
-		"Size", "Status", "Created", "State")
+		"Size", "Created", "Status", "State")
 
 	a.SetColumnTableConfigs(
 		a.ColumnConfig(1, text.AlignCenter, 27, text.Colors{text.Bold}),
 		a.ColumnConfig(2, text.AlignRight, 19, nil),
 		a.ColumnConfig(3, text.AlignRight, 19, nil),
 		a.ColumnConfig(4, text.AlignRight, 10, nil),
-		a.ColumnConfig(5, text.AlignRight, 10, nil),
-		a.ColumnConfig(6, text.AlignRight, 19, nil),
+		a.ColumnConfig(5, text.AlignRight, 19, nil),
+		a.ColumnConfig(6, text.AlignRight, 10, nil),
 		a.ColumnConfig(7, text.AlignCenter, 7, text.Colors{text.Bold}),
 	)
 
@@ -121,8 +118,8 @@ func (a *DeleteAdapter) PrintFiles() error {
 			a.FormatString(files[i].Filename, &empty),
 			a.FormatString(files[i].Purpose, &empty),
 			a.FormatBytes(files[i].Bytes, &empty),
-			a.FormatString(files[i].Status, &empty),
 			a.FormatTime(files[i].CreatedAt, &empty),
+			a.FormatString(files[i].Status, &empty),
 			a.FormatExecStatus(files[i].ExecStatus),
 		)
 	}
