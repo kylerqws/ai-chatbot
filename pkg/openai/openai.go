@@ -10,6 +10,7 @@ import (
 	"github.com/kylerqws/chatbot/pkg/openai/usecase/service"
 
 	ctr "github.com/kylerqws/chatbot/pkg/openai/contract"
+	ctrcl "github.com/kylerqws/chatbot/pkg/openai/contract/client"
 	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 )
@@ -19,7 +20,7 @@ type api struct {
 	ctx context.Context
 	cfg ctrcfg.Config
 
-	cl     *client.Client
+	cl     ctrcl.Client
 	clOnce sync.Once
 
 	fileService ctrsvc.FileService
@@ -77,7 +78,7 @@ func (a *api) ModelService() ctrsvc.ModelService {
 }
 
 // client returns the lazily-initialized OpenAI HTTP client.
-func (a *api) client() *client.Client {
+func (a *api) client() ctrcl.Client {
 	a.clOnce.Do(func() {
 		a.cl = client.New(a.cfg)
 	})

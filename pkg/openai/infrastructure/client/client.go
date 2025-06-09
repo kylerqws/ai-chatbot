@@ -16,7 +16,7 @@ import (
 	"github.com/kylerqws/chatbot/pkg/openai/domain/purpose"
 	"github.com/kylerqws/chatbot/pkg/openai/utils/converter/jsonl"
 
-	ctrcli "github.com/kylerqws/chatbot/pkg/openai/contract/client"
+	ctrcl "github.com/kylerqws/chatbot/pkg/openai/contract/client"
 	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 )
 
@@ -27,7 +27,7 @@ type client struct {
 }
 
 // New creates a new OpenAI API client using the provided configuration.
-func New(cfg ctrcfg.Config) ctrcli.Client {
+func New(cfg ctrcfg.Config) ctrcl.Client {
 	hc := &http.Client{Timeout: cfg.GetTimeout()}
 	return &client{config: cfg, httpClient: hc}
 }
