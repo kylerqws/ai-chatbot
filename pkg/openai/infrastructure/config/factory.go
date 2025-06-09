@@ -4,29 +4,27 @@ import (
 	"context"
 	"fmt"
 
-	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
+	ctr "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 	"github.com/kylerqws/chatbot/pkg/openai/infrastructure/config/source"
 )
 
-const (
-	SourceTypeKey     = "sourceType"
-	DefaultSourceType = "env"
-)
-
-func New(ctx context.Context) (ctrcfg.Config, error) {
-	st, ok := ctx.Value(SourceTypeKey).(string)
+// New returns a Config implementation based on the source type defined in the context.
+// If no source type is provided, the default from the contract is used.
+func New(ctx context.Context) (ctr.Config, error) {
+	st, ok := ctx.Value(ctr.SourceTypeKey).(ctr.SourceType)
 	if !ok || st == "" {
-		st = DefaultSourceType
+		st = ctr.DefaultSourceType
 	}
 
 	switch st {
-	case "env":
+	case ctr.EnvSourceType:
 		cfg, err := source.NewEnvConfig(ctx)
 		if err != nil {
-			return nil, fmt.Errorf("failed to load env config: %w", err)
+			return nil, fmt.Errorf("load env config: %w", err)
 		}
 		return cfg, nil
+
 	default:
-		return nil, fmt.Errorf("unsupported config source: '%v'", st)
+		return nil, fmt.Errorf("unsupported config source: '%s'", st)
 	}
 }
