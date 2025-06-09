@@ -91,17 +91,17 @@ func (s *modelService) DeleteModel(ctx context.Context, req *ctrsvc.DeleteModelR
 // filterListModels applies in-memory filtering logic to a list of models based on provided conditions.
 func (*modelService) filterListModels(models []*ctrsvc.Model, req *ctrsvc.ListModelsRequest) []*ctrsvc.Model {
 	var filtered []*ctrsvc.Model
-	for _, m := range models {
-		if !filter.MatchDateValue(&m.CreatedAt, req.CreatedAfter, req.CreatedBefore) {
+	for i := range models {
+		if !filter.MatchDateValue(&models[i].CreatedAt, req.CreatedAfter, req.CreatedBefore) {
 			continue
 		}
-		if !filter.MatchStrValue(&m.ID, req.ModelIDs) {
+		if !filter.MatchStrValue(&models[i].ID, req.ModelIDs) {
 			continue
 		}
-		if !filter.MatchStrValue(&m.OwnedBy, req.Owners) {
+		if !filter.MatchStrValue(&models[i].OwnedBy, req.Owners) {
 			continue
 		}
-		filtered = append(filtered, m)
+		filtered = append(filtered, models[i])
 	}
 	return filtered
 }

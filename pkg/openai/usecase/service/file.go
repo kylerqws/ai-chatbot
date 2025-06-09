@@ -144,23 +144,23 @@ func (*fileService) buildListFilesQuery(req *ctrsvc.ListFilesRequest) string {
 // filterListFiles applies in-memory filtering logic to a list of files based on provided conditions.
 func (*fileService) filterListFiles(files []*ctrsvc.File, req *ctrsvc.ListFilesRequest) []*ctrsvc.File {
 	var filtered []*ctrsvc.File
-	for _, f := range files {
-		if !filter.MatchDateValue(&f.CreatedAt, req.CreatedAfter, req.CreatedBefore) {
+	for i := range files {
+		if !filter.MatchDateValue(&files[i].CreatedAt, req.CreatedAfter, req.CreatedBefore) {
 			continue
 		}
-		if !filter.MatchDateValue(f.ExpiresAt, req.ExpiresAfter, req.ExpiresBefore) {
+		if !filter.MatchDateValue(files[i].ExpiresAt, req.ExpiresAfter, req.ExpiresBefore) {
 			continue
 		}
-		if !filter.MatchStrValue(&f.ID, req.FileIDs) {
+		if !filter.MatchStrValue(&files[i].ID, req.FileIDs) {
 			continue
 		}
-		if !filter.MatchStrValue(&f.Purpose, req.Purposes) {
+		if !filter.MatchStrValue(&files[i].Purpose, req.Purposes) {
 			continue
 		}
-		if !filter.MatchStrValue(&f.Filename, req.Filenames) {
+		if !filter.MatchStrValue(&files[i].Filename, req.Filenames) {
 			continue
 		}
-		filtered = append(filtered, f)
+		filtered = append(filtered, files[i])
 	}
 	return filtered
 }
