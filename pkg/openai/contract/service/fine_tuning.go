@@ -148,7 +148,7 @@ type ListFineTuningJobsResponse struct {
 	FineTuningJobs []*FineTuningJob `json:"fine_tuning_jobs"`
 }
 
-// ListFineTuningJobEventsRequest contains parameters for filtering listed job events.
+// ListFineTuningJobEventsRequest contains parameters for filtering listed fine-tuning job events.
 type ListFineTuningJobEventsRequest struct {
 	// API-supported query parameters
 	FineTuningJobID string  `json:"fine_tuning_job_id"`
@@ -156,12 +156,12 @@ type ListFineTuningJobEventsRequest struct {
 	Limit           *uint8  `json:"limit,omitempty"`
 }
 
-// ListFineTuningJobEventsResponse wraps a list of job events returned from the API.
+// ListFineTuningJobEventsResponse wraps a list of fine-tuning job events returned from the API.
 type ListFineTuningJobEventsResponse struct {
-	Events []*FineTuningJobEvent `json:"events"`
+	FineTuningJobEvents []*FineTuningJobEvent `json:"fine_tuning_job_events"`
 }
 
-// ListFineTuningJobCheckpointsRequest contains parameters for filtering listed job checkpoints.
+// ListFineTuningJobCheckpointsRequest contains parameters for filtering listed fine-tuning job checkpoints.
 type ListFineTuningJobCheckpointsRequest struct {
 	// API-supported query parameters
 	FineTuningJobID string  `json:"fine_tuning_job_id"`
@@ -169,9 +169,9 @@ type ListFineTuningJobCheckpointsRequest struct {
 	Limit           *uint8  `json:"limit,omitempty"`
 }
 
-// ListFineTuningJobCheckpointsResponse wraps a list of job checkpoints returned from the API.
+// ListFineTuningJobCheckpointsResponse wraps a list of fine-tuning job checkpoints returned from the API.
 type ListFineTuningJobCheckpointsResponse struct {
-	Checkpoints []*FineTuningJobCheckpoint `json:"checkpoints"`
+	FineTuningJobCheckpoints []*FineTuningJobCheckpoint `json:"fine_tuning_job_checkpoints"`
 }
 
 // PauseFineTuningJobRequest contains the ID of the fine-tuning job to pause.
