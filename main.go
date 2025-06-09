@@ -2,40 +2,30 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/joho/godotenv"
 
-	intapp "github.com/kylerqws/chatbot/internal/app"
-	intres "github.com/kylerqws/chatbot/internal/app/resolver"
-	intcli "github.com/kylerqws/chatbot/internal/cli"
+	"github.com/kylerqws/chatbot/internal/app"
+	"github.com/kylerqws/chatbot/internal/app/resolver"
+	"github.com/kylerqws/chatbot/internal/cli"
 )
 
+// init loads the base `.env` file and an optional mode-specific `.env.{mode}` configuration file.
 func init() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("No .env file found, using system environment variables")
+	if err := godotenv.Load(); err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "Warning: failed to load .env: %v\n", err)
 	}
 
-	mode := intres.ResolveMode()
-	if intapp.ModeService == mode || intapp.ModeUtility == mode {
-		_ = godotenv.Load(".env." + mode)
+	mode := resolver.ResolveMode()
+	if err := godotenv.Load(".env." + mode); err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "Warning: failed to load .env.%s: %v\n", mode, err)
 	}
 }
 
+// main initializes the application and executes the CLI entry point.
 func main() {
-	ctx, cancel := intres.ResolveContext()
-	defer cancel()
-
-	app, err := intapp.New(ctx, cancel)
-	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "Failed to create application: %v\n", err)
-		os.Exit(1)
-	}
-
-	err = intcli.Execute(app)
-	if err != nil {
+	if err := cli.Execute(app.New(resolver.ResolveContext())); err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(1)
 	}
