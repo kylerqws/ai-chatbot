@@ -93,6 +93,6 @@ type FileService interface {
 	// ListFiles returns a filtered list of uploaded files.
 	ListFiles(ctx context.Context, req *ListFilesRequest) (*ListFilesResponse, error)
 
-	// DeleteFile removes a file by ID.
+	// DeleteFile removes a file from OpenAI storage by its ID.
 	DeleteFile(ctx context.Context, req *DeleteFileRequest) (*DeleteFileResponse, error)
 }
