@@ -1,25 +1,24 @@
 .PHONY: run build migrate rollback
 
 MAKEFLAGS += --silent
-CGO_ENABLED = 1
 
+GO_ENV := CGO_ENABLED=1 GO111MODULE=on
 GO_TAGS := -tags "cgo"
-GO_MAIN_FILE := main.go
-GO_BIN_FILE := chatbot
-GO_RUN := go run $(GO_TAGS) $(GO_MAIN_FILE)
-GO_BUILD := go build $(GO_TAGS) -o $(GO_BIN_FILE) $(GO_MAIN_FILE)
+
+GO_RUN := $(GO_ENV) go run $(GO_TAGS) main.go
+GO_BUILD := $(GO_ENV) go build $(GO_TAGS) -o chatbot main.go
 
 run:
-	- $(GO_RUN) $(filter-out run,$(MAKECMDGOALS))
+	$(GO_RUN) $(filter-out run,$(MAKECMDGOALS))
 
 build:
-	- $(GO_BUILD)
+	$(GO_BUILD)
 
 migrate:
-	- $(GO_RUN) dev db migrate
+	$(GO_RUN) dev db migrate
 
 rollback:
-	- $(GO_RUN) dev db rollback
+	$(GO_RUN) dev db rollback
 
 %:
 	@:
