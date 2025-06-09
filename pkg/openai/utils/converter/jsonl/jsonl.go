@@ -2,7 +2,6 @@ package jsonl
 
 import (
 	"bufio"
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,79 +9,74 @@ import (
 	"strings"
 )
 
-func ConvertToReader(path string) (reader io.Reader, err error) {
+// HasJSONSuffix returns true if the file path ends with ".json" (case-insensitive).
+func HasJSONSuffix(path string) bool {
+	return strings.HasSuffix(strings.ToLower(path), ".json")
+}
+
+// ConvertToReader opens a JSON file with an array of objects and returns a JSONL stream.
+func ConvertToReader(path string) (io.ReadCloser, error) {
 	if !HasJSONSuffix(path) {
 		return nil, fmt.Errorf("unsupported file extension (expected .json): %s", path)
 	}
 
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open file %v: %w", path, err)
+		return nil, fmt.Errorf("open file '%s': %w", path, err)
 	}
 
-	defer func(file *os.File) {
-		if clerr := file.Close(); clerr != nil {
-			if err == nil {
-				err = fmt.Errorf("failed to close file %v: %w", path, clerr)
-			}
-		}
-	}(file)
-
-	data, err := decodeJSON(file)
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode JSON from %v: %w", path, err)
+	decoder := json.NewDecoder(file)
+	tok, err := decoder.Token()
+	if err != nil || tok != json.Delim('[') {
+		_ = file.Close()
+		return nil, fmt.Errorf("expected top-level JSON array: %w", err)
 	}
 
-	jsonl, err := encodeToJSONL(data)
-	if err != nil {
-		return nil, fmt.Errorf("failed to encode to JSONL from %v: %w", path, err)
-	}
-
-	reader = bytes.NewReader(jsonl)
-	return reader, err
+	return startStreamingJSONL(file, decoder)
 }
 
-func HasJSONSuffix(path string) bool {
-	return strings.HasSuffix(strings.ToLower(path), ".json")
+// startStreamingJSONL launches a goroutine that converts JSON array to JSONL lines.
+func startStreamingJSONL(file *os.File, decoder *json.Decoder) (io.ReadCloser, error) {
+	pr, pw := io.Pipe()
+
+	go func() {
+		err := writeJSONLStream(decoder, pw)
+		if cerr := file.Close(); cerr != nil && err == nil {
+			err = fmt.Errorf("close file: %w", cerr)
+		}
+		_ = pw.CloseWithError(err)
+	}()
+
+	return pr, nil
 }
 
-func decodeJSON(reader io.Reader) ([]map[string]any, error) {
-	var data []map[string]any
-	decoder := json.NewDecoder(reader)
+// writeJSONLStream reads JSON objects from decoder and writes them as JSONL lines.
+func writeJSONLStream(decoder *json.Decoder, w io.Writer) error {
+	writer := bufio.NewWriter(w)
 
-	err := decoder.Decode(&data)
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode JSON: %w", err)
-	}
-
-	return data, nil
-}
-
-func encodeToJSONL(data []map[string]any) ([]byte, error) {
-	var buffer bytes.Buffer
-	writer := bufio.NewWriter(&buffer)
-
-	for i := range data {
-		line, err := json.Marshal(data[i])
-		if err != nil {
-			return nil, fmt.Errorf("failed to marshal record: %w", err)
+	for decoder.More() {
+		var obj map[string]any
+		if err := decoder.Decode(&obj); err != nil {
+			return fmt.Errorf("decode JSON object: %w", err)
 		}
 
-		_, err = writer.Write(line)
+		line, err := json.Marshal(obj)
 		if err != nil {
-			return nil, fmt.Errorf("failed to write line: %w", err)
+			return fmt.Errorf("marshal JSON object: %w", err)
 		}
 
-		err = writer.WriteByte('\n')
-		if err != nil {
-			return nil, fmt.Errorf("failed to write line break: %w", err)
+		if _, err := writer.Write(line); err != nil {
+			return fmt.Errorf("write JSONL line: %w", err)
+		}
+
+		if err := writer.WriteByte('\n'); err != nil {
+			return fmt.Errorf("write newline: %w", err)
 		}
 	}
 
-	err := writer.Flush()
-	if err != nil {
-		return nil, fmt.Errorf("failed to flush writer: %w", err)
+	if err := writer.Flush(); err != nil {
+		return fmt.Errorf("flush writer: %w", err)
 	}
 
-	return buffer.Bytes(), nil
+	return nil
 }
