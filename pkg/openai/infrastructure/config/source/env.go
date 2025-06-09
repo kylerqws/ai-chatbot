@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	ctr "github.com/kylerqws/chatbot/pkg/openai/contract/config"
+	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 )
 
 // envConfig implements the Config interface using environment variables as the source.
@@ -21,7 +21,7 @@ type envConfig struct {
 
 // NewEnvConfig returns a Config implementation populated from environment variables.
 // Falls back to default values when optional variables are missing.
-func NewEnvConfig(_ context.Context) (ctr.Config, error) {
+func NewEnvConfig(_ context.Context) (ctrcfg.Config, error) {
 	baseURL := os.Getenv("OPENAI_API_BASE_URL")
 	apiKey := os.Getenv("OPENAI_API_KEY")
 	timeoutStr := os.Getenv("OPENAI_API_TIMEOUT")
