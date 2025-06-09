@@ -6,13 +6,13 @@ import (
 	"strings"
 )
 
-// EventLevel defines the severity level of a fine-tuning event.
+// EventLevel defines the severity level of a fine‑tuning event.
 type EventLevel struct {
 	Code        string // Unique identifier for the event level.
-	Description string // Human-readable explanation of the event level.
+	Description string // Human-readable explanation of the level.
 }
 
-// Event level code constants.
+// EventLevel code constants.
 const (
 	InfoCode    = "info"
 	WarningCode = "warning"
@@ -21,45 +21,35 @@ const (
 
 // Predefined EventLevel instances.
 var (
-	Info = &EventLevel{
-		Code:        InfoCode,
-		Description: "Informational event.",
-	}
-	Warning = &EventLevel{
-		Code:        WarningCode,
-		Description: "Potential issue or caution.",
-	}
-	Error = &EventLevel{
-		Code:        ErrorCode,
-		Description: "Error that occurred during the process.",
-	}
+	Info    = &EventLevel{Code: InfoCode, Description: "Informational event."}
+	Warning = &EventLevel{Code: WarningCode, Description: "Potential issue."}
+	Error   = &EventLevel{Code: ErrorCode, Description: "Error occurred."}
 )
 
-// AllEventLevels maps all known event level codes to their EventLevel instances.
+// AllEventLevels lists all known EventLevel instances.
 var AllEventLevels = map[string]*EventLevel{
 	InfoCode:    Info,
 	WarningCode: Warning,
 	ErrorCode:   Error,
 }
 
-// Resolve returns the EventLevel associated with the given code.
-// Returns an error if the code is empty or unrecognized.
+// Resolve looks up an EventLevel by code, error if missing or unknown.
 func Resolve(code string) (*EventLevel, error) {
 	if code == "" {
 		return nil, fmt.Errorf("event level code is required")
 	}
-	if evl, ok := AllEventLevels[code]; ok {
-		return evl, nil
+	if ev, ok := AllEventLevels[code]; ok {
+		return ev, nil
 	}
-	return nil, fmt.Errorf("unknown event level code: '%v'", code)
+	return nil, fmt.Errorf("unknown event level code: '%s'", code)
 }
 
-// JoinCodes returns a sorted, delimited string of all known event level codes.
+// JoinCodes returns all event level codes joined by separator.
 func JoinCodes(sep string) string {
-	codes := make([]string, 0, len(AllEventLevels))
+	c := make([]string, 0, len(AllEventLevels))
 	for code := range AllEventLevels {
-		codes = append(codes, code)
+		c = append(c, code)
 	}
-	sort.Strings(codes)
-	return strings.Join(codes, sep)
+	sort.Strings(c)
+	return strings.Join(c, sep)
 }
