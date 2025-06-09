@@ -10,7 +10,7 @@ type Purpose struct {
 
 // Purpose code constants.
 const (
-	FineTuneCode   = "fine‑tune"
+	FineTuneCode   = "fine-tune"
 	AssistantsCode = "assistants"
 	BatchCode      = "batch"
 	UserDataCode   = "user_data"

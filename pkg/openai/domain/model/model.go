@@ -10,8 +10,8 @@ type Model struct {
 
 // Model code constants.
 const (
-	GPT35TurboCode = "gpt‑3.5‑turbo"
-	GPT4Code       = "gpt‑4"
+	GPT35TurboCode = "gpt-3.5-turbo"
+	GPT4Code       = "gpt-4"
 )
 
 // Predefined Model instances.
