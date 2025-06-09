@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -15,170 +16,193 @@ import (
 	"github.com/kylerqws/chatbot/pkg/openai/domain/purpose"
 	"github.com/kylerqws/chatbot/pkg/openai/utils/converter/jsonl"
 
+	ctrcli "github.com/kylerqws/chatbot/pkg/openai/contract/client"
 	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 )
 
-type Client struct {
+// client implements the Client interface for communicating with the OpenAI API.
+type client struct {
 	config     ctrcfg.Config
 	httpClient *http.Client
 }
 
-func New(cfg ctrcfg.Config) *Client {
+// New creates a new OpenAI API client using the provided configuration.
+func New(cfg ctrcfg.Config) ctrcli.Client {
 	hc := &http.Client{Timeout: cfg.GetTimeout()}
-	return &Client{config: cfg, httpClient: hc}
+	return &client{config: cfg, httpClient: hc}
 }
 
-func (c *Client) RequestMultipart(ctx context.Context, path string, body map[string]string) (resp []byte, err error) {
+// RequestMultipart sends a multipart/form-data POST request to the specified path.
+// The body map must include a "file" entry. If the file is JSON and the purpose is for fine-tuning,
+// it will be automatically converted to JSONL format.
+func (c *client) RequestMultipart(ctx context.Context, path string, body map[string]string) (res []byte, err error) {
 	filePath := body["file"]
-	file, err := os.Open(filePath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to open file %v: %w", filePath, err)
+	if filePath == "" {
+		return nil, errors.New("missing required field 'file' in request body")
 	}
 
-	defer func(file *os.File) {
-		if clerr := file.Close(); clerr != nil {
-			if err == nil {
-				err = fmt.Errorf("failed to close file %v: %w", filePath, clerr)
+	reader, err := c.prepareFileReader(filePath, body["purpose"])
+	if err != nil {
+		return nil, fmt.Errorf("prepare file reader: %w", err)
+	}
+	defer func() {
+		if closer, ok := reader.(io.Closer); ok {
+			if cerr := closer.Close(); cerr != nil && err == nil {
+				err = fmt.Errorf("close file reader: %w", cerr)
 			}
 		}
-	}(file)
+	}()
 
-	reader := io.Reader(file)
-	if jsonl.HasJSONSuffix(filePath) {
-		prp := body["purpose"]
-		if prp == purpose.FineTune.Code {
-			reader, err = jsonl.ConvertToReader(filePath)
-			if err != nil {
-				return nil, fmt.Errorf("failed to convert json to jsonl: %w", err)
-			}
-		}
-	}
+	pr, pw := io.Pipe()
+	writer := multipart.NewWriter(pw)
+	go c.writeMultipartBody(writer, pw, reader, filePath, body)
 
-	buf := &bytes.Buffer{}
-	writer := multipart.NewWriter(buf)
-
-	err = c.writeMultipart(writer, reader, filepath.Base(filePath), body)
+	req, err := c.buildRequest(ctx, http.MethodPost, path, pr)
 	if err != nil {
-		return nil, fmt.Errorf("failed to write multipart: %w", err)
-	}
-
-	req, err := c.buildRequest("POST", path, buf)
-	if err != nil {
-		return nil, fmt.Errorf("failed to build request: %w", err)
+		return nil, fmt.Errorf("build multipart request: %w", err)
 	}
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
-	resp, err = c.doRequest(ctx, req)
-	return resp, err
+	return c.doRequest(req)
 }
 
-func (c *Client) RequestJSON(ctx context.Context, method, path string, body any) ([]byte, error) {
+// RequestJSON sends an HTTP request with a JSON-encoded body.
+func (c *client) RequestJSON(ctx context.Context, method, path string, body any) ([]byte, error) {
 	buf := new(bytes.Buffer)
-	err := json.NewEncoder(buf).Encode(body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to encode json body: %w", err)
+	if err := json.NewEncoder(buf).Encode(body); err != nil {
+		return nil, fmt.Errorf("encode JSON body: %w", err)
 	}
 
-	req, err := c.buildRequest(method, path, buf)
+	req, err := c.buildRequest(ctx, method, path, buf)
 	if err != nil {
-		return nil, fmt.Errorf("failed to build request: %w", err)
+		return nil, fmt.Errorf("build JSON request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	return c.doRequest(ctx, req)
+	return c.doRequest(req)
 }
 
-func (c *Client) Request(ctx context.Context, method, path string) ([]byte, error) {
-	return c.RequestReader(ctx, method, path, nil)
-}
-
-func (c *Client) RequestReader(ctx context.Context, method, path string, body io.Reader) ([]byte, error) {
-	req, err := c.buildRequest(method, path, body)
+// RequestRaw sends a generic HTTP request with the provided method, path, and optional body.
+// Suitable for GET, DELETE, etc.
+func (c *client) RequestRaw(ctx context.Context, method, path string, body io.Reader) ([]byte, error) {
+	req, err := c.buildRequest(ctx, method, path, body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to build request: %w", err)
+		return nil, fmt.Errorf("build raw request: %w", err)
+	}
+	return c.doRequest(req)
+}
+
+// prepareFileReader returns a file reader or a JSONL-converted stream based on file and purpose.
+func (c *client) prepareFileReader(filePath, purposeCode string) (io.ReadCloser, error) {
+	if jsonl.HasJSONSuffix(filePath) && purposeCode == purpose.FineTune.Code {
+		r, err := jsonl.ConvertToReader(filePath)
+		if err != nil {
+			return nil, fmt.Errorf("convert to JSONL: %w", err)
+		}
+		return r, nil
 	}
 
-	return c.doRequest(ctx, req)
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("open file '%s': %w", filePath, err)
+	}
+	return file, nil
 }
 
-func (c *Client) buildRequest(method, path string, body io.Reader) (*http.Request, error) {
-	url := strings.TrimRight(c.config.GetBaseURL(), "/") + path
-
-	req, err := http.NewRequest(method, url, body)
+// buildRequest constructs a new HTTP request with appropriate headers and context.
+func (c *client) buildRequest(ctx context.Context, method, path string, body io.Reader) (*http.Request, error) {
+	url := strings.TrimRight(c.config.GetBaseURL(), "/") + "/" + strings.TrimLeft(path, "/")
+	req, err := http.NewRequestWithContext(ctx, method, url, body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create HTTP request: %w", err)
+		return nil, fmt.Errorf("create HTTP request: %w", err)
 	}
 	req.Header.Set("Authorization", "Bearer "+c.config.GetAPIKey())
-
 	return req, nil
 }
 
-func (*Client) writeMultipart(w *multipart.Writer, file io.Reader, filename string, fields map[string]string) error {
-	part, err := w.CreateFormFile("file", filename)
+// doRequest performs the HTTP request and handles the response.
+func (c *client) doRequest(req *http.Request) (body []byte, err error) {
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return fmt.Errorf("failed to create multipart file part: %w", err)
+		return nil, fmt.Errorf("send request: %w", err)
 	}
-
-	_, err = io.Copy(part, file)
-	if err != nil {
-		return fmt.Errorf("failed to copy file content: %w", err)
-	}
-
-	for k, v := range fields {
-		if k != "file" {
-			err = w.WriteField(k, v)
-			if err != nil {
-				return fmt.Errorf("failed to write field '%v': %w", k, err)
-			}
+	defer func() {
+		if cerr := resp.Body.Close(); cerr != nil && err == nil {
+			err = fmt.Errorf("close response body: %w", cerr)
 		}
-	}
-
-	err = w.Close()
-	if err != nil {
-		return fmt.Errorf("failed to close multipart writer: %w", err)
-	}
-
-	return nil
-}
-
-func (c *Client) doRequest(ctx context.Context, req *http.Request) (body []byte, err error) {
-	resp, err := c.httpClient.Do(req.WithContext(ctx))
-	if err != nil {
-		return nil, fmt.Errorf("HTTP request failed: %w", err)
-	}
-
-	defer func(body io.ReadCloser) {
-		if clerr := body.Close(); clerr != nil {
-			if err == nil {
-				err = fmt.Errorf("failed to close response body: %w", clerr)
-			}
-		}
-	}(resp.Body)
+	}()
 
 	body, err = io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read response body: %w", err)
+		return nil, fmt.Errorf("read response body: %w", err)
 	}
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		msg := c.extractAPIError(body)
-		return nil, fmt.Errorf("unexpected status '%v' (%s)", resp.Status, msg)
+		return nil, fmt.Errorf("OpenAI API error: %s", extractAPIError(body))
 	}
 
-	return body, err
+	return body, nil
 }
 
-func (*Client) extractAPIError(body []byte) string {
+// writeMultipartBody writes the file and additional fields to the multipart writer.
+func (c *client) writeMultipartBody(writer *multipart.Writer, pw *io.PipeWriter, reader io.Reader, filePath string, fields map[string]string) {
+	var err error
+	defer func() {
+		if cerr := writer.Close(); cerr != nil && err == nil {
+			err = fmt.Errorf("close multipart writer: %w", cerr)
+		}
+		if cerr := pw.Close(); cerr != nil && err == nil {
+			err = fmt.Errorf("close pipe writer: %w", cerr)
+		}
+	}()
+
+	part, err := writer.CreateFormFile("file", filepath.Base(filePath))
+	if err != nil {
+		_ = pw.CloseWithError(fmt.Errorf("create form file: %w", err))
+		return
+	}
+	if _, err := io.Copy(part, reader); err != nil {
+		_ = pw.CloseWithError(fmt.Errorf("copy file content: %w", err))
+		return
+	}
+	for k, v := range fields {
+		if k == "file" {
+			continue
+		}
+		if err := writer.WriteField(k, v); err != nil {
+			_ = pw.CloseWithError(fmt.Errorf("write field '%s': %w", k, err))
+			return
+		}
+	}
+}
+
+// extractAPIError parses a structured OpenAI error response and formats it.
+func extractAPIError(body []byte) string {
 	var data struct {
 		Error struct {
-			Message string `json:"message"`
+			Message string  `json:"message"`
+			Type    *string `json:"type,omitempty"`
+			Param   *string `json:"param,omitempty"`
+			Code    *string `json:"code,omitempty"`
 		} `json:"error"`
 	}
 
-	err := json.Unmarshal(body, &data)
-	if err == nil && data.Error.Message != "" {
-		return data.Error.Message
+	if err := json.Unmarshal(body, &data); err == nil && data.Error.Message != "" {
+		msg := data.Error.Message
+		var parts []string
+		if t := data.Error.Type; t != nil && *t != "" {
+			parts = append(parts, fmt.Sprintf("type '%s'", *t))
+		}
+		if p := data.Error.Param; p != nil && *p != "" {
+			parts = append(parts, fmt.Sprintf("param '%s'", *p))
+		}
+		if c := data.Error.Code; c != nil && *c != "" {
+			parts = append(parts, fmt.Sprintf("code '%s'", *c))
+		}
+		if len(parts) > 0 {
+			msg += " (" + strings.Join(parts, ", ") + ")"
+		}
+		return msg
 	}
-
 	return "unknown OpenAI API error"
 }
