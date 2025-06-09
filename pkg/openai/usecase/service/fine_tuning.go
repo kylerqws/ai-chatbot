@@ -8,166 +8,185 @@ import (
 
 	"github.com/kylerqws/chatbot/pkg/openai/utils/query"
 
-	ctrcli "github.com/kylerqws/chatbot/pkg/openai/contract/client"
+	ctrcl "github.com/kylerqws/chatbot/pkg/openai/contract/client"
 	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 )
 
-// fineTuningService implements FineTuningService using the OpenAI API client.
+// fineTuningService implements FineTuningService using OpenAI API client.
 type fineTuningService struct {
 	config ctrcfg.Config
-	client ctrcli.Client
+	client ctrcl.Client
 }
 
-// NewFineTuningService creates a new instance of FineTuningService.
-func NewFineTuningService(cl ctrcli.Client, cfg ctrcfg.Config) ctrsvc.FineTuningService {
+// NewFineTuningService creates a new FineTuningService instance.
+func NewFineTuningService(cl ctrcl.Client, cfg ctrcfg.Config) ctrsvc.FineTuningService {
 	return &fineTuningService{config: cfg, client: cl}
 }
 
-// CreateJob starts a new fine-tuning job.
-func (s *fineTuningService) CreateJob(ctx context.Context, req *ctrsvc.CreateFineTuningJobRequest) (*ctrsvc.CreateFineTuningJobResponse, error) {
-	result := &ctrsvc.CreateFineTuningJobResponse{}
+// CreateJob creates a new fine-tuning job on OpenAI.
+func (s *fineTuningService) CreateJob(ctx context.Context, req *ctrsvc.CreateJobRequest) (*ctrsvc.CreateJobResponse, error) {
+	result := &ctrsvc.CreateJobResponse{}
 
 	resp, err := s.client.RequestJSON(ctx, "POST", "/fine_tuning/jobs", req)
 	if err != nil {
-		return nil, fmt.Errorf("create job: %w", err)
+		return result, fmt.Errorf("create job: %w", err)
 	}
 
-	if err := json.Unmarshal(resp, result); err != nil {
-		return nil, fmt.Errorf("unmarshal create job response: %w", err)
+	var job ctrsvc.Job
+	if err := json.Unmarshal(resp, &job); err != nil {
+		return result, fmt.Errorf("unmarshal create job response: %w", err)
 	}
 
+	result.Job = &job
 	return result, nil
 }
 
-// RetrieveJob fetches details of a fine-tuning job by ID.
-func (s *fineTuningService) RetrieveJob(ctx context.Context, req *ctrsvc.RetrieveFineTuningJobRequest) (*ctrsvc.RetrieveFineTuningJobResponse, error) {
-	result := &ctrsvc.RetrieveFineTuningJobResponse{}
+// RetrieveJob fetches fine-tuning job metadata from OpenAI by its ID.
+func (s *fineTuningService) RetrieveJob(ctx context.Context, req *ctrsvc.RetrieveJobRequest) (*ctrsvc.RetrieveJobResponse, error) {
+	result := &ctrsvc.RetrieveJobResponse{}
 
 	path := "/fine_tuning/jobs/" + url.PathEscape(req.JobID)
 	resp, err := s.client.RequestRaw(ctx, "GET", path, nil)
 	if err != nil {
-		return nil, fmt.Errorf("retrieve job: %w", err)
+		return result, fmt.Errorf("retrieve job: %w", err)
 	}
 
-	if err := json.Unmarshal(resp, result); err != nil {
-		return nil, fmt.Errorf("unmarshal retrieve job response: %w", err)
+	var job ctrsvc.Job
+	if err := json.Unmarshal(resp, &job); err != nil {
+		return result, fmt.Errorf("unmarshal retrieve job response: %w", err)
 	}
 
+	result.Job = &job
 	return result, nil
 }
 
-// CancelJob cancels a running fine-tuning job.
-func (s *fineTuningService) CancelJob(ctx context.Context, req *ctrsvc.CancelFineTuningJobRequest) (*ctrsvc.CancelFineTuningJobResponse, error) {
-	result := &ctrsvc.CancelFineTuningJobResponse{}
+// CancelJob sends a cancel request for a running fine-tuning job.
+func (s *fineTuningService) CancelJob(ctx context.Context, req *ctrsvc.CancelJobRequest) (*ctrsvc.CancelJobResponse, error) {
+	result := &ctrsvc.CancelJobResponse{}
 
 	path := "/fine_tuning/jobs/" + url.PathEscape(req.JobID) + "/cancel"
 	resp, err := s.client.RequestRaw(ctx, "POST", path, nil)
 	if err != nil {
-		return nil, fmt.Errorf("cancel job: %w", err)
+		return result, fmt.Errorf("cancel job: %w", err)
 	}
 
-	if err := json.Unmarshal(resp, result); err != nil {
-		return nil, fmt.Errorf("unmarshal cancel job response: %w", err)
+	var job ctrsvc.Job
+	if err := json.Unmarshal(resp, &job); err != nil {
+		return result, fmt.Errorf("unmarshal cancel job response: %w", err)
 	}
 
+	result.Job = &job
 	return result, nil
 }
 
-// PauseJob pauses a running fine-tuning job.
-func (s *fineTuningService) PauseJob(ctx context.Context, req *ctrsvc.PauseFineTuningJobRequest) (*ctrsvc.PauseFineTuningJobResponse, error) {
-	result := &ctrsvc.PauseFineTuningJobResponse{}
+// PauseJob pauses an active fine-tuning job on OpenAI.
+func (s *fineTuningService) PauseJob(ctx context.Context, req *ctrsvc.PauseJobRequest) (*ctrsvc.PauseJobResponse, error) {
+	result := &ctrsvc.PauseJobResponse{}
 
 	path := "/fine_tuning/jobs/" + url.PathEscape(req.JobID) + "/pause"
 	resp, err := s.client.RequestRaw(ctx, "POST", path, nil)
 	if err != nil {
-		return nil, fmt.Errorf("pause job: %w", err)
+		return result, fmt.Errorf("pause job: %w", err)
 	}
 
-	if err := json.Unmarshal(resp, result); err != nil {
-		return nil, fmt.Errorf("unmarshal pause job response: %w", err)
+	var job ctrsvc.Job
+	if err := json.Unmarshal(resp, &job); err != nil {
+		return result, fmt.Errorf("unmarshal pause job response: %w", err)
 	}
 
+	result.Job = &job
 	return result, nil
 }
 
-// ResumeJob resumes a paused fine-tuning job.
-func (s *fineTuningService) ResumeJob(ctx context.Context, req *ctrsvc.ResumeFineTuningJobRequest) (*ctrsvc.ResumeFineTuningJobResponse, error) {
-	result := &ctrsvc.ResumeFineTuningJobResponse{}
+// ResumeJob resumes a paused fine-tuning job on OpenAI.
+func (s *fineTuningService) ResumeJob(ctx context.Context, req *ctrsvc.ResumeJobRequest) (*ctrsvc.ResumeJobResponse, error) {
+	result := &ctrsvc.ResumeJobResponse{}
 
 	path := "/fine_tuning/jobs/" + url.PathEscape(req.JobID) + "/resume"
 	resp, err := s.client.RequestRaw(ctx, "POST", path, nil)
 	if err != nil {
-		return nil, fmt.Errorf("resume job: %w", err)
+		return result, fmt.Errorf("resume job: %w", err)
 	}
 
-	if err := json.Unmarshal(resp, result); err != nil {
-		return nil, fmt.Errorf("unmarshal resume job response: %w", err)
+	var job ctrsvc.Job
+	if err := json.Unmarshal(resp, &job); err != nil {
+		return result, fmt.Errorf("unmarshal resume job response: %w", err)
 	}
 
+	result.Job = &job
 	return result, nil
 }
 
-// ListJobs returns all fine-tuning jobs with optional pagination.
-func (s *fineTuningService) ListJobs(ctx context.Context, req *ctrsvc.ListFineTuningJobsRequest) (*ctrsvc.ListFineTuningJobsResponse, error) {
-	result := &ctrsvc.ListFineTuningJobsResponse{}
+// ListJobs retrieves all fine-tuning jobs with optional pagination.
+func (s *fineTuningService) ListJobs(ctx context.Context, req *ctrsvc.ListJobsRequest) (*ctrsvc.ListJobsResponse, error) {
+	result := &ctrsvc.ListJobsResponse{}
 
-	path := "/fine_tuning/jobs" + s.buildQuery(req.After, req.Limit)
+	path := "/fine_tuning/jobs" + s.buildPaginationQuery(req.After, req.Limit)
 	resp, err := s.client.RequestRaw(ctx, "GET", path, nil)
 	if err != nil {
-		return nil, fmt.Errorf("list jobs: %w", err)
+		return result, fmt.Errorf("list jobs: %w", err)
 	}
 
 	var parsed struct {
-		Data []*ctrsvc.FineTuningJob `json:"data"`
+		Data []*ctrsvc.Job `json:"data"`
 	}
 	if err := json.Unmarshal(resp, &parsed); err != nil {
-		return nil, fmt.Errorf("unmarshal list jobs response: %w", err)
+		return result, fmt.Errorf("unmarshal list jobs response: %w", err)
 	}
 
 	result.Jobs = parsed.Data
 	return result, nil
 }
 
-// ListCheckpoints returns training checkpoints for a fine-tuning job.
-func (s *fineTuningService) ListCheckpoints(ctx context.Context, req *ctrsvc.ListFineTuningJobCheckpointsRequest) (*ctrsvc.ListFineTuningJobCheckpointsResponse, error) {
-	result := &ctrsvc.ListFineTuningJobCheckpointsResponse{}
+// ListCheckpoints retrieves training checkpoints for a fine-tuning job.
+func (s *fineTuningService) ListCheckpoints(ctx context.Context, req *ctrsvc.ListCheckpointsRequest) (*ctrsvc.ListCheckpointsResponse, error) {
+	result := &ctrsvc.ListCheckpointsResponse{}
 
-	path := "/fine_tuning/jobs/" + url.PathEscape(req.FineTuningJobID) + "/checkpoints" + s.buildQuery(req.After, req.Limit)
+	path := "/fine_tuning/jobs/" + url.PathEscape(req.JobID) + "/checkpoints" + s.buildPaginationQuery(req.After, req.Limit)
 	resp, err := s.client.RequestRaw(ctx, "GET", path, nil)
 	if err != nil {
-		return nil, fmt.Errorf("list checkpoints: %w", err)
+		return result, fmt.Errorf("list checkpoints: %w", err)
 	}
 
-	if err := json.Unmarshal(resp, result); err != nil {
-		return nil, fmt.Errorf("unmarshal list checkpoints response: %w", err)
+	var parsed struct {
+		Data []*ctrsvc.Checkpoint `json:"data"`
+	}
+	if err := json.Unmarshal(resp, &parsed); err != nil {
+		return result, fmt.Errorf("unmarshal list checkpoints response: %w", err)
 	}
 
+	result.Checkpoints = parsed.Data
 	return result, nil
 }
 
-// ListEvents returns event logs for a fine-tuning job.
-func (s *fineTuningService) ListEvents(ctx context.Context, req *ctrsvc.ListFineTuningJobEventsRequest) (*ctrsvc.ListFineTuningJobEventsResponse, error) {
-	result := &ctrsvc.ListFineTuningJobEventsResponse{}
+// ListEvents retrieves event logs for a fine-tuning job.
+func (s *fineTuningService) ListEvents(ctx context.Context, req *ctrsvc.ListEventsRequest) (*ctrsvc.ListEventsResponse, error) {
+	result := &ctrsvc.ListEventsResponse{}
 
-	path := "/fine_tuning/jobs/" + url.PathEscape(req.FineTuningJobID) + "/events" + s.buildQuery(req.After, req.Limit)
+	path := "/fine_tuning/jobs/" + url.PathEscape(req.JobID) + "/events" + s.buildPaginationQuery(req.After, req.Limit)
 	resp, err := s.client.RequestRaw(ctx, "GET", path, nil)
 	if err != nil {
-		return nil, fmt.Errorf("list events: %w", err)
+		return result, fmt.Errorf("list events: %w", err)
 	}
 
-	if err := json.Unmarshal(resp, result); err != nil {
-		return nil, fmt.Errorf("unmarshal list events response: %w", err)
+	var parsed struct {
+		Data []*ctrsvc.Event `json:"data"`
+	}
+	if err := json.Unmarshal(resp, &parsed); err != nil {
+		return result, fmt.Errorf("unmarshal list events response: %w", err)
 	}
 
+	result.Events = parsed.Data
 	return result, nil
 }
 
-func (s *fineTuningService) buildQuery(after *string, limit *uint8) string {
+// buildPaginationQuery constructs the API query string from the pagination parameters.
+func (*fineTuningService) buildPaginationQuery(after *string, limit *uint8) string {
 	q := query.NewUrlQuery()
 
 	q.SetQueryStringParam("after", after)
-	q.SetQueryUint8Param("after", limit)
+	q.SetQueryUint8Param("limit", limit)
 
 	return q.Encode()
 }

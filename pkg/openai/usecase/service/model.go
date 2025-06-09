@@ -36,7 +36,7 @@ func (s *modelService) RetrieveModel(ctx context.Context, req *ctrsvc.RetrieveMo
 
 	var model ctrsvc.Model
 	if err := json.Unmarshal(resp, &model); err != nil {
-		return result, fmt.Errorf("unmarshal retrieve response: %w", err)
+		return result, fmt.Errorf("unmarshal retrieve model response: %w", err)
 	}
 
 	result.Model = &model
@@ -56,7 +56,7 @@ func (s *modelService) ListModels(ctx context.Context, req *ctrsvc.ListModelsReq
 		Data []*ctrsvc.Model `json:"data"`
 	}
 	if err := json.Unmarshal(resp, &parsed); err != nil {
-		return result, fmt.Errorf("unmarshal list response: %w", err)
+		return result, fmt.Errorf("unmarshal list models response: %w", err)
 	}
 
 	if s.hasListModelsFilter(req) {
@@ -79,7 +79,7 @@ func (s *modelService) DeleteModel(ctx context.Context, req *ctrsvc.DeleteModelR
 	}
 
 	if err := json.Unmarshal(resp, result); err != nil {
-		return result, fmt.Errorf("unmarshal delete response: %w", err)
+		return result, fmt.Errorf("unmarshal delete model response: %w", err)
 	}
 
 	if !result.Deleted {

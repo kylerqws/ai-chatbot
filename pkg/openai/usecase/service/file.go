@@ -43,7 +43,7 @@ func (s *fileService) UploadFile(ctx context.Context, req *ctrsvc.UploadFileRequ
 
 	var file ctrsvc.File
 	if err := json.Unmarshal(resp, &file); err != nil {
-		return result, fmt.Errorf("unmarshal upload response: %w", err)
+		return result, fmt.Errorf("unmarshal upload file response: %w", err)
 	}
 
 	result.File = &file
@@ -62,7 +62,7 @@ func (s *fileService) RetrieveFile(ctx context.Context, req *ctrsvc.RetrieveFile
 
 	var file ctrsvc.File
 	if err := json.Unmarshal(resp, &file); err != nil {
-		return result, fmt.Errorf("unmarshal retrieve response: %w", err)
+		return result, fmt.Errorf("unmarshal retrieve file response: %w", err)
 	}
 
 	result.File = &file
@@ -97,7 +97,7 @@ func (s *fileService) ListFiles(ctx context.Context, req *ctrsvc.ListFilesReques
 		Data []*ctrsvc.File `json:"data"`
 	}
 	if err := json.Unmarshal(resp, &parsed); err != nil {
-		return result, fmt.Errorf("unmarshal list response: %w", err)
+		return result, fmt.Errorf("unmarshal list files response: %w", err)
 	}
 
 	if s.hasListFilesFilter(req) {
@@ -120,7 +120,7 @@ func (s *fileService) DeleteFile(ctx context.Context, req *ctrsvc.DeleteFileRequ
 	}
 
 	if err := json.Unmarshal(resp, result); err != nil {
-		return result, fmt.Errorf("unmarshal delete response: %w", err)
+		return result, fmt.Errorf("unmarshal delete file response: %w", err)
 	}
 
 	if !result.Deleted {
