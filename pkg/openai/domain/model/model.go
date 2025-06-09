@@ -35,18 +35,18 @@ func Resolve(code string) (*Model, error) {
 	if code == "" {
 		return GPT35Turbo, nil
 	}
-	if m, ok := AllModels[code]; ok {
-		return m, nil
+	if model, ok := AllModels[code]; ok {
+		return model, nil
 	}
 	return nil, fmt.Errorf("unknown model code: '%s'", code)
 }
 
 // JoinCodes returns all model codes joined by separator.
 func JoinCodes(sep string) string {
-	c := make([]string, 0, len(AllModels))
+	codes := make([]string, 0, len(AllModels))
 	for code := range AllModels {
-		c = append(c, code)
+		codes = append(codes, code)
 	}
-	sort.Strings(c)
-	return strings.Join(c, sep)
+	sort.Strings(codes)
+	return strings.Join(codes, sep)
 }

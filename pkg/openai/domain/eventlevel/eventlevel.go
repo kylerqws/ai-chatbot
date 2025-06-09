@@ -38,18 +38,18 @@ func Resolve(code string) (*EventLevel, error) {
 	if code == "" {
 		return nil, fmt.Errorf("event level code is required")
 	}
-	if ev, ok := AllEventLevels[code]; ok {
-		return ev, nil
+	if level, ok := AllEventLevels[code]; ok {
+		return level, nil
 	}
 	return nil, fmt.Errorf("unknown event level code: '%s'", code)
 }
 
 // JoinCodes returns all event level codes joined by separator.
 func JoinCodes(sep string) string {
-	c := make([]string, 0, len(AllEventLevels))
+	codes := make([]string, 0, len(AllEventLevels))
 	for code := range AllEventLevels {
-		c = append(c, code)
+		codes = append(codes, code)
 	}
-	sort.Strings(c)
-	return strings.Join(c, sep)
+	sort.Strings(codes)
+	return strings.Join(codes, sep)
 }

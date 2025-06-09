@@ -47,18 +47,18 @@ func Resolve(code string) (*Purpose, error) {
 	if code == "" {
 		return FineTune, nil
 	}
-	if pr, ok := AllPurposes[code]; ok {
-		return pr, nil
+	if purpose, ok := AllPurposes[code]; ok {
+		return purpose, nil
 	}
 	return nil, fmt.Errorf("unknown purpose code: '%s'", code)
 }
 
 // JoinCodes returns all purpose codes joined by separator.
 func JoinCodes(sep string) string {
-	c := make([]string, 0, len(AllPurposes))
+	codes := make([]string, 0, len(AllPurposes))
 	for code := range AllPurposes {
-		c = append(c, code)
+		codes = append(codes, code)
 	}
-	sort.Strings(c)
-	return strings.Join(c, sep)
+	sort.Strings(codes)
+	return strings.Join(codes, sep)
 }

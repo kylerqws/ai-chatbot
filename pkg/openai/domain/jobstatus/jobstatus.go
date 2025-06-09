@@ -47,18 +47,18 @@ func Resolve(code string) (*JobStatus, error) {
 	if code == "" {
 		return nil, fmt.Errorf("job status code is required")
 	}
-	if js, ok := AllJobStatuses[code]; ok {
-		return js, nil
+	if status, ok := AllJobStatuses[code]; ok {
+		return status, nil
 	}
 	return nil, fmt.Errorf("unknown job status code: '%s'", code)
 }
 
 // JoinCodes returns all job status codes joined by separator.
 func JoinCodes(sep string) string {
-	c := make([]string, 0, len(AllJobStatuses))
+	codes := make([]string, 0, len(AllJobStatuses))
 	for code := range AllJobStatuses {
-		c = append(c, code)
+		codes = append(codes, code)
 	}
-	sort.Strings(c)
-	return strings.Join(c, sep)
+	sort.Strings(codes)
+	return strings.Join(codes, sep)
 }

@@ -41,18 +41,18 @@ func Resolve(code string) (*Owner, error) {
 	if code == "" {
 		return User, nil
 	}
-	if o, ok := AllOwners[code]; ok {
-		return o, nil
+	if owner, ok := AllOwners[code]; ok {
+		return owner, nil
 	}
 	return nil, fmt.Errorf("unknown owner code: '%s'", code)
 }
 
 // JoinCodes returns all owner codes joined by separator.
 func JoinCodes(sep string) string {
-	c := make([]string, 0, len(AllOwners))
+	codes := make([]string, 0, len(AllOwners))
 	for code := range AllOwners {
-		c = append(c, code)
+		codes = append(codes, code)
 	}
-	sort.Strings(c)
-	return strings.Join(c, sep)
+	sort.Strings(codes)
+	return strings.Join(codes, sep)
 }

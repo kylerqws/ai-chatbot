@@ -41,18 +41,18 @@ func Resolve(code string) (*ChatRole, error) {
 	if code == "" {
 		return nil, fmt.Errorf("chat role code is required")
 	}
-	if cr, ok := AllChatRoles[code]; ok {
-		return cr, nil
+	if role, ok := AllChatRoles[code]; ok {
+		return role, nil
 	}
 	return nil, fmt.Errorf("unknown chat role code: '%s'", code)
 }
 
 // JoinCodes returns all chat role codes joined by separator.
 func JoinCodes(sep string) string {
-	c := make([]string, 0, len(AllChatRoles))
+	codes := make([]string, 0, len(AllChatRoles))
 	for code := range AllChatRoles {
-		c = append(c, code)
+		codes = append(codes, code)
 	}
-	sort.Strings(c)
-	return strings.Join(c, sep)
+	sort.Strings(codes)
+	return strings.Join(codes, sep)
 }

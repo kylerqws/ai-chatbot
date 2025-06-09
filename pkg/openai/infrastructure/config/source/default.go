@@ -1,5 +1,6 @@
 package source
 
+//goland:noinspection GoUnusedConst
 const (
 	// DefaultBaseURL is the default OpenAI API base URL.
 	DefaultBaseURL = "https://api.openai.com/v1"
