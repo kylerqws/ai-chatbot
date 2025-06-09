@@ -1,10 +1,6 @@
 package jobstatus
 
-import (
-	"fmt"
-	"sort"
-	"strings"
-)
+import "github.com/kylerqws/chatbot/pkg/openai/utils/enumset"
 
 // JobStatus defines a fine‑tuning job state.
 type JobStatus struct {
@@ -44,21 +40,10 @@ var AllJobStatuses = map[string]*JobStatus{
 
 // Resolve looks up a JobStatus by code, error if missing or unknown.
 func Resolve(code string) (*JobStatus, error) {
-	if code == "" {
-		return nil, fmt.Errorf("job status code is required")
-	}
-	if status, ok := AllJobStatuses[code]; ok {
-		return status, nil
-	}
-	return nil, fmt.Errorf("unknown job status code: '%s'", code)
+	return enumset.ResolveRequired(code, AllJobStatuses, "job status")
 }
 
 // JoinCodes returns all job status codes joined by separator.
 func JoinCodes(sep string) string {
-	codes := make([]string, 0, len(AllJobStatuses))
-	for code := range AllJobStatuses {
-		codes = append(codes, code)
-	}
-	sort.Strings(codes)
-	return strings.Join(codes, sep)
+	return enumset.JoinCodes(AllJobStatuses, sep)
 }

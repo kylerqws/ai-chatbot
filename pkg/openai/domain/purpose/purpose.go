@@ -1,10 +1,6 @@
 package purpose
 
-import (
-	"fmt"
-	"sort"
-	"strings"
-)
+import "github.com/kylerqws/chatbot/pkg/openai/utils/enumset"
 
 // Purpose defines a file usage category in OpenAI operations.
 type Purpose struct {
@@ -44,21 +40,10 @@ var AllPurposes = map[string]*Purpose{
 
 // Resolve looks up a Purpose by code, defaulting to FineTune.
 func Resolve(code string) (*Purpose, error) {
-	if code == "" {
-		return FineTune, nil
-	}
-	if purpose, ok := AllPurposes[code]; ok {
-		return purpose, nil
-	}
-	return nil, fmt.Errorf("unknown purpose code: '%s'", code)
+	return enumset.ResolveWithDefault(code, AllPurposes, FineTune, "purpose")
 }
 
 // JoinCodes returns all purpose codes joined by separator.
 func JoinCodes(sep string) string {
-	codes := make([]string, 0, len(AllPurposes))
-	for code := range AllPurposes {
-		codes = append(codes, code)
-	}
-	sort.Strings(codes)
-	return strings.Join(codes, sep)
+	return enumset.JoinCodes(AllPurposes, sep)
 }

@@ -1,10 +1,6 @@
 package chatrole
 
-import (
-	"fmt"
-	"sort"
-	"strings"
-)
+import "github.com/kylerqws/chatbot/pkg/openai/utils/enumset"
 
 // ChatRole defines a role in chat conversations.
 type ChatRole struct {
@@ -38,21 +34,10 @@ var AllChatRoles = map[string]*ChatRole{
 
 // Resolve looks up a ChatRole by code, error if missing or unknown.
 func Resolve(code string) (*ChatRole, error) {
-	if code == "" {
-		return nil, fmt.Errorf("chat role code is required")
-	}
-	if role, ok := AllChatRoles[code]; ok {
-		return role, nil
-	}
-	return nil, fmt.Errorf("unknown chat role code: '%s'", code)
+	return enumset.ResolveRequired(code, AllChatRoles, "chat role")
 }
 
 // JoinCodes returns all chat role codes joined by separator.
 func JoinCodes(sep string) string {
-	codes := make([]string, 0, len(AllChatRoles))
-	for code := range AllChatRoles {
-		codes = append(codes, code)
-	}
-	sort.Strings(codes)
-	return strings.Join(codes, sep)
+	return enumset.JoinCodes(AllChatRoles, sep)
 }

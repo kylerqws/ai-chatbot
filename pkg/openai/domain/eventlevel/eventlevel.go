@@ -1,10 +1,6 @@
 package eventlevel
 
-import (
-	"fmt"
-	"sort"
-	"strings"
-)
+import "github.com/kylerqws/chatbot/pkg/openai/utils/enumset"
 
 // EventLevel defines the severity level of a fine‑tuning event.
 type EventLevel struct {
@@ -35,21 +31,10 @@ var AllEventLevels = map[string]*EventLevel{
 
 // Resolve looks up an EventLevel by code, error if missing or unknown.
 func Resolve(code string) (*EventLevel, error) {
-	if code == "" {
-		return nil, fmt.Errorf("event level code is required")
-	}
-	if level, ok := AllEventLevels[code]; ok {
-		return level, nil
-	}
-	return nil, fmt.Errorf("unknown event level code: '%s'", code)
+	return enumset.ResolveRequired(code, AllEventLevels, "event level")
 }
 
 // JoinCodes returns all event level codes joined by separator.
 func JoinCodes(sep string) string {
-	codes := make([]string, 0, len(AllEventLevels))
-	for code := range AllEventLevels {
-		codes = append(codes, code)
-	}
-	sort.Strings(codes)
-	return strings.Join(codes, sep)
+	return enumset.JoinCodes(AllEventLevels, sep)
 }

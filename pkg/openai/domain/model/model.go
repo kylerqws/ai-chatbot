@@ -1,10 +1,6 @@
 package model
 
-import (
-	"fmt"
-	"sort"
-	"strings"
-)
+import "github.com/kylerqws/chatbot/pkg/openai/utils/enumset"
 
 // Model defines a machine learning model supported by the OpenAI API.
 type Model struct {
@@ -32,21 +28,10 @@ var AllModels = map[string]*Model{
 
 // Resolve looks up a Model by code, defaulting to GPT35Turbo.
 func Resolve(code string) (*Model, error) {
-	if code == "" {
-		return GPT35Turbo, nil
-	}
-	if model, ok := AllModels[code]; ok {
-		return model, nil
-	}
-	return nil, fmt.Errorf("unknown model code: '%s'", code)
+	return enumset.ResolveWithDefault(code, AllModels, GPT35Turbo, "model")
 }
 
 // JoinCodes returns all model codes joined by separator.
 func JoinCodes(sep string) string {
-	codes := make([]string, 0, len(AllModels))
-	for code := range AllModels {
-		codes = append(codes, code)
-	}
-	sort.Strings(codes)
-	return strings.Join(codes, sep)
+	return enumset.JoinCodes(AllModels, sep)
 }

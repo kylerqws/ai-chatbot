@@ -1,10 +1,6 @@
 package owner
 
-import (
-	"fmt"
-	"sort"
-	"strings"
-)
+import "github.com/kylerqws/chatbot/pkg/openai/utils/enumset"
 
 // Owner represents a model ownership category in OpenAI operations.
 type Owner struct {
@@ -38,21 +34,10 @@ var AllOwners = map[string]*Owner{
 
 // Resolve looks up an Owner by code, defaulting to User.
 func Resolve(code string) (*Owner, error) {
-	if code == "" {
-		return User, nil
-	}
-	if owner, ok := AllOwners[code]; ok {
-		return owner, nil
-	}
-	return nil, fmt.Errorf("unknown owner code: '%s'", code)
+	return enumset.ResolveWithDefault(code, AllOwners, User, "owner")
 }
 
 // JoinCodes returns all owner codes joined by separator.
 func JoinCodes(sep string) string {
-	codes := make([]string, 0, len(AllOwners))
-	for code := range AllOwners {
-		codes = append(codes, code)
-	}
-	sort.Strings(codes)
-	return strings.Join(codes, sep)
+	return enumset.JoinCodes(AllOwners, sep)
 }
