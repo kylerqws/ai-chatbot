@@ -167,9 +167,9 @@ func (*fileService) filterListFiles(files []*ctrsvc.File, req *ctrsvc.ListFilesR
 
 // hasListFilesFilter checks whether any of the local filter fields are non-empty or set.
 func (*fileService) hasListFilesFilter(req *ctrsvc.ListFilesRequest) bool {
-	return (req.CreatedAfter != nil && *req.CreatedAfter > 0) ||
+	return len(req.FileIDs) > 0 || len(req.Purposes) > 0 || len(req.Filenames) > 0 ||
+		(req.CreatedAfter != nil && *req.CreatedAfter > 0) ||
 		(req.CreatedBefore != nil && *req.CreatedBefore > 0) ||
 		(req.ExpiresAfter != nil && *req.ExpiresAfter > 0) ||
-		(req.ExpiresBefore != nil && *req.ExpiresBefore > 0) ||
-		len(req.FileIDs) > 0 || len(req.Purposes) > 0 || len(req.Filenames) > 0
+		(req.ExpiresBefore != nil && *req.ExpiresBefore > 0)
 }

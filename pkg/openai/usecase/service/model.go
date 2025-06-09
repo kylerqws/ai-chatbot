@@ -108,7 +108,7 @@ func (*modelService) filterListModels(models []*ctrsvc.Model, req *ctrsvc.ListMo
 
 // hasListModelsFilter checks whether any of the local filter fields are non-empty or set.
 func (*modelService) hasListModelsFilter(req *ctrsvc.ListModelsRequest) bool {
-	return (req.CreatedAfter != nil && *req.CreatedAfter > 0) ||
-		(req.CreatedBefore != nil && *req.CreatedBefore > 0) ||
-		len(req.ModelIDs) > 0 || len(req.Owners) > 0
+	return len(req.ModelIDs) > 0 || len(req.Owners) > 0 ||
+		(req.CreatedAfter != nil && *req.CreatedAfter > 0) ||
+		(req.CreatedBefore != nil && *req.CreatedBefore > 0)
 }
