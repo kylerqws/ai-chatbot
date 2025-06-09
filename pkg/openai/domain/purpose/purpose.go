@@ -2,14 +2,17 @@ package purpose
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
+// Purpose defines a file usage category in OpenAI operations.
 type Purpose struct {
-	Code        string
-	Description string
+	Code        string // Unique identifier for the purpose.
+	Description string // Human-readable explanation of the purpose.
 }
 
+// Purpose code constants.
 const (
 	FineTuneCode   = "fine-tune"
 	AssistantsCode = "assistants"
@@ -19,33 +22,35 @@ const (
 	EvalsCode      = "evals"
 )
 
+// Predefined Purpose instances.
 var (
 	FineTune = &Purpose{
 		Code:        FineTuneCode,
-		Description: "Used to upload files for fine-tuning models.",
+		Description: "Used for fine-tuning a model.",
 	}
 	Assistants = &Purpose{
 		Code:        AssistantsCode,
-		Description: "Used to upload files for the Assistants API.",
+		Description: "Used with the Assistants API.",
 	}
 	Batch = &Purpose{
 		Code:        BatchCode,
-		Description: "Used for batch processing tasks.",
+		Description: "Used with the Batch API.",
 	}
 	UserData = &Purpose{
 		Code:        UserDataCode,
-		Description: "Used to upload user data files.",
+		Description: "Used for user-provided data.",
 	}
 	Vision = &Purpose{
 		Code:        VisionCode,
-		Description: "Used for vision model tasks.",
+		Description: "Used with vision-related APIs.",
 	}
 	Evals = &Purpose{
 		Code:        EvalsCode,
-		Description: "Used for evaluation tasks.",
+		Description: "Used with OpenAI Evals.",
 	}
 )
 
+// AllPurposes maps all known purpose codes to their Purpose instances.
 var AllPurposes = map[string]*Purpose{
 	FineTuneCode:   FineTune,
 	AssistantsCode: Assistants,
@@ -55,6 +60,8 @@ var AllPurposes = map[string]*Purpose{
 	EvalsCode:      Evals,
 }
 
+// Resolve returns the Purpose associated with the given code.
+// If the code is empty, the FineTune purpose is returned by default.
 func Resolve(code string) (*Purpose, error) {
 	if code == "" {
 		return FineTune, nil
@@ -62,15 +69,15 @@ func Resolve(code string) (*Purpose, error) {
 	if prp, ok := AllPurposes[code]; ok {
 		return prp, nil
 	}
-
-	return nil, fmt.Errorf("unknown value '%v'", code)
+	return nil, fmt.Errorf("purpose code is unknown")
 }
 
+// JoinCodes returns a sorted, delimited string of all known purpose codes.
 func JoinCodes(sep string) string {
 	codes := make([]string, 0, len(AllPurposes))
 	for code := range AllPurposes {
 		codes = append(codes, code)
 	}
-
+	sort.Strings(codes)
 	return strings.Join(codes, sep)
 }
