@@ -5,166 +5,171 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"strconv"
 
 	"github.com/kylerqws/chatbot/pkg/openai/domain/purpose"
-	"github.com/kylerqws/chatbot/pkg/openai/infrastructure/client"
 	"github.com/kylerqws/chatbot/pkg/openai/utils/filter"
+	"github.com/kylerqws/chatbot/pkg/openai/utils/query"
 
+	ctrcl "github.com/kylerqws/chatbot/pkg/openai/contract/client"
 	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 )
 
+// fileService implements FileService using OpenAI API client.
 type fileService struct {
 	config ctrcfg.Config
-	client *client.Client
+	client ctrcl.Client
 }
 
-func NewFileService(cl *client.Client, cfg ctrcfg.Config) ctrsvc.FileService {
+// NewFileService creates a new FileService instance.
+func NewFileService(cl ctrcl.Client, cfg ctrcfg.Config) ctrsvc.FileService {
 	return &fileService{config: cfg, client: cl}
 }
 
-func (s *fileService) UploadFile(
-	ctx context.Context,
-	req *ctrsvc.UploadFileRequest,
-) (*ctrsvc.UploadFileResponse, error) {
+// UploadFile uploads a file to the OpenAI API with the given purpose.
+func (s *fileService) UploadFile(ctx context.Context, req *ctrsvc.UploadFileRequest) (*ctrsvc.UploadFileResponse, error) {
 	result := &ctrsvc.UploadFileResponse{}
 
 	prp, err := purpose.Resolve(req.Purpose)
 	if err != nil {
-		return result, fmt.Errorf("failed to resolve purpose: %w", err)
+		return result, fmt.Errorf("resolve purpose: %w", err)
 	}
 
 	body := map[string]string{"file": req.FilePath, "purpose": prp.Code}
 	resp, err := s.client.RequestMultipart(ctx, "/files", body)
 	if err != nil {
-		return result, fmt.Errorf("failed to send multipart request: %w", err)
+		return result, fmt.Errorf("upload file: %w", err)
 	}
 
 	var file ctrsvc.File
-	err = json.Unmarshal(resp, &file)
-	if err != nil {
-		return result, fmt.Errorf("failed to unmarshal response: %w", err)
+	if err := json.Unmarshal(resp, &file); err != nil {
+		return result, fmt.Errorf("unmarshal upload response: %w", err)
 	}
 
 	result.File = &file
 	return result, nil
 }
 
-func (s *fileService) GetFileInfo(
-	ctx context.Context,
-	req *ctrsvc.GetFileInfoRequest,
-) (*ctrsvc.GetFileInfoResponse, error) {
-	result := &ctrsvc.GetFileInfoResponse{}
+// RetrieveFile fetches file metadata from OpenAI API by its ID.
+func (s *fileService) RetrieveFile(ctx context.Context, req *ctrsvc.RetrieveFileRequest) (*ctrsvc.RetrieveFileResponse, error) {
+	result := &ctrsvc.RetrieveFileResponse{}
 
-	resp, err := s.client.Request(ctx, "GET", "/files/"+req.FileID)
+	path := "/files/" + url.PathEscape(req.FileID)
+	resp, err := s.client.RequestRaw(ctx, "GET", path, nil)
 	if err != nil {
-		return result, fmt.Errorf("failed to send request: %w", err)
+		return result, fmt.Errorf("retrieve file: %w", err)
 	}
 
 	var file ctrsvc.File
-	err = json.Unmarshal(resp, &file)
-	if err != nil {
-		return result, fmt.Errorf("failed to unmarshal response: %w", err)
+	if err := json.Unmarshal(resp, &file); err != nil {
+		return result, fmt.Errorf("unmarshal retrieve response: %w", err)
 	}
 
 	result.File = &file
 	return result, nil
 }
 
-func (s *fileService) ListFiles(
-	ctx context.Context,
-	req *ctrsvc.ListFilesRequest,
-) (*ctrsvc.ListFilesResponse, error) {
+// RetrieveFileContent downloads the binary content of a file from OpenAI by ID.
+func (s *fileService) RetrieveFileContent(ctx context.Context, req *ctrsvc.RetrieveFileContentRequest) (*ctrsvc.RetrieveFileContentResponse, error) {
+	result := &ctrsvc.RetrieveFileContentResponse{}
+
+	path := "/files/" + url.PathEscape(req.FileID) + "/content"
+	resp, err := s.client.RequestRaw(ctx, "GET", path, nil)
+	if err != nil {
+		return result, fmt.Errorf("retrieve file content: %w", err)
+	}
+
+	result.Content = resp
+	return result, nil
+}
+
+// ListFiles retrieves a list of all files from OpenAI and optionally applies local filtering.
+func (s *fileService) ListFiles(ctx context.Context, req *ctrsvc.ListFilesRequest) (*ctrsvc.ListFilesResponse, error) {
 	result := &ctrsvc.ListFilesResponse{}
 
 	path := "/files" + s.buildListFilesQuery(req)
-	resp, err := s.client.Request(ctx, "GET", path)
+	resp, err := s.client.RequestRaw(ctx, "GET", path, nil)
 	if err != nil {
-		return result, fmt.Errorf("failed to send request: %w", err)
+		return result, fmt.Errorf("retrieve file list: %w", err)
 	}
 
 	var parsed struct {
 		Data []*ctrsvc.File `json:"data"`
 	}
-	err = json.Unmarshal(resp, &parsed)
-	if err != nil {
-		return result, fmt.Errorf("failed to unmarshal response: %w", err)
+	if err := json.Unmarshal(resp, &parsed); err != nil {
+		return result, fmt.Errorf("unmarshal list response: %w", err)
 	}
 
-	result.Files = s.applyListFilesFilter(parsed.Data, req)
+	if s.hasListFilesFilter(req) {
+		result.Files = s.filterListFiles(parsed.Data, req)
+		return result, nil
+	}
+
+	result.Files = parsed.Data
 	return result, nil
 }
 
-func (s *fileService) DeleteFile(
-	ctx context.Context,
-	req *ctrsvc.DeleteFileRequest,
-) (*ctrsvc.DeleteFileResponse, error) {
+// DeleteFile deletes a file from the OpenAI API using its ID.
+func (s *fileService) DeleteFile(ctx context.Context, req *ctrsvc.DeleteFileRequest) (*ctrsvc.DeleteFileResponse, error) {
 	result := &ctrsvc.DeleteFileResponse{}
 
-	resp, err := s.client.Request(ctx, "DELETE", "/files/"+req.FileID)
+	path := "/files/" + url.PathEscape(req.FileID)
+	resp, err := s.client.RequestRaw(ctx, "DELETE", path, nil)
 	if err != nil {
-		return result, fmt.Errorf("failed to send request: %w", err)
+		return result, fmt.Errorf("delete file: %w", err)
 	}
 
-	err = json.Unmarshal(resp, result)
-	if err != nil {
-		return result, fmt.Errorf("failed to unmarshal response: %w", err)
+	if err := json.Unmarshal(resp, result); err != nil {
+		return result, fmt.Errorf("unmarshal delete response: %w", err)
 	}
 
 	if !result.Deleted {
-		return result, fmt.Errorf("failed to delete file '%v'", result.ID)
+		return result, fmt.Errorf("file not deleted: %s", result.ID)
 	}
 	return result, nil
 }
 
-func (*fileService) hasAnyListFilesFilter(req *ctrsvc.ListFilesRequest) bool {
-	return req.CreatedAfter != 0 || req.CreatedBefore != 0 ||
-		len(req.FileIDs) > 0 || len(req.Statuses) > 0 ||
-		len(req.Purposes) > 0 || len(req.Filenames) > 0
-}
-
+// buildListFilesQuery constructs the API query string from the filter parameters.
 func (*fileService) buildListFilesQuery(req *ctrsvc.ListFilesRequest) string {
-	params := url.Values{}
+	q := query.NewUrlQuery()
 
-	if req.AfterFileID != "" {
-		params.Set("after", req.AfterFileID)
-	}
-	if req.LimitFiles != 0 {
-		params.Set("limit", strconv.FormatUint(uint64(req.LimitFiles), 10))
-	}
+	q.SetQueryStringParam("purpose", req.Purpose)
+	q.SetQueryStringParam("order", req.Order)
+	q.SetQueryStringParam("after", req.After)
+	q.SetQueryUint8Param("limit", req.Limit)
 
-	if query := params.Encode(); query != "" {
-		return "?" + query
-	}
-	return ""
+	return q.Encode()
 }
 
-func (s *fileService) applyListFilesFilter(files []*ctrsvc.File, req *ctrsvc.ListFilesRequest) []*ctrsvc.File {
-	if !s.hasAnyListFilesFilter(req) {
-		return files
+// filterListFiles applies in-memory filtering logic to a list of files based on provided conditions.
+func (*fileService) filterListFiles(files []*ctrsvc.File, req *ctrsvc.ListFilesRequest) []*ctrsvc.File {
+	var filtered []*ctrsvc.File
+	for _, f := range files {
+		if !filter.MatchDateValue(&f.CreatedAt, req.CreatedAfter, req.CreatedBefore) {
+			continue
+		}
+		if !filter.MatchDateValue(f.ExpiresAt, req.ExpiresAfter, req.ExpiresBefore) {
+			continue
+		}
+		if !filter.MatchStrValue(&f.ID, req.FileIDs) {
+			continue
+		}
+		if !filter.MatchStrValue(&f.Purpose, req.Purposes) {
+			continue
+		}
+		if !filter.MatchStrValue(&f.Filename, req.Filenames) {
+			continue
+		}
+		filtered = append(filtered, f)
 	}
+	return filtered
+}
 
-	var result []*ctrsvc.File
-	for i := range files {
-		if !filter.MatchDateValue(files[i].CreatedAt, req.CreatedAfter, req.CreatedBefore) {
-			continue
-		}
-		if !filter.MatchStrValue(files[i].ID, req.FileIDs) {
-			continue
-		}
-		if !filter.MatchStrValue(files[i].Status, req.Statuses) {
-			continue
-		}
-		if !filter.MatchStrValue(files[i].Purpose, req.Purposes) {
-			continue
-		}
-		if !filter.MatchStrValue(files[i].Filename, req.Filenames) {
-			continue
-		}
-
-		result = append(result, files[i])
-	}
-
-	return result
+// hasListFilesFilter checks whether any of the local filter fields are non-empty or set.
+func (*fileService) hasListFilesFilter(req *ctrsvc.ListFilesRequest) bool {
+	return (req.CreatedAfter != nil && *req.CreatedAfter > 0) ||
+		(req.CreatedBefore != nil && *req.CreatedBefore > 0) ||
+		(req.ExpiresAfter != nil && *req.ExpiresAfter > 0) ||
+		(req.ExpiresBefore != nil && *req.ExpiresBefore > 0) ||
+		len(req.FileIDs) > 0 || len(req.Purposes) > 0 || len(req.Filenames) > 0
 }
