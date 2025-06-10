@@ -2,6 +2,7 @@ package source
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -9,11 +10,14 @@ import (
 	ctrcfg "github.com/kylerqws/chatbot/pkg/logger/contract/config"
 )
 
+// envConfig implements the Config interface using environment variables as the source.
 type envConfig struct {
 	writer string
 	debug  bool
 }
 
+// NewEnvConfig returns a Config implementation populated from environment variables.
+// Falls back to default values when optional variables are missing.
 func NewEnvConfig(_ context.Context) (ctrcfg.Config, error) {
 	writer := os.Getenv("LOGGER_WRITER")
 	debugStr := os.Getenv("LOGGER_DEBUG")
@@ -24,34 +28,38 @@ func NewEnvConfig(_ context.Context) (ctrcfg.Config, error) {
 	}
 
 	cfg := &envConfig{}
-	if err = cfg.SetWriter(writer); err != nil {
-		return nil, err
+	if err := cfg.SetWriter(writer); err != nil {
+		return nil, fmt.Errorf("set writer: %w", err)
 	}
-	if err = cfg.SetDebug(debug); err != nil {
-		return nil, err
+	if err := cfg.SetDebug(debug); err != nil {
+		return nil, fmt.Errorf("set debug: %w", err)
 	}
 
 	return cfg, nil
 }
 
+// GetWriter returns the configured log writer type.
 func (c *envConfig) GetWriter() string {
 	return c.writer
 }
 
+// SetWriter sets the log writer type.
+// If the input is empty or whitespace, a default value is used.
 func (c *envConfig) SetWriter(writer string) error {
-	writer = strings.TrimSpace(writer)
-	if writer == "" {
+	if writer = strings.TrimSpace(writer); writer == "" {
 		writer = DefaultWriter
 	}
-
 	c.writer = writer
 	return nil
 }
 
+// IsDebug returns whether debug mode is enabled.
 func (c *envConfig) IsDebug() bool {
 	return c.debug
 }
 
+// SetDebug sets the debug mode flag.
+// Returns an error if value is invalid (always succeeds for bool).
 func (c *envConfig) SetDebug(debug bool) error {
 	c.debug = debug
 	return nil

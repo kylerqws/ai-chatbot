@@ -8,25 +8,23 @@ import (
 	"github.com/kylerqws/chatbot/pkg/logger/infrastructure/config/source"
 )
 
-const (
-	SourceTypeKey     = "sourceType"
-	DefaultSourceType = "env"
-)
-
+// New returns a Config implementation based on the source type defined in the context.
+// If no source type is provided, the default from the contract is used.
 func New(ctx context.Context) (ctrcfg.Config, error) {
-	st, ok := ctx.Value(SourceTypeKey).(string)
+	st, ok := ctx.Value(ctrcfg.SourceTypeKey).(ctrcfg.SourceType)
 	if !ok || st == "" {
-		st = DefaultSourceType
+		st = ctrcfg.DefaultSourceType
 	}
 
 	switch st {
-	case "env":
+	case ctrcfg.EnvSourceType:
 		cfg, err := source.NewEnvConfig(ctx)
 		if err != nil {
-			return nil, fmt.Errorf("failed to load env config: %w", err)
+			return nil, fmt.Errorf("load env config: %w", err)
 		}
 		return cfg, nil
+
 	default:
-		return nil, fmt.Errorf("unsupported config source: '%v'", st)
+		return nil, fmt.Errorf("unsupported config source: '%s'", st)
 	}
 }
