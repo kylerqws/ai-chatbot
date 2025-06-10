@@ -35,7 +35,7 @@ func New(ctx context.Context) ctrint.Logger {
 // DB returns the logger for database output.
 func (l *manager) DB() ctrpkg.Logger {
 	l.dbOnce.Do(func() {
-		l.db = l.initLogger(ctrwrt.TypeDB)
+		l.db = l.newLogger(ctrwrt.TypeDB)
 	})
 	return l.db
 }
@@ -43,7 +43,7 @@ func (l *manager) DB() ctrpkg.Logger {
 // Out returns the logger for standard output.
 func (l *manager) Out() ctrpkg.Logger {
 	l.stdoutOnce.Do(func() {
-		l.stdout = l.initLogger(ctrwrt.TypeStdout)
+		l.stdout = l.newLogger(ctrwrt.TypeStdout)
 	})
 	return l.stdout
 }
@@ -51,13 +51,13 @@ func (l *manager) Out() ctrpkg.Logger {
 // Err returns the logger for standard error.
 func (l *manager) Err() ctrpkg.Logger {
 	l.stderrOnce.Do(func() {
-		l.stderr = l.initLogger(ctrwrt.TypeStderr)
+		l.stderr = l.newLogger(ctrwrt.TypeStderr)
 	})
 	return l.stderr
 }
 
-// initLogger initializes a logger for the specified writer type.
-func (l *manager) initLogger(wt string) ctrpkg.Logger {
+// newLogger creates a logger for the specified writer type.
+func (l *manager) newLogger(wt string) ctrpkg.Logger {
 	instance, err := logger.NewWithWriter(l.ctx, wt)
 	if err != nil {
 		log.Fatal(fmt.Errorf("init logger '%s': %w", wt, err))
