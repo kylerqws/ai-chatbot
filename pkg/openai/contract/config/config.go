@@ -23,10 +23,10 @@ const (
 
 // Config defines access to OpenAI API client settings.
 type Config interface {
-	// GetBaseURL returns the base URL of the OpenAI API.
+	// GetBaseURL returns the OpenAI API base URL.
 	GetBaseURL() string
 
-	// SetBaseURL sets the base URL for the API.
+	// SetBaseURL sets the OpenAI API base URL.
 	SetBaseURL(url string) error
 
 	// GetAPIKey returns the API key used for authentication.
@@ -35,9 +35,9 @@ type Config interface {
 	// SetAPIKey sets the API key for authentication.
 	SetAPIKey(key string) error
 
-	// GetTimeout returns the HTTP timeout duration.
+	// GetTimeout returns the HTTP client timeout duration.
 	GetTimeout() time.Duration
 
-	// SetTimeout sets the timeout in seconds.
+	// SetTimeout sets the HTTP client timeout in seconds.
 	SetTimeout(seconds uint64) error
 }

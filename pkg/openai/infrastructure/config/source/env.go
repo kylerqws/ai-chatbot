@@ -59,12 +59,12 @@ func (c *envConfig) SetBaseURL(baseURL string) error {
 	return nil
 }
 
-// GetAPIKey returns the OpenAI API key.
+// GetAPIKey returns the API key used for authentication.
 func (c *envConfig) GetAPIKey() string {
 	return c.apiKey
 }
 
-// SetAPIKey sets the OpenAI API key.
+// SetAPIKey sets the API key for authentication.
 // Returns an error if the key is empty or only whitespace.
 func (c *envConfig) SetAPIKey(apiKey string) error {
 	if apiKey = strings.TrimSpace(apiKey); apiKey == "" {
@@ -74,7 +74,7 @@ func (c *envConfig) SetAPIKey(apiKey string) error {
 	return nil
 }
 
-// GetTimeout returns the HTTP client timeout.
+// GetTimeout returns the HTTP client timeout duration.
 func (c *envConfig) GetTimeout() time.Duration {
 	return c.timeout
 }

@@ -21,10 +21,10 @@ const (
 
 // Config defines database configuration settings.
 type Config interface {
-	// GetDialect returns database dialect name (e.g., "sqlite", "postgres").
+	// GetDialect returns database dialect (e.g., "sqlite", "postgres").
 	GetDialect() string
 
-	// SetDialect sets the database dialect name to use.
+	// SetDialect sets the database dialect.
 	SetDialect(dialect string) error
 
 	// GetDSN returns the database connection string (Data Source Name).
