@@ -35,7 +35,7 @@ type Config interface {
 	// SetAPIKey sets the API key for authentication.
 	SetAPIKey(key string) error
 
-	// GetTimeout returns the configured HTTP timeout duration.
+	// GetTimeout returns the HTTP timeout duration.
 	GetTimeout() time.Duration
 
 	// SetTimeout sets the timeout in seconds.

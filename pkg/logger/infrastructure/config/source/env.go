@@ -38,7 +38,7 @@ func NewEnvConfig(_ context.Context) (ctrcfg.Config, error) {
 	return cfg, nil
 }
 
-// GetWriter returns the configured log writer type.
+// GetWriter returns the log writer type.
 func (c *envConfig) GetWriter() string {
 	return c.writer
 }

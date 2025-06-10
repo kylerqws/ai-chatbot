@@ -44,7 +44,7 @@ func NewEnvConfig(_ context.Context) (ctrcfg.Config, error) {
 	return cfg, nil
 }
 
-// GetBaseURL returns the configured OpenAI API base URL.
+// GetBaseURL returns the OpenAI API base URL.
 func (c *envConfig) GetBaseURL() string {
 	return c.baseURL
 }
@@ -59,7 +59,7 @@ func (c *envConfig) SetBaseURL(baseURL string) error {
 	return nil
 }
 
-// GetAPIKey returns the configured OpenAI API key.
+// GetAPIKey returns the OpenAI API key.
 func (c *envConfig) GetAPIKey() string {
 	return c.apiKey
 }
@@ -74,7 +74,7 @@ func (c *envConfig) SetAPIKey(apiKey string) error {
 	return nil
 }
 
-// GetTimeout returns the configured HTTP client timeout.
+// GetTimeout returns the HTTP client timeout.
 func (c *envConfig) GetTimeout() time.Duration {
 	return c.timeout
 }
