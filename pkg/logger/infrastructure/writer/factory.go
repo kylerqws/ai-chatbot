@@ -18,6 +18,6 @@ func NewProvider(cfg ctrcfg.Config) (ctrwrt.Provider, error) {
 	case ctrwrt.TypeDB:
 		return provider.NewDBProvider(cfg), nil
 	default:
-		return nil, fmt.Errorf("unsupported writer type: %q", wt)
+		return nil, fmt.Errorf("unsupported writer type: '%s'", wt)
 	}
 }

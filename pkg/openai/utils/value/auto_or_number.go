@@ -50,7 +50,7 @@ func (v *AutoOrNumber[T]) UnmarshalJSON(data []byte) error {
 			v.Value = zero
 			return nil
 		}
-		return fmt.Errorf("invalid string value for AutoOrNumber: %q", s)
+		return fmt.Errorf("invalid string value for AutoOrNumber: '%s'", s)
 	}
 
 	var num T
