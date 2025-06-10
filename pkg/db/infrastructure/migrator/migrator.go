@@ -22,7 +22,7 @@ func New(cl ctrcl.Client) ctrmig.Migrator {
 
 // Migrate applies all pending migrations.
 func (m *migrator) Migrate(ctx context.Context, mgs *migrate.Migrations) error {
-	mig, err := m.prepare(ctx, mgs)
+	mig, err := m.newMigrator(ctx, mgs)
 	if err != nil {
 		return fmt.Errorf("prepare migrator: %w", err)
 	}
@@ -34,7 +34,7 @@ func (m *migrator) Migrate(ctx context.Context, mgs *migrate.Migrations) error {
 
 // Rollback rolls back the last applied migrations.
 func (m *migrator) Rollback(ctx context.Context, mgs *migrate.Migrations) error {
-	mig, err := m.prepare(ctx, mgs)
+	mig, err := m.newMigrator(ctx, mgs)
 	if err != nil {
 		return fmt.Errorf("prepare migrator: %w", err)
 	}
@@ -44,8 +44,8 @@ func (m *migrator) Rollback(ctx context.Context, mgs *migrate.Migrations) error 
 	return nil
 }
 
-// prepare initializes a migrator with the provided migrations.
-func (m *migrator) prepare(ctx context.Context, mgs *migrate.Migrations) (*migrate.Migrator, error) {
+// newMigrator creates and initializes a migrator with the provided migrations.
+func (m *migrator) newMigrator(ctx context.Context, mgs *migrate.Migrations) (*migrate.Migrator, error) {
 	mig := migrate.NewMigrator(m.client.DB(), mgs)
 	if err := mig.Init(ctx); err != nil {
 		return nil, fmt.Errorf("init migrator: %w", err)
