@@ -33,32 +33,32 @@ func New(ctx context.Context) ctrint.Logger {
 }
 
 // DB returns the logger for database output.
-func (l *manager) DB() ctrpkg.Logger {
-	l.dbOnce.Do(func() {
-		l.db = l.newLogger(ctrwrt.TypeDB)
+func (m *manager) DB() ctrpkg.Logger {
+	m.dbOnce.Do(func() {
+		m.db = m.newLogger(ctrwrt.TypeDB)
 	})
-	return l.db
+	return m.db
 }
 
 // Out returns the logger for standard output.
-func (l *manager) Out() ctrpkg.Logger {
-	l.stdoutOnce.Do(func() {
-		l.stdout = l.newLogger(ctrwrt.TypeStdout)
+func (m *manager) Out() ctrpkg.Logger {
+	m.stdoutOnce.Do(func() {
+		m.stdout = m.newLogger(ctrwrt.TypeStdout)
 	})
-	return l.stdout
+	return m.stdout
 }
 
 // Err returns the logger for standard error.
-func (l *manager) Err() ctrpkg.Logger {
-	l.stderrOnce.Do(func() {
-		l.stderr = l.newLogger(ctrwrt.TypeStderr)
+func (m *manager) Err() ctrpkg.Logger {
+	m.stderrOnce.Do(func() {
+		m.stderr = m.newLogger(ctrwrt.TypeStderr)
 	})
-	return l.stderr
+	return m.stderr
 }
 
 // newLogger creates a logger for the specified writer type.
-func (l *manager) newLogger(wt string) ctrpkg.Logger {
-	instance, err := logger.NewWithWriter(l.ctx, wt)
+func (m *manager) newLogger(wt string) ctrpkg.Logger {
+	instance, err := logger.NewWithWriter(m.ctx, wt)
 	if err != nil {
 		log.Fatal(fmt.Errorf("init logger '%s': %w", wt, err))
 	}
