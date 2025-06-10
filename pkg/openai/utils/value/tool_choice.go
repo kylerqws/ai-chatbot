@@ -2,7 +2,6 @@ package value
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
@@ -37,7 +36,7 @@ func NewToolChoiceNone() *ToolChoice {
 // The name parameter must be a non-empty function name.
 func NewToolChoiceFunction(name string) (*ToolChoice, error) {
 	if name == "" {
-		return nil, errors.New("function name cannot be empty")
+		return nil, fmt.Errorf("function name cannot be empty")
 	}
 
 	payload := map[string]any{

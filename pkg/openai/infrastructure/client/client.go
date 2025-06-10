@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -38,7 +37,7 @@ func New(cfg ctrcfg.Config) ctrcl.Client {
 func (c *client) RequestMultipart(ctx context.Context, path string, body map[string]string) (res []byte, err error) {
 	filePath := body["file"]
 	if filePath == "" {
-		return nil, errors.New("missing required field 'file' in request body")
+		return nil, fmt.Errorf("missing required field 'file' in request body")
 	}
 
 	reader, err := c.prepareFileReader(filePath, body["purpose"])

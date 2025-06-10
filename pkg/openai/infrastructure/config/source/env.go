@@ -2,7 +2,6 @@ package source
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -69,7 +68,7 @@ func (c *envConfig) GetAPIKey() string {
 // Returns an error if the key is empty or only whitespace.
 func (c *envConfig) SetAPIKey(apiKey string) error {
 	if apiKey = strings.TrimSpace(apiKey); apiKey == "" {
-		return errors.New("missing required OpenAI API key")
+		return fmt.Errorf("missing required OpenAI API key")
 	}
 	c.apiKey = apiKey
 	return nil
@@ -81,6 +80,7 @@ func (c *envConfig) GetTimeout() time.Duration {
 }
 
 // SetTimeout sets the HTTP client timeout in seconds.
+// Returns a default value if the provided timeout is zero.
 func (c *envConfig) SetTimeout(seconds uint64) error {
 	if seconds == 0 {
 		seconds = DefaultTimeout
