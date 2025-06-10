@@ -10,6 +10,8 @@ import (
 	"github.com/kylerqws/chatbot/pkg/openai"
 
 	ctrint "github.com/kylerqws/chatbot/internal/openai/contract"
+	ctrenm "github.com/kylerqws/chatbot/internal/openai/contract/enumset"
+
 	ctrpkg "github.com/kylerqws/chatbot/pkg/openai/contract"
 	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 )
@@ -18,20 +20,20 @@ import (
 type manager struct {
 	sdk ctrpkg.OpenAI
 
-	chatOnce sync.Once
-	chat     ctrsvc.ChatService
+	chatServiceOnce sync.Once
+	chatService     ctrsvc.ChatService
 
-	fileOnce sync.Once
-	file     ctrsvc.FileService
+	fileServiceOnce sync.Once
+	fileService     ctrsvc.FileService
 
-	fineOnce sync.Once
-	fine     ctrsvc.FineTuningService
+	fineServiceOnce   sync.Once
+	fineTuningService ctrsvc.FineTuningService
 
-	modelOnce sync.Once
-	model     ctrsvc.ModelService
+	modelServiceOnce sync.Once
+	modelService     ctrsvc.ModelService
 
-	setOnce    sync.Once
-	managerSet *enumset.ManagerSet
+	managerSetOnce sync.Once
+	managerSet     ctrenm.ManagerSet
 }
 
 // New returns a new OpenAI manager.
@@ -45,39 +47,39 @@ func New(ctx context.Context) ctrint.OpenAI {
 
 // ChatService returns the chat service.
 func (m *manager) ChatService() ctrsvc.ChatService {
-	m.chatOnce.Do(func() {
-		m.chat = m.sdk.ChatService()
+	m.chatServiceOnce.Do(func() {
+		m.chatService = m.sdk.ChatService()
 	})
-	return m.chat
+	return m.chatService
 }
 
 // FileService returns the file service.
 func (m *manager) FileService() ctrsvc.FileService {
-	m.fileOnce.Do(func() {
-		m.file = m.sdk.FileService()
+	m.fileServiceOnce.Do(func() {
+		m.fileService = m.sdk.FileService()
 	})
-	return m.file
+	return m.fileService
 }
 
 // FineTuningService returns the fine-tuning service.
 func (m *manager) FineTuningService() ctrsvc.FineTuningService {
-	m.fineOnce.Do(func() {
-		m.fine = m.sdk.FineTuningService()
+	m.fineServiceOnce.Do(func() {
+		m.fineTuningService = m.sdk.FineTuningService()
 	})
-	return m.fine
+	return m.fineTuningService
 }
 
 // ModelService returns the model service.
 func (m *manager) ModelService() ctrsvc.ModelService {
-	m.modelOnce.Do(func() {
-		m.model = m.sdk.ModelService()
+	m.modelServiceOnce.Do(func() {
+		m.modelService = m.sdk.ModelService()
 	})
-	return m.model
+	return m.modelService
 }
 
 // ManagerSet returns the OpenAI enum manager set.
-func (m *manager) ManagerSet() *enumset.ManagerSet {
-	m.setOnce.Do(func() {
+func (m *manager) ManagerSet() ctrenm.ManagerSet {
+	m.managerSetOnce.Do(func() {
 		m.managerSet = enumset.NewManagerSet()
 	})
 	return m.managerSet
