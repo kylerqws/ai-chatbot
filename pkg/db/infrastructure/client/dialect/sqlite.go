@@ -17,60 +17,62 @@ import (
 	ctrcfg "github.com/kylerqws/chatbot/pkg/db/contract/config"
 )
 
+// sqliteDialect implements the Dialect interface using SQLite.
 type sqliteDialect struct {
 	config ctrcfg.Config
 	db     *bun.DB
 }
 
+// NewSQLite creates a new SQLite dialect.
 func NewSQLite(cfg ctrcfg.Config) ctrdlt.Dialect {
 	return &sqliteDialect{config: cfg}
 }
 
+// Connect opens the connection via the dialect.
 func (d *sqliteDialect) Connect() error {
 	dsn, err := d.prepareDSN(d.config.GetDSN())
 	if err != nil {
-		return fmt.Errorf("failed to prepare DSN: %w", err)
+		return fmt.Errorf("prepare DSN: %w", err)
 	}
 
 	sqldb, err := sql.Open("sqlite3", dsn)
 	if err != nil {
-		return fmt.Errorf("failed to open SQLite connection: %w", err)
+		return fmt.Errorf("open SQLite connection: %w", err)
 	}
 
 	d.db = bun.NewDB(sqldb, sqlitedialect.New())
 
-	err = d.init()
-	if err != nil {
-		return fmt.Errorf("failed to initialize database: %w", err)
+	if err := d.init(); err != nil {
+		return fmt.Errorf("init database: %w", err)
 	}
 
-	err = d.db.Ping()
-	if err != nil {
-		return fmt.Errorf("failed to ping database: %w", err)
+	if err := d.db.Ping(); err != nil {
+		return fmt.Errorf("ping database: %w", err)
 	}
 
 	return nil
 }
 
+// Close closes the database connection.
 func (d *sqliteDialect) Close() error {
-	err := d.db.Close()
-	if err != nil {
-		return fmt.Errorf("failed to close SQLite database: %w", err)
+	if err := d.db.Close(); err != nil {
+		return fmt.Errorf("close database: %w", err)
 	}
-
 	return nil
 }
 
+// DB returns the low-level database instance.
 func (d *sqliteDialect) DB() *bun.DB {
 	if d.db == nil {
 		log.Fatalf("database not initialized")
 	}
-
 	return d.db
 }
 
+// prepareDSN normalizes and ensures the DSN path is valid.
 func (*sqliteDialect) prepareDSN(dsn string) (string, error) {
-	if strings.TrimSpace(dsn) == "" {
+	dsn = strings.TrimSpace(dsn)
+	if dsn == "" {
 		dsn = "var/database.sqlite"
 	}
 
@@ -79,22 +81,21 @@ func (*sqliteDialect) prepareDSN(dsn string) (string, error) {
 	}
 
 	dir := filepath.Dir(dsn)
-	err := os.MkdirAll(dir, os.ModePerm)
-	if err != nil {
-		return "", fmt.Errorf("failed to create directory %v: %w", dir, err)
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+		return "", fmt.Errorf("create directory '%s': %w", dir, err)
 	}
 
 	return dsn, nil
 }
 
+// init applies SQLite-specific settings and debug mode if enabled.
 func (d *sqliteDialect) init() error {
 	if d.config.IsDebug() {
 		d.db.AddQueryHook(bundebug.NewQueryHook())
 	}
 
-	_, err := d.db.Exec(`PRAGMA foreign_keys = ON;`)
-	if err != nil {
-		return fmt.Errorf("failed to enable foreign keys: %w", err)
+	if _, err := d.db.Exec(`PRAGMA foreign_keys = ON;`); err != nil {
+		return fmt.Errorf("enable foreign keys: %w", err)
 	}
 
 	return nil

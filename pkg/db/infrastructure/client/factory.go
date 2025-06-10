@@ -12,48 +12,49 @@ import (
 	ctrcfg "github.com/kylerqws/chatbot/pkg/db/contract/config"
 )
 
+// dbClient implements the Client interface using a specific SQL dialect.
 type dbClient struct {
 	config  ctrcfg.Config
 	dialect ctrdlt.Dialect
 	db      *bun.DB
 }
 
+// New returns a new database client.
 func New(cfg ctrcfg.Config) ctrcl.Client {
 	return &dbClient{config: cfg}
 }
 
+// Connect opens the database connection via the configured dialect.
 func (c *dbClient) Connect() error {
-	dn := c.config.GetDialect()
+	dialectName := c.config.GetDialect()
 
-	switch dn {
+	switch dialectName {
 	case "sqlite":
 		c.dialect = dialect.NewSQLite(c.config)
 	default:
-		return fmt.Errorf("unsupported database dialect: '%v'", dn)
+		return fmt.Errorf("unsupported database dialect: '%s'", dialectName)
 	}
 
-	err := c.dialect.Connect()
-	if err != nil {
-		return fmt.Errorf("failed to connect dialect '%v': %w", dn, err)
+	if err := c.dialect.Connect(); err != nil {
+		return fmt.Errorf("connect with dialect '%s': %w", dialectName, err)
 	}
 
 	c.db = c.dialect.DB()
 	return nil
 }
 
+// Close closes the database connection.
 func (c *dbClient) Close() error {
-	err := c.db.Close()
-	if err != nil {
-		return fmt.Errorf("failed to close database: %w", err)
+	if err := c.db.Close(); err != nil {
+		return fmt.Errorf("close database: %w", err)
 	}
-
 	return nil
 }
 
+// DB returns the low-level database instance.
 func (c *dbClient) DB() *bun.DB {
 	if c.db == nil {
 		log.Fatalf("database not initialized")
 	}
-
 	return c.db
 }
