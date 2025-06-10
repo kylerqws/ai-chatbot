@@ -7,6 +7,7 @@ import (
 	intcli "github.com/kylerqws/chatbot/internal/cli/adapter/cmd/openai"
 )
 
-func JobCommand(app *intapp.App) *cobra.Command {
-	return intcli.NewJobAdapter(app).Configure()
+// ModelCommand creates a command for interacting with OpenAI models.
+func ModelCommand(app *intapp.App) *cobra.Command {
+	return intcli.NewModelAdapter(app).Configure()
 }
