@@ -84,15 +84,15 @@ type FileService interface {
 	// UploadFile uploads a new file to OpenAI.
 	UploadFile(ctx context.Context, req *UploadFileRequest) (*UploadFileResponse, error)
 
-	// RetrieveFile retrieves a metadata file by its ID.
+	// RetrieveFile retrieves a file from OpenAI by its ID.
 	RetrieveFile(ctx context.Context, req *RetrieveFileRequest) (*RetrieveFileResponse, error)
 
-	// RetrieveFileContent retrieves the binary content of a file by its ID.
+	// RetrieveFileContent retrieves the binary content of a file from OpenAI by its ID.
 	RetrieveFileContent(ctx context.Context, req *RetrieveFileContentRequest) (*RetrieveFileContentResponse, error)
 
-	// ListFiles returns a filtered list of uploaded files.
+	// ListFiles returns a filtered list of files from OpenAI.
 	ListFiles(ctx context.Context, req *ListFilesRequest) (*ListFilesResponse, error)
 
-	// DeleteFile removes a file from OpenAI storage by its ID.
+	// DeleteFile removes a file from OpenAI by its ID.
 	DeleteFile(ctx context.Context, req *DeleteFileRequest) (*DeleteFileResponse, error)
 }

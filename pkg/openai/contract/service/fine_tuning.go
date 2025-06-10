@@ -222,12 +222,12 @@ type ResumeJobResponse struct {
 	Job *Job `json:"job"`
 }
 
-// FineTuningService defines operations for managing fine-tuning jobs.
+// FineTuningService defines operations for managing fine-tuning jobs in OpenAI.
 type FineTuningService interface {
 	// CreateJob creates a new fine-tuning job in OpenAI.
 	CreateJob(ctx context.Context, req *CreateJobRequest) (*CreateJobResponse, error)
 
-	// RetrieveJob retrieves a fine-tuning job by its ID.
+	// RetrieveJob retrieves a fine-tuning job from OpenAI by its ID.
 	RetrieveJob(ctx context.Context, req *RetrieveJobRequest) (*RetrieveJobResponse, error)
 
 	// CancelJob cancels an active fine-tuning job in OpenAI.
@@ -239,12 +239,12 @@ type FineTuningService interface {
 	// ResumeJob resumes a paused fine-tuning job in OpenAI.
 	ResumeJob(ctx context.Context, req *ResumeJobRequest) (*ResumeJobResponse, error)
 
-	// ListJobs returns a filtered list of fine-tuning jobs.
+	// ListJobs returns a filtered list of fine-tuning jobs from OpenAI.
 	ListJobs(ctx context.Context, req *ListJobsRequest) (*ListJobsResponse, error)
 
-	// ListEvents returns a filtered list of events for a specific fine-tuning job.
+	// ListEvents returns a filtered list of events for a fine-tuning job from OpenAI.
 	ListEvents(ctx context.Context, req *ListEventsRequest) (*ListEventsResponse, error)
 
-	// ListCheckpoints returns a filtered list of checkpoints for a specific fine-tuning job.
+	// ListCheckpoints returns a filtered list of checkpoints for a fine-tuning job from OpenAI.
 	ListCheckpoints(ctx context.Context, req *ListCheckpointsRequest) (*ListCheckpointsResponse, error)
 }

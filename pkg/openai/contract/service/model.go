@@ -48,10 +48,10 @@ type DeleteModelResponse struct {
 
 // ModelService defines operations for managing OpenAI models.
 type ModelService interface {
-	// RetrieveModel retrieves a metadata model by its ID.
+	// RetrieveModel retrieves a model from OpenAI by its ID.
 	RetrieveModel(ctx context.Context, req *RetrieveModelRequest) (*RetrieveModelResponse, error)
 
-	// ListModels returns a filtered list of available models.
+	// ListModels returns a filtered list of models from OpenAI.
 	ListModels(ctx context.Context, req *ListModelsRequest) (*ListModelsResponse, error)
 
 	// DeleteModel removes a model from OpenAI by its ID.
