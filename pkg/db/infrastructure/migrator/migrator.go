@@ -10,49 +10,45 @@ import (
 	ctrmig "github.com/kylerqws/chatbot/pkg/db/contract/migrator"
 )
 
+// migrator handles database schema migrations.
 type migrator struct {
 	client ctrcl.Client
 }
 
+// New returns a new migrator using the given database client.
 func New(cl ctrcl.Client) ctrmig.Migrator {
 	return &migrator{client: cl}
 }
 
+// Migrate applies all pending migrations.
 func (m *migrator) Migrate(ctx context.Context, mgs *migrate.Migrations) error {
-	mig, err := m.newMigrator(ctx, mgs)
+	mig, err := m.prepare(ctx, mgs)
 	if err != nil {
-		return fmt.Errorf("failed to create migrator: %w", err)
+		return fmt.Errorf("prepare migrator: %w", err)
 	}
-
-	_, err = mig.Migrate(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to migrate migrations: %w", err)
+	if _, err := mig.Migrate(ctx); err != nil {
+		return fmt.Errorf("apply migrations: %w", err)
 	}
-
 	return nil
 }
 
+// Rollback rolls back the last applied migrations.
 func (m *migrator) Rollback(ctx context.Context, mgs *migrate.Migrations) error {
-	mig, err := m.newMigrator(ctx, mgs)
+	mig, err := m.prepare(ctx, mgs)
 	if err != nil {
-		return fmt.Errorf("failed to create migrator: %w", err)
+		return fmt.Errorf("prepare migrator: %w", err)
 	}
-
-	_, err = mig.Rollback(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to rollback migrations: %w", err)
+	if _, err := mig.Rollback(ctx); err != nil {
+		return fmt.Errorf("rollback migrations: %w", err)
 	}
-
 	return nil
 }
 
-func (m *migrator) newMigrator(ctx context.Context, mgs *migrate.Migrations) (*migrate.Migrator, error) {
+// prepare initializes a migrator with the provided migrations.
+func (m *migrator) prepare(ctx context.Context, mgs *migrate.Migrations) (*migrate.Migrator, error) {
 	mig := migrate.NewMigrator(m.client.DB(), mgs)
-
-	err := mig.Init(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to init migrator: %w", err)
+	if err := mig.Init(ctx); err != nil {
+		return nil, fmt.Errorf("init migrator: %w", err)
 	}
-
 	return mig, nil
 }
