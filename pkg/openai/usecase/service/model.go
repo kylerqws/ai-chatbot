@@ -24,7 +24,7 @@ func NewModelService(cl ctrcl.Client, cfg ctrcfg.Config) ctrsvc.ModelService {
 	return &modelService{config: cfg, client: cl}
 }
 
-// RetrieveModel fetches model metadata from OpenAI API by its ID.
+// RetrieveModel retrieves a model from OpenAI by its ID.
 func (s *modelService) RetrieveModel(ctx context.Context, req *ctrsvc.RetrieveModelRequest) (*ctrsvc.RetrieveModelResponse, error) {
 	result := &ctrsvc.RetrieveModelResponse{}
 
@@ -43,13 +43,13 @@ func (s *modelService) RetrieveModel(ctx context.Context, req *ctrsvc.RetrieveMo
 	return result, nil
 }
 
-// ListModels retrieves a list of all models from OpenAI and optionally applies local filtering.
+// ListModels retrieves a list of models from OpenAI and optionally applies local filtering.
 func (s *modelService) ListModels(ctx context.Context, req *ctrsvc.ListModelsRequest) (*ctrsvc.ListModelsResponse, error) {
 	result := &ctrsvc.ListModelsResponse{}
 
 	resp, err := s.client.RequestRaw(ctx, "GET", "/models", nil)
 	if err != nil {
-		return result, fmt.Errorf("retrieve model list: %w", err)
+		return result, fmt.Errorf("retrieve list models: %w", err)
 	}
 
 	var parsed struct {
@@ -68,7 +68,7 @@ func (s *modelService) ListModels(ctx context.Context, req *ctrsvc.ListModelsReq
 	return result, nil
 }
 
-// DeleteModel deletes a model from the OpenAI API using its ID.
+// DeleteModel deletes a model from OpenAI by its ID.
 func (s *modelService) DeleteModel(ctx context.Context, req *ctrsvc.DeleteModelRequest) (*ctrsvc.DeleteModelResponse, error) {
 	result := &ctrsvc.DeleteModelResponse{}
 

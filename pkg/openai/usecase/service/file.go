@@ -26,7 +26,7 @@ func NewFileService(cl ctrcl.Client, cfg ctrcfg.Config) ctrsvc.FileService {
 	return &fileService{config: cfg, client: cl}
 }
 
-// UploadFile uploads a file to the OpenAI API with the given purpose.
+// UploadFile uploads a file to OpenAI with the given purpose.
 func (s *fileService) UploadFile(ctx context.Context, req *ctrsvc.UploadFileRequest) (*ctrsvc.UploadFileResponse, error) {
 	result := &ctrsvc.UploadFileResponse{}
 
@@ -50,7 +50,7 @@ func (s *fileService) UploadFile(ctx context.Context, req *ctrsvc.UploadFileRequ
 	return result, nil
 }
 
-// RetrieveFile fetches file metadata from OpenAI API by its ID.
+// RetrieveFile retrieves a file from OpenAI by its ID.
 func (s *fileService) RetrieveFile(ctx context.Context, req *ctrsvc.RetrieveFileRequest) (*ctrsvc.RetrieveFileResponse, error) {
 	result := &ctrsvc.RetrieveFileResponse{}
 
@@ -83,14 +83,14 @@ func (s *fileService) RetrieveFileContent(ctx context.Context, req *ctrsvc.Retri
 	return result, nil
 }
 
-// ListFiles retrieves a list of all files from OpenAI and optionally applies local filtering.
+// ListFiles retrieves a list of files from OpenAI and optionally applies local filtering.
 func (s *fileService) ListFiles(ctx context.Context, req *ctrsvc.ListFilesRequest) (*ctrsvc.ListFilesResponse, error) {
 	result := &ctrsvc.ListFilesResponse{}
 
 	path := "/files" + s.buildListFilesQuery(req)
 	resp, err := s.client.RequestRaw(ctx, "GET", path, nil)
 	if err != nil {
-		return result, fmt.Errorf("retrieve file list: %w", err)
+		return result, fmt.Errorf("retrieve list files: %w", err)
 	}
 
 	var parsed struct {
@@ -109,7 +109,7 @@ func (s *fileService) ListFiles(ctx context.Context, req *ctrsvc.ListFilesReques
 	return result, nil
 }
 
-// DeleteFile deletes a file from the OpenAI API using its ID.
+// DeleteFile deletes a file from OpenAI by its ID.
 func (s *fileService) DeleteFile(ctx context.Context, req *ctrsvc.DeleteFileRequest) (*ctrsvc.DeleteFileResponse, error) {
 	result := &ctrsvc.DeleteFileResponse{}
 

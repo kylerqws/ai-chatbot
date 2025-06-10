@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 
+	"github.com/kylerqws/chatbot/pkg/openai/utils/filter"
 	"github.com/kylerqws/chatbot/pkg/openai/utils/query"
 
 	ctrcl "github.com/kylerqws/chatbot/pkg/openai/contract/client"
@@ -42,7 +43,7 @@ func (s *fineTuningService) CreateJob(ctx context.Context, req *ctrsvc.CreateJob
 	return result, nil
 }
 
-// RetrieveJob fetches fine-tuning job metadata from OpenAI by its ID.
+// RetrieveJob retrieves fine-tuning job metadata from OpenAI by its ID.
 func (s *fineTuningService) RetrieveJob(ctx context.Context, req *ctrsvc.RetrieveJobRequest) (*ctrsvc.RetrieveJobResponse, error) {
 	result := &ctrsvc.RetrieveJobResponse{}
 
@@ -61,7 +62,7 @@ func (s *fineTuningService) RetrieveJob(ctx context.Context, req *ctrsvc.Retriev
 	return result, nil
 }
 
-// CancelJob sends a cancel request for a running fine-tuning job.
+// CancelJob cancels an active fine-tuning job in OpenAI by its ID.
 func (s *fineTuningService) CancelJob(ctx context.Context, req *ctrsvc.CancelJobRequest) (*ctrsvc.CancelJobResponse, error) {
 	result := &ctrsvc.CancelJobResponse{}
 
@@ -80,7 +81,7 @@ func (s *fineTuningService) CancelJob(ctx context.Context, req *ctrsvc.CancelJob
 	return result, nil
 }
 
-// PauseJob pauses an active fine-tuning job on OpenAI.
+// PauseJob pauses a running fine-tuning job in OpenAI by its ID.
 func (s *fineTuningService) PauseJob(ctx context.Context, req *ctrsvc.PauseJobRequest) (*ctrsvc.PauseJobResponse, error) {
 	result := &ctrsvc.PauseJobResponse{}
 
@@ -99,7 +100,7 @@ func (s *fineTuningService) PauseJob(ctx context.Context, req *ctrsvc.PauseJobRe
 	return result, nil
 }
 
-// ResumeJob resumes a paused fine-tuning job on OpenAI.
+// ResumeJob resumes a paused fine-tuning job in OpenAI by its ID.
 func (s *fineTuningService) ResumeJob(ctx context.Context, req *ctrsvc.ResumeJobRequest) (*ctrsvc.ResumeJobResponse, error) {
 	result := &ctrsvc.ResumeJobResponse{}
 
@@ -118,14 +119,14 @@ func (s *fineTuningService) ResumeJob(ctx context.Context, req *ctrsvc.ResumeJob
 	return result, nil
 }
 
-// ListJobs retrieves all fine-tuning jobs with optional pagination.
+// ListJobs retrieves a list of fine-tuning jobs from OpenAI and optionally applies local filtering.
 func (s *fineTuningService) ListJobs(ctx context.Context, req *ctrsvc.ListJobsRequest) (*ctrsvc.ListJobsResponse, error) {
 	result := &ctrsvc.ListJobsResponse{}
 
 	path := "/fine_tuning/jobs" + s.buildPaginationQuery(req.After, req.Limit)
 	resp, err := s.client.RequestRaw(ctx, "GET", path, nil)
 	if err != nil {
-		return result, fmt.Errorf("list jobs: %w", err)
+		return result, fmt.Errorf("retrieve list jobs: %w", err)
 	}
 
 	var parsed struct {
@@ -135,39 +136,23 @@ func (s *fineTuningService) ListJobs(ctx context.Context, req *ctrsvc.ListJobsRe
 		return result, fmt.Errorf("unmarshal list jobs response: %w", err)
 	}
 
+	if s.hasListJobsFilter(req) {
+		result.Jobs = s.filterListJobs(parsed.Data, req)
+		return result, nil
+	}
+
 	result.Jobs = parsed.Data
 	return result, nil
 }
 
-// ListCheckpoints retrieves training checkpoints for a fine-tuning job.
-func (s *fineTuningService) ListCheckpoints(ctx context.Context, req *ctrsvc.ListCheckpointsRequest) (*ctrsvc.ListCheckpointsResponse, error) {
-	result := &ctrsvc.ListCheckpointsResponse{}
-
-	path := "/fine_tuning/jobs/" + url.PathEscape(req.JobID) + "/checkpoints" + s.buildPaginationQuery(req.After, req.Limit)
-	resp, err := s.client.RequestRaw(ctx, "GET", path, nil)
-	if err != nil {
-		return result, fmt.Errorf("list checkpoints: %w", err)
-	}
-
-	var parsed struct {
-		Data []*ctrsvc.Checkpoint `json:"data"`
-	}
-	if err := json.Unmarshal(resp, &parsed); err != nil {
-		return result, fmt.Errorf("unmarshal list checkpoints response: %w", err)
-	}
-
-	result.Checkpoints = parsed.Data
-	return result, nil
-}
-
-// ListEvents retrieves event logs for a fine-tuning job.
+// ListEvents retrieves a list of fine-tuning job events from OpenAI and optionally applies local filtering.
 func (s *fineTuningService) ListEvents(ctx context.Context, req *ctrsvc.ListEventsRequest) (*ctrsvc.ListEventsResponse, error) {
 	result := &ctrsvc.ListEventsResponse{}
 
 	path := "/fine_tuning/jobs/" + url.PathEscape(req.JobID) + "/events" + s.buildPaginationQuery(req.After, req.Limit)
 	resp, err := s.client.RequestRaw(ctx, "GET", path, nil)
 	if err != nil {
-		return result, fmt.Errorf("list events: %w", err)
+		return result, fmt.Errorf("retrieve list events: %w", err)
 	}
 
 	var parsed struct {
@@ -177,7 +162,38 @@ func (s *fineTuningService) ListEvents(ctx context.Context, req *ctrsvc.ListEven
 		return result, fmt.Errorf("unmarshal list events response: %w", err)
 	}
 
+	if s.hasListEventsFilter(req) {
+		result.Events = s.filterListEvents(parsed.Data, req)
+		return result, nil
+	}
+
 	result.Events = parsed.Data
+	return result, nil
+}
+
+// ListCheckpoints retrieves a list of fine-tuning job checkpoints from OpenAI and optionally applies local filtering.
+func (s *fineTuningService) ListCheckpoints(ctx context.Context, req *ctrsvc.ListCheckpointsRequest) (*ctrsvc.ListCheckpointsResponse, error) {
+	result := &ctrsvc.ListCheckpointsResponse{}
+
+	path := "/fine_tuning/jobs/" + url.PathEscape(req.JobID) + "/checkpoints" + s.buildPaginationQuery(req.After, req.Limit)
+	resp, err := s.client.RequestRaw(ctx, "GET", path, nil)
+	if err != nil {
+		return result, fmt.Errorf("retrieve list checkpoints: %w", err)
+	}
+
+	var parsed struct {
+		Data []*ctrsvc.Checkpoint `json:"data"`
+	}
+	if err := json.Unmarshal(resp, &parsed); err != nil {
+		return result, fmt.Errorf("unmarshal list checkpoints response: %w", err)
+	}
+
+	if s.hasListCheckpointsFilter(req) {
+		result.Checkpoints = s.filterListCheckpoints(parsed.Data, req)
+		return result, nil
+	}
+
+	result.Checkpoints = parsed.Data
 	return result, nil
 }
 
@@ -189,4 +205,111 @@ func (*fineTuningService) buildPaginationQuery(after *string, limit *uint8) stri
 	q.SetQueryUint8Param("limit", limit)
 
 	return q.Encode()
+}
+
+// filterListJobs applies in-memory filtering logic to a list of fine-tuning jobs based on provided conditions.
+func (*fineTuningService) filterListJobs(jobs []*ctrsvc.Job, req *ctrsvc.ListJobsRequest) []*ctrsvc.Job {
+	var filtered []*ctrsvc.Job
+	for i := range jobs {
+		if !filter.MatchDateValue(&jobs[i].CreatedAt, req.CreatedAfter, req.CreatedBefore) {
+			continue
+		}
+		if !filter.MatchDateValue(&jobs[i].UpdatedAt, req.UpdatedAfter, req.UpdatedBefore) {
+			continue
+		}
+		if !filter.MatchDateValue(jobs[i].FinishedAt, req.FinishedAfter, req.FinishedBefore) {
+			continue
+		}
+		if !filter.MatchDateValue(jobs[i].EstimatedFinishAt, req.EstimatedFinishAfter, req.EstimatedFinishBefore) {
+			continue
+		}
+		if !filter.MatchStrValue(&jobs[i].ID, req.JobIDs) {
+			continue
+		}
+		if !filter.MatchStrValue(&jobs[i].OrganizationID, req.OrganizationIDs) {
+			continue
+		}
+		if !filter.MatchStrValue(&jobs[i].Status, req.Statuses) {
+			continue
+		}
+		if !filter.MatchStrValue(jobs[i].Suffix, req.Suffixes) {
+			continue
+		}
+		if !filter.MatchStrValue(&jobs[i].Model, req.Models) {
+			continue
+		}
+		if !filter.MatchStrValue(jobs[i].FineTunedModel, req.FineTunedModels) {
+			continue
+		}
+		if !filter.MatchStrValue(&jobs[i].TrainingFile, req.TrainingFiles) {
+			continue
+		}
+		if !filter.MatchStrValue(jobs[i].ValidationFile, req.ValidationFiles) {
+			continue
+		}
+		filtered = append(filtered, jobs[i])
+	}
+	return filtered
+}
+
+// hasListJobsFilter checks whether any of the local filter fields are non-empty or set.
+func (*fineTuningService) hasListJobsFilter(req *ctrsvc.ListJobsRequest) bool {
+	return len(req.JobIDs) > 0 || len(req.OrganizationIDs) > 0 || len(req.Statuses) > 0 ||
+		len(req.Suffixes) > 0 || len(req.Models) > 0 || len(req.FineTunedModels) > 0 ||
+		len(req.TrainingFiles) > 0 || len(req.ValidationFiles) > 0 ||
+		(req.CreatedAfter != nil && *req.CreatedAfter > 0) ||
+		(req.CreatedBefore != nil && *req.CreatedBefore > 0) ||
+		(req.UpdatedAfter != nil && *req.UpdatedAfter > 0) ||
+		(req.UpdatedBefore != nil && *req.UpdatedBefore > 0) ||
+		(req.FinishedAfter != nil && *req.FinishedAfter > 0) ||
+		(req.FinishedBefore != nil && *req.FinishedBefore > 0) ||
+		(req.EstimatedFinishAfter != nil && *req.EstimatedFinishAfter > 0) ||
+		(req.EstimatedFinishBefore != nil && *req.EstimatedFinishBefore > 0)
+}
+
+// filterListEvents applies in-memory filtering logic to a list of fine-tuning job events based on provided conditions.
+func (*fineTuningService) filterListEvents(events []*ctrsvc.Event, req *ctrsvc.ListEventsRequest) []*ctrsvc.Event {
+	var filtered []*ctrsvc.Event
+	for i := range events {
+		if !filter.MatchDateValue(&events[i].CreatedAt, req.CreatedAfter, req.CreatedBefore) {
+			continue
+		}
+		if !filter.MatchStrValue(&events[i].ID, req.EventIDs) {
+			continue
+		}
+		if !filter.MatchStrValue(&events[i].Level, req.Levels) {
+			continue
+		}
+		filtered = append(filtered, events[i])
+	}
+	return filtered
+}
+
+// hasListEventsFilter checks whether any of the local filter fields are non-empty or set.
+func (*fineTuningService) hasListEventsFilter(req *ctrsvc.ListEventsRequest) bool {
+	return len(req.EventIDs) > 0 || len(req.Levels) > 0 ||
+		(req.CreatedAfter != nil && *req.CreatedAfter > 0) ||
+		(req.CreatedBefore != nil && *req.CreatedBefore > 0)
+}
+
+// filterListCheckpoints applies in-memory filtering logic to a list of fine-tuning job checkpoints based on provided conditions.
+func (*fineTuningService) filterListCheckpoints(checkpoints []*ctrsvc.Checkpoint, req *ctrsvc.ListCheckpointsRequest) []*ctrsvc.Checkpoint {
+	var filtered []*ctrsvc.Checkpoint
+	for i := range checkpoints {
+		if !filter.MatchDateValue(&checkpoints[i].CreatedAt, req.CreatedAfter, req.CreatedBefore) {
+			continue
+		}
+		if !filter.MatchStrValue(&checkpoints[i].ID, req.CheckpointIDs) {
+			continue
+		}
+		filtered = append(filtered, checkpoints[i])
+	}
+	return filtered
+}
+
+// hasListCheckpointsFilter checks whether any of the local filter fields are non-empty or set.
+func (*fineTuningService) hasListCheckpointsFilter(req *ctrsvc.ListCheckpointsRequest) bool {
+	return len(req.CheckpointIDs) > 0 ||
+		(req.CreatedAfter != nil && *req.CreatedAfter > 0) ||
+		(req.CreatedBefore != nil && *req.CreatedBefore > 0)
 }
