@@ -13,7 +13,7 @@ import (
 	ctrenm "github.com/kylerqws/chatbot/internal/openai/contract/enumset"
 )
 
-// ManagerSet provides access to enumset managers.
+// managerSet provides thread-safe access to OpenAI enum managers.
 type managerSet struct {
 	chatOnce sync.Once
 	chatRole *chatrole.Manager
@@ -34,7 +34,7 @@ type managerSet struct {
 	purpose     *purpose.Manager
 }
 
-// NewManagerSet returns a new ManagerSet.
+// NewManagerSet returns a new enum manager set.
 func NewManagerSet() ctrenm.ManagerSet {
 	return &managerSet{}
 }
