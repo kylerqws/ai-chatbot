@@ -19,6 +19,6 @@ type OpenAI interface {
 	// ModelService returns the service for model management.
 	ModelService() ctrsvc.ModelService
 
-	// ManagerSet returns the manager set for OpenAI enum types.
-	ManagerSet() ctrenm.ManagerSet
+	// EnumManagerSet returns the manager set for OpenAI enum types.
+	EnumManagerSet() ctrenm.ManagerSet
 }

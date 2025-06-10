@@ -32,8 +32,8 @@ type manager struct {
 	modelServiceOnce sync.Once
 	modelService     ctrsvc.ModelService
 
-	managerSetOnce sync.Once
-	managerSet     ctrenm.ManagerSet
+	enumManagerSetOnce sync.Once
+	enumManagerSet     ctrenm.ManagerSet
 }
 
 // New returns a new OpenAI manager.
@@ -77,10 +77,10 @@ func (m *manager) ModelService() ctrsvc.ModelService {
 	return m.modelService
 }
 
-// ManagerSet returns the OpenAI enum manager set.
-func (m *manager) ManagerSet() ctrenm.ManagerSet {
-	m.managerSetOnce.Do(func() {
-		m.managerSet = enumset.NewManagerSet()
+// EnumManagerSet returns the OpenAI enum manager set.
+func (m *manager) EnumManagerSet() ctrenm.ManagerSet {
+	m.enumManagerSetOnce.Do(func() {
+		m.enumManagerSet = enumset.NewManagerSet()
 	})
-	return m.managerSet
+	return m.enumManagerSet
 }
