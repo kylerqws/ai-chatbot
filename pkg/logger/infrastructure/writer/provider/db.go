@@ -8,24 +8,27 @@ import (
 	ctrwrt "github.com/kylerqws/chatbot/pkg/logger/contract/writer"
 )
 
-type (
-	dbProvider struct {
-		config ctrcfg.Config
-	}
-	dbWriter struct {
-		config ctrcfg.Config
-	}
-)
+// dbProvider implements Provider using a database writer stub.
+type dbProvider struct {
+	config ctrcfg.Config
+}
 
+// dbWriter is a placeholder for database-backed io.Writer.
+type dbWriter struct {
+	config ctrcfg.Config
+}
+
+// NewDBProvider creates a new database writer provider.
 func NewDBProvider(cfg ctrcfg.Config) ctrwrt.Provider {
 	return &dbProvider{config: cfg}
 }
 
-func (p *dbProvider) Writer() io.Writer {
-	return &dbWriter{config: p.config}
+// Writer returns a placeholder DB writer.
+func (*dbProvider) Writer() io.Writer {
+	return &dbWriter{}
 }
 
-func (*dbWriter) Write(p []byte) (int, error) {
-	// TODO: need to implement for storing logs in the database
-	return len(p), fmt.Errorf("database writer is not implemented")
+// Write persists log entries to the database.
+func (*dbWriter) Write(_ []byte) (int, error) {
+	return 0, fmt.Errorf("db writer is not implemented")
 }
