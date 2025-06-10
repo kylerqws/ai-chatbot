@@ -5,16 +5,16 @@ import (
 	"github.com/kylerqws/chatbot/pkg/openai/utils/value"
 )
 
-// Job represents a fine-tuning job resource.
+// Job represents a job object returned from the OpenAI API.
 type Job struct {
 	ID                string                  `json:"id"`
 	Object            string                  `json:"object"`
-	Status            string                  `json:"status"`
 	Model             string                  `json:"model"`
 	TrainingFile      string                  `json:"training_file"`
+	OrganizationID    string                  `json:"organization_id"`
+	Status            string                  `json:"status"`
 	CreatedAt         int64                   `json:"created_at"`
 	UpdatedAt         int64                   `json:"updated_at"`
-	OrganizationID    string                  `json:"organization_id"`
 	Hyperparameters   map[string]interface{}  `json:"hyperparameters,omitempty"`
 	ResultFiles       []string                `json:"result_files"`
 	FineTunedModel    *string                 `json:"fine_tuned_model,omitempty"`
@@ -30,7 +30,7 @@ type Job struct {
 	Permissions       []*FineTuningPermission `json:"permissions,omitempty"`
 }
 
-// FineTuningPermission describes permissions for a fine-tuning job.
+// FineTuningPermission represents a permission object returned from the OpenAI API.
 type FineTuningPermission struct {
 	ID                 string  `json:"id"`
 	Object             string  `json:"object"`
@@ -46,7 +46,7 @@ type FineTuningPermission struct {
 	Group              *string `json:"group,omitempty"`
 }
 
-// Event represents a log event for a fine-tuning job.
+// Event represents an event object returned from the OpenAI API.
 type Event struct {
 	ID        string `json:"id"`
 	Object    string `json:"object"`
@@ -55,15 +55,14 @@ type Event struct {
 	CreatedAt int64  `json:"created_at"`
 }
 
-// Checkpoint represents a checkpoint of a fine-tuning job.
+// Checkpoint represents a checkpoint object returned from the OpenAI API.
 type Checkpoint struct {
 	ID                       string                 `json:"id"`
 	Object                   string                 `json:"object"`
-	FineTuningJobID          string                 `json:"fine_tuning_job_id"`
-	Metrics                  map[string]interface{} `json:"metrics"`
-	EvalMetrics              map[string]interface{} `json:"eval_metrics"`
 	StepNumber               int64                  `json:"step_number"`
 	CreatedAt                int64                  `json:"created_at"`
+	Metrics                  map[string]interface{} `json:"metrics"`
+	EvalMetrics              map[string]interface{} `json:"eval_metrics"`
 	FullModelFile            *string                `json:"full_model_file,omitempty"`
 	FineTunedModelCheckpoint *string                `json:"fine_tuned_model_checkpoint,omitempty"`
 }
@@ -138,6 +137,24 @@ type CancelJobResponse struct {
 
 // ListJobsRequest contains parameters for filtering listed fine-tuning jobs.
 type ListJobsRequest struct {
+	// Local filtering (applied after fetching data)
+	JobIDs                []string `json:"job_ids,omitempty"`
+	OrganizationIDs       []string `json:"organization_ids,omitempty"`
+	Statuses              []string `json:"statuses,omitempty"`
+	Suffixes              []string `json:"suffixes,omitempty"`
+	Models                []string `json:"models,omitempty"`
+	FineTunedModels       []string `json:"fine_tuned_models,omitempty"`
+	TrainingFiles         []string `json:"training_files,omitempty"`
+	ValidationFiles       []string `json:"validation_files,omitempty"`
+	CreatedAfter          *int64   `json:"created_after,omitempty"`
+	CreatedBefore         *int64   `json:"created_before,omitempty"`
+	UpdatedAfter          *int64   `json:"updated_after,omitempty"`
+	UpdatedBefore         *int64   `json:"updated_before,omitempty"`
+	FinishedAfter         *int64   `json:"finished_after,omitempty"`
+	FinishedBefore        *int64   `json:"finished_before,omitempty"`
+	EstimatedFinishAfter  *int64   `json:"estimated_finish_after,omitempty"`
+	EstimatedFinishBefore *int64   `json:"estimated_finish_before,omitempty"`
+
 	// API-supported query parameters
 	After *string `json:"after,omitempty"`
 	Limit *uint8  `json:"limit,omitempty"`
@@ -150,6 +167,12 @@ type ListJobsResponse struct {
 
 // ListEventsRequest contains parameters for filtering listed fine-tuning job events.
 type ListEventsRequest struct {
+	// Local filtering (applied after fetching data)
+	EventIDs      []string `json:"event_ids,omitempty"`
+	Levels        []string `json:"levels,omitempty"`
+	CreatedAfter  *int64   `json:"created_after,omitempty"`
+	CreatedBefore *int64   `json:"created_before,omitempty"`
+
 	// API-supported query parameters
 	JobID string  `json:"job_id"`
 	After *string `json:"after,omitempty"`
@@ -163,6 +186,11 @@ type ListEventsResponse struct {
 
 // ListCheckpointsRequest contains parameters for filtering listed fine-tuning job checkpoints.
 type ListCheckpointsRequest struct {
+	// Local filtering (applied after fetching data)
+	CheckpointIDs []string `json:"checkpoint_ids,omitempty"`
+	CreatedAfter  *int64   `json:"created_after,omitempty"`
+	CreatedBefore *int64   `json:"created_before,omitempty"`
+
 	// API-supported query parameters
 	JobID string  `json:"job_id"`
 	After *string `json:"after,omitempty"`
@@ -196,27 +224,27 @@ type ResumeJobResponse struct {
 
 // FineTuningService defines operations for managing fine-tuning jobs.
 type FineTuningService interface {
-	// CreateJob creates a new fine-tuning job.
+	// CreateJob creates a new fine-tuning job in OpenAI.
 	CreateJob(ctx context.Context, req *CreateJobRequest) (*CreateJobResponse, error)
 
 	// RetrieveJob retrieves a fine-tuning job by its ID.
 	RetrieveJob(ctx context.Context, req *RetrieveJobRequest) (*RetrieveJobResponse, error)
 
-	// CancelJob cancels an active fine-tuning job.
+	// CancelJob cancels an active fine-tuning job in OpenAI.
 	CancelJob(ctx context.Context, req *CancelJobRequest) (*CancelJobResponse, error)
 
-	// PauseJob pauses a running fine-tuning job.
+	// PauseJob pauses a running fine-tuning job in OpenAI.
 	PauseJob(ctx context.Context, req *PauseJobRequest) (*PauseJobResponse, error)
 
-	// ResumeJob resumes a paused fine-tuning job.
+	// ResumeJob resumes a paused fine-tuning job in OpenAI.
 	ResumeJob(ctx context.Context, req *ResumeJobRequest) (*ResumeJobResponse, error)
 
-	// ListJobs returns a list of fine-tuning jobs with optional pagination.
+	// ListJobs returns a filtered list of fine-tuning jobs.
 	ListJobs(ctx context.Context, req *ListJobsRequest) (*ListJobsResponse, error)
 
-	// ListCheckpoints returns checkpoints for a specific fine-tuning job.
-	ListCheckpoints(ctx context.Context, req *ListCheckpointsRequest) (*ListCheckpointsResponse, error)
-
-	// ListEvents returns events for a specific fine-tuning job.
+	// ListEvents returns a filtered list of events for a specific fine-tuning job.
 	ListEvents(ctx context.Context, req *ListEventsRequest) (*ListEventsResponse, error)
+
+	// ListCheckpoints returns a filtered list of checkpoints for a specific fine-tuning job.
+	ListCheckpoints(ctx context.Context, req *ListCheckpointsRequest) (*ListCheckpointsResponse, error)
 }

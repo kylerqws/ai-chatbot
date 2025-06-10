@@ -2,7 +2,7 @@ package service
 
 import "context"
 
-// File represents a file object stored on the OpenAI server.
+// File represents a file object returned from the OpenAI API.
 type File struct {
 	ID        string `json:"id"`
 	Object    string `json:"object"`
@@ -84,10 +84,10 @@ type FileService interface {
 	// UploadFile uploads a new file to OpenAI.
 	UploadFile(ctx context.Context, req *UploadFileRequest) (*UploadFileResponse, error)
 
-	// RetrieveFile fetches metadata of a file by ID.
+	// RetrieveFile retrieves a metadata file by its ID.
 	RetrieveFile(ctx context.Context, req *RetrieveFileRequest) (*RetrieveFileResponse, error)
 
-	// RetrieveFileContent returns the binary content of a file.
+	// RetrieveFileContent retrieves the binary content of a file by its ID.
 	RetrieveFileContent(ctx context.Context, req *RetrieveFileContentRequest) (*RetrieveFileContentResponse, error)
 
 	// ListFiles returns a filtered list of uploaded files.

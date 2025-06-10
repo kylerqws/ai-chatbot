@@ -2,7 +2,7 @@ package service
 
 import "context"
 
-// Model represents a model object returned by the OpenAI API.
+// Model represents a model object returned from the OpenAI API.
 type Model struct {
 	ID        string `json:"id"`
 	Object    string `json:"object"`
@@ -48,7 +48,7 @@ type DeleteModelResponse struct {
 
 // ModelService defines operations for managing OpenAI models.
 type ModelService interface {
-	// RetrieveModel fetches metadata of a model by ID.
+	// RetrieveModel retrieves a metadata model by its ID.
 	RetrieveModel(ctx context.Context, req *RetrieveModelRequest) (*RetrieveModelResponse, error)
 
 	// ListModels returns a filtered list of available models.
