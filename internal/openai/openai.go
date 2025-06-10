@@ -6,6 +6,7 @@ import (
 	"log"
 	"sync"
 
+	"github.com/kylerqws/chatbot/internal/openai/enumset"
 	"github.com/kylerqws/chatbot/pkg/openai"
 
 	ctrint "github.com/kylerqws/chatbot/internal/openai/contract"
@@ -13,7 +14,7 @@ import (
 	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 )
 
-// manager provides access to OpenAI services.
+// manager provides access to OpenAI services and enum sets.
 type manager struct {
 	sdk ctrpkg.OpenAI
 
@@ -28,6 +29,9 @@ type manager struct {
 
 	modelOnce sync.Once
 	model     ctrsvc.ModelService
+
+	setOnce    sync.Once
+	managerSet *enumset.ManagerSet
 }
 
 // New returns a new OpenAI manager.
@@ -69,4 +73,12 @@ func (m *manager) ModelService() ctrsvc.ModelService {
 		m.model = m.sdk.ModelService()
 	})
 	return m.model
+}
+
+// ManagerSet returns the OpenAI enum manager set.
+func (m *manager) ManagerSet() *enumset.ManagerSet {
+	m.setOnce.Do(func() {
+		m.managerSet = enumset.NewManagerSet()
+	})
+	return m.managerSet
 }
