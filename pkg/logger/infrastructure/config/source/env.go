@@ -58,8 +58,8 @@ func (c *envConfig) IsDebug() bool {
 	return c.debug
 }
 
-// SetDebug enables or disables debug mode.
-// Returns an error if value is invalid (always succeeds for bool).
+// SetDebug sets the debug mode flag.
+// This method always succeeds since the input is a valid boolean.
 func (c *envConfig) SetDebug(debug bool) error {
 	c.debug = debug
 	return nil

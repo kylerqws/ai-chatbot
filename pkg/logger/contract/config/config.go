@@ -21,7 +21,7 @@ const (
 
 // Config defines logger configuration settings.
 type Config interface {
-	// GetWriter returns the configured log writer type.
+	// GetWriter returns the log writer type.
 	GetWriter() string
 
 	// SetWriter sets the log writer type (e.g., "stdout", "stderr", "db").
