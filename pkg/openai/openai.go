@@ -77,7 +77,7 @@ func (a *api) ModelService() ctrsvc.ModelService {
 	return a.modelService
 }
 
-// client returns the lazily-initialized OpenAI HTTP client.
+// client returns the initialized OpenAI HTTP client.
 func (a *api) client() ctrcl.Client {
 	a.clOnce.Do(func() {
 		a.cl = client.New(a.cfg)

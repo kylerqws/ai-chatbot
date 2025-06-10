@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/kylerqws/chatbot/pkg/db/infrastructure/client"
 	"github.com/kylerqws/chatbot/pkg/db/infrastructure/config"
@@ -10,30 +11,43 @@ import (
 
 	ctr "github.com/kylerqws/chatbot/pkg/db/contract"
 	ctrcl "github.com/kylerqws/chatbot/pkg/db/contract/client"
+	ctrcfg "github.com/kylerqws/chatbot/pkg/db/contract/config"
 	ctrmig "github.com/kylerqws/chatbot/pkg/db/contract/migrator"
 )
 
+// db provides access to the database client and migrator.
 type db struct {
-	client   ctrcl.Client
+	ctx context.Context
+	cfg ctrcfg.Config
+
+	client ctrcl.Client
+	clOnce sync.Once
+
 	migrator ctrmig.Migrator
+	migOnce  sync.Once
 }
 
+// New creates and returns a new DB access object.
 func New(ctx context.Context) (ctr.DB, error) {
 	cfg, err := config.New(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to load config: %w", err)
+		return nil, fmt.Errorf("load db config: %w", err)
 	}
-
-	cl := client.New(cfg)
-	mig := migrator.New(cl)
-
-	return &db{client: cl, migrator: mig}, nil
+	return &db{ctx: ctx, cfg: cfg}, nil
 }
 
-func (db *db) Client() ctrcl.Client {
-	return db.client
+// Client returns the initialized database client.
+func (d *db) Client() ctrcl.Client {
+	d.clOnce.Do(func() {
+		d.client = client.New(d.cfg)
+	})
+	return d.client
 }
 
-func (db *db) Migrator() ctrmig.Migrator {
-	return db.migrator
+// Migrator returns the initialized database migrator.
+func (d *db) Migrator() ctrmig.Migrator {
+	d.migOnce.Do(func() {
+		d.migrator = migrator.New(d.Client())
+	})
+	return d.migrator
 }
