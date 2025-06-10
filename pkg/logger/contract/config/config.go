@@ -24,7 +24,7 @@ type Config interface {
 	// GetWriter returns the log writer type.
 	GetWriter() string
 
-	// SetWriter sets the log writer type (e.g., "stdout", "stderr", "db").
+	// SetWriter sets the log writer type (e.g., "db", "stdout", "stderr").
 	SetWriter(writer string) error
 
 	// IsDebug returns whether debug mode is enabled.

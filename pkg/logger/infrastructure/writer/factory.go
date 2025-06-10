@@ -11,12 +11,12 @@ import (
 // NewProvider returns a writer provider based on the configured writer type.
 func NewProvider(cfg ctrcfg.Config) (ctrwrt.Provider, error) {
 	switch wt := cfg.GetWriter(); wt {
+	case ctrwrt.TypeDB:
+		return provider.NewDBProvider(cfg), nil
 	case ctrwrt.TypeStdout:
 		return provider.NewStdoutProvider(cfg), nil
 	case ctrwrt.TypeStderr:
 		return provider.NewStderrProvider(cfg), nil
-	case ctrwrt.TypeDB:
-		return provider.NewDBProvider(cfg), nil
 	default:
 		return nil, fmt.Errorf("unsupported writer type: '%s'", wt)
 	}
