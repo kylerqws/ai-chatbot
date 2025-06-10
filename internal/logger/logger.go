@@ -60,7 +60,7 @@ func (m *manager) Err() ctrpkg.Logger {
 func (m *manager) newLogger(wt string) ctrpkg.Logger {
 	instance, err := logger.NewWithWriter(m.ctx, wt)
 	if err != nil {
-		log.Fatal(fmt.Errorf("init logger '%s': %w", wt, err))
+		log.Fatal(fmt.Errorf("create logger with writer '%s': %w", wt, err))
 	}
 	return instance
 }
