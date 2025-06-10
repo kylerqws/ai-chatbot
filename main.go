@@ -13,14 +13,8 @@ import (
 
 // init loads the base `.env` file and an optional mode-specific `.env.{mode}` configuration file.
 func init() {
-	if err := godotenv.Load(); err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "Warning: failed to load .env: %v\n", err)
-	}
-
-	mode := resolver.ResolveMode()
-	if err := godotenv.Load(".env." + mode); err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "Warning: failed to load .env.%s: %v\n", mode, err)
-	}
+	_ = godotenv.Load()
+	_ = godotenv.Load(".env." + resolver.ResolveMode())
 }
 
 // main initializes the application and executes the CLI entry point.
