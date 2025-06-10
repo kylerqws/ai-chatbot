@@ -27,7 +27,7 @@ type Config interface {
 	// SetWriter sets the log writer type (e.g., "stdout", "stderr", "db").
 	SetWriter(writer string) error
 
-	// IsDebug reports whether debug mode is enabled.
+	// IsDebug returns whether debug mode is enabled.
 	IsDebug() bool
 
 	// SetDebug enables or disables debug mode.
