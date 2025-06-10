@@ -1,45 +1,37 @@
 package service
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 
-	"github.com/kylerqws/chatbot/pkg/openai/infrastructure/client"
-
+	ctrcl "github.com/kylerqws/chatbot/pkg/openai/contract/client"
 	ctrcfg "github.com/kylerqws/chatbot/pkg/openai/contract/config"
 	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 )
 
+// chatService implements ChatService using the OpenAI API client.
 type chatService struct {
 	config ctrcfg.Config
-	client *client.Client
+	client ctrcl.Client
 }
 
-func NewChatService(cl *client.Client, cfg ctrcfg.Config) ctrsvc.ChatService {
+// NewChatService creates a new instance of ChatService.
+func NewChatService(cl ctrcl.Client, cfg ctrcfg.Config) ctrsvc.ChatService {
 	return &chatService{config: cfg, client: cl}
 }
 
-func (s *chatService) ChatCompletion(
-	ctx context.Context,
-	req *ctrsvc.ChatCompletionRequest,
-) (*ctrsvc.ChatCompletionResponse, error) {
+// ChatCompletion sends a chat completion request to OpenAI and returns the generated response.
+func (s *chatService) ChatCompletion(ctx context.Context, req *ctrsvc.ChatCompletionRequest) (*ctrsvc.ChatCompletionResponse, error) {
 	result := &ctrsvc.ChatCompletionResponse{}
 
-	payload, err := json.Marshal(req)
+	resp, err := s.client.RequestJSON(ctx, "POST", "/chat/completions", req)
 	if err != nil {
-		return result, fmt.Errorf("failed to marshal request: %w", err)
+		return nil, fmt.Errorf("send chat completion request: %w", err)
 	}
 
-	resp, err := s.client.RequestReader(ctx, "POST", "/chat/completions", bytes.NewReader(payload))
-	if err != nil {
-		return result, fmt.Errorf("failed to send request: %w", err)
-	}
-
-	err = json.Unmarshal(resp, result)
-	if err != nil {
-		return result, fmt.Errorf("failed to unmarshal response: %w", err)
+	if err := json.Unmarshal(resp, result); err != nil {
+		return nil, fmt.Errorf("unmarshal chat completion response: %w", err)
 	}
 
 	return result, nil
