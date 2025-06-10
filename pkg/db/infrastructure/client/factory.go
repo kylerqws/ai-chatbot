@@ -26,17 +26,17 @@ func New(cfg ctrcfg.Config) ctrcl.Client {
 
 // Connect opens the database connection via the configured dialect.
 func (c *dbClient) Connect() error {
-	dialectName := c.config.GetDialect()
+	dn := c.config.GetDialect()
 
-	switch dialectName {
+	switch dn {
 	case "sqlite":
 		c.dialect = dialect.NewSQLite(c.config)
 	default:
-		return fmt.Errorf("unsupported database dialect: '%s'", dialectName)
+		return fmt.Errorf("unsupported database dialect: '%s'", dn)
 	}
 
 	if err := c.dialect.Connect(); err != nil {
-		return fmt.Errorf("connect with dialect '%s': %w", dialectName, err)
+		return fmt.Errorf("connect with dialect '%s': %w", dn, err)
 	}
 
 	c.db = c.dialect.DB()
