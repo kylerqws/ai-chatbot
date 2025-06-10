@@ -43,14 +43,14 @@ func (l *zeroLogger) ErrorWithContext(ctx context.Context, args ...any) {
 	l.withContext(ctx).Error().Msg(l.format(args...))
 }
 
-// Debug logs a debug-level message if debug mode is enabled.
+// Debug logs a debug-level message.
 func (l *zeroLogger) Debug(args ...any) {
 	if l.config.IsDebug() {
 		l.logger.Debug().Msg(l.format(args...))
 	}
 }
 
-// DebugWithContext logs a debug-level message with context if debug mode is enabled.
+// DebugWithContext logs a debug-level message with context.
 func (l *zeroLogger) DebugWithContext(ctx context.Context, args ...any) {
 	if l.config.IsDebug() {
 		l.withContext(ctx).Debug().Msg(l.format(args...))
