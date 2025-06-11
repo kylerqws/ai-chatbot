@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/kylerqws/chatbot/pkg/openai/domain/purpose"
+	"github.com/kylerqws/chatbot/pkg/openai/enumset/purpose"
 	"github.com/kylerqws/chatbot/pkg/openai/utils/filter"
 	"github.com/kylerqws/chatbot/pkg/openai/utils/query"
 

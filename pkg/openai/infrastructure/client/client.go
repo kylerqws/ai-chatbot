@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/kylerqws/chatbot/pkg/openai/domain/purpose"
+	"github.com/kylerqws/chatbot/pkg/openai/enumset/purpose"
 	"github.com/kylerqws/chatbot/pkg/openai/utils/converter/jsonl"
 
 	ctrcl "github.com/kylerqws/chatbot/pkg/openai/contract/client"
