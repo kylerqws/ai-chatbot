@@ -26,12 +26,17 @@ var AllModels = map[string]*Model{
 	GPT4Code:       GPT4,
 }
 
-// Resolve looks up a Model by code, defaulting to GPT35Turbo.
+// Resolve returns the Model for the given code or the default Model if not found.
 func Resolve(code string) (*Model, error) {
-	return enumset.ResolveWithDefault(code, AllModels, GPT35Turbo, "model")
+	return enumset.ResolveWithDefault(code, AllModels, Default(), "model")
 }
 
 // JoinCodes returns all model codes joined by separator.
 func JoinCodes(sep string) string {
 	return enumset.JoinCodes(AllModels, sep)
+}
+
+// Default returns the default Model.
+func Default() *Model {
+	return GPT35Turbo
 }

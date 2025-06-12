@@ -38,7 +38,7 @@ var AllJobStatuses = map[string]*JobStatus{
 	FailedCode:          Failed,
 }
 
-// Resolve looks up a JobStatus by code, error if missing or unknown.
+// Resolve returns the JobStatus for the given code or error if missing or unknown.
 func Resolve(code string) (*JobStatus, error) {
 	return enumset.ResolveRequired(code, AllJobStatuses, "job status")
 }

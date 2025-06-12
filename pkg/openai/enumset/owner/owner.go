@@ -32,12 +32,17 @@ var AllOwners = map[string]*Owner{
 	UserCode:         User,
 }
 
-// Resolve looks up an Owner by code, defaulting to User.
+// Resolve returns the Owner for the given code or the default Owner if not found.
 func Resolve(code string) (*Owner, error) {
-	return enumset.ResolveWithDefault(code, AllOwners, User, "owner")
+	return enumset.ResolveWithDefault(code, AllOwners, Default(), "owner")
 }
 
 // JoinCodes returns all owner codes joined by separator.
 func JoinCodes(sep string) string {
 	return enumset.JoinCodes(AllOwners, sep)
+}
+
+// Default returns the default Owner.
+func Default() *Owner {
+	return User
 }

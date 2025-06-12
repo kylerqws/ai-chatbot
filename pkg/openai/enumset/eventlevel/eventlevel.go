@@ -29,7 +29,7 @@ var AllEventLevels = map[string]*EventLevel{
 	ErrorCode:   Error,
 }
 
-// Resolve looks up an EventLevel by code, error if missing or unknown.
+// Resolve returns the EventLevel for the given code or error if missing or unknown.
 func Resolve(code string) (*EventLevel, error) {
 	return enumset.ResolveRequired(code, AllEventLevels, "event level")
 }

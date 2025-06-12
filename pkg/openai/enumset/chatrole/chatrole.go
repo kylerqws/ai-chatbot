@@ -32,7 +32,7 @@ var AllChatRoles = map[string]*ChatRole{
 	ToolCode:      Tool,
 }
 
-// Resolve looks up a ChatRole by code, error if missing or unknown.
+// Resolve returns the ChatRole for the given code or error if missing or unknown.
 func Resolve(code string) (*ChatRole, error) {
 	return enumset.ResolveRequired(code, AllChatRoles, "chat role")
 }

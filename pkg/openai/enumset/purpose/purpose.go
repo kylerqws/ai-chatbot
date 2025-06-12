@@ -38,12 +38,17 @@ var AllPurposes = map[string]*Purpose{
 	EvalsCode:      Evals,
 }
 
-// Resolve looks up a Purpose by code, defaulting to FineTune.
+// Resolve returns the Purpose for the given code or the default Purpose if not found.
 func Resolve(code string) (*Purpose, error) {
-	return enumset.ResolveWithDefault(code, AllPurposes, FineTune, "purpose")
+	return enumset.ResolveWithDefault(code, AllPurposes, Default(), "purpose")
 }
 
 // JoinCodes returns all purpose codes joined by separator.
 func JoinCodes(sep string) string {
 	return enumset.JoinCodes(AllPurposes, sep)
+}
+
+// Default returns the default Purpose.
+func Default() *Purpose {
+	return FineTune
 }
