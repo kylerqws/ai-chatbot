@@ -23,9 +23,6 @@ type api struct {
 	cl     ctrcl.Client
 	clOnce sync.Once
 
-	chat     ctrsvc.ChatService
-	chatOnce sync.Once
-
 	file     ctrsvc.FileService
 	fileOnce sync.Once
 
@@ -34,6 +31,9 @@ type api struct {
 
 	model     ctrsvc.ModelService
 	modelOnce sync.Once
+
+	chat     ctrsvc.ChatService
+	chatOnce sync.Once
 }
 
 // New creates and returns a new OpenAI API access object.

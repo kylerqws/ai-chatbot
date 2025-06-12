@@ -19,9 +19,6 @@ type provider struct {
 	ctx context.Context
 	sdk ctrpkg.OpenAI
 
-	chat     ctrsvc.ChatService
-	chatOnce sync.Once
-
 	file     ctrsvc.FileService
 	fileOnce sync.Once
 
@@ -30,19 +27,14 @@ type provider struct {
 
 	model     ctrsvc.ModelService
 	modelOnce sync.Once
+
+	chat     ctrsvc.ChatService
+	chatOnce sync.Once
 }
 
 // NewProvider creates a new service provider that groups OpenAI API services.
 func NewProvider(ctx context.Context, sdk ctrpkg.OpenAI) ctrprv.ServiceProvider {
 	return &provider{ctx: ctx, sdk: sdk}
-}
-
-// Chat returns the service for chat completions.
-func (p *provider) Chat() ctrsvc.ChatService {
-	p.chatOnce.Do(func() {
-		p.chat = chat.NewService(p.ctx, p.sdk)
-	})
-	return p.chat
 }
 
 // File returns the service for file management.
@@ -67,4 +59,12 @@ func (p *provider) Model() ctrsvc.ModelService {
 		p.model = model.NewService(p.ctx, p.sdk)
 	})
 	return p.model
+}
+
+// Chat returns the service for chat completions.
+func (p *provider) Chat() ctrsvc.ChatService {
+	p.chatOnce.Do(func() {
+		p.chat = chat.NewService(p.ctx, p.sdk)
+	})
+	return p.chat
 }
