@@ -11,14 +11,12 @@ import (
 // service provides operations for managing OpenAI models.
 type service struct {
 	ctx context.Context
-	sdk ctrpkg.OpenAI
-
 	svc ctrsvc.ModelService
 }
 
 // NewService creates a new model service for managing OpenAI models.
 func NewService(ctx context.Context, sdk ctrpkg.OpenAI) ctrint.ModelService {
-	return &service{ctx: ctx, sdk: sdk, svc: sdk.ModelService()}
+	return &service{ctx: ctx, svc: sdk.ModelService()}
 }
 
 // NewRetrieveModelRequest creates a new retrieve model request.

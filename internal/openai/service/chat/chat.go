@@ -11,14 +11,12 @@ import (
 // service provides operations for generating chat completions.
 type service struct {
 	ctx context.Context
-	sdk ctrpkg.OpenAI
-
 	svc ctrsvc.ChatService
 }
 
 // NewService creates a new chat service for generating chat completions.
 func NewService(ctx context.Context, sdk ctrpkg.OpenAI) ctrint.ChatService {
-	return &service{ctx: ctx, sdk: sdk, svc: sdk.ChatService()}
+	return &service{ctx: ctx, svc: sdk.ChatService()}
 }
 
 // NewChatCompletionRequest creates a new chat completion request.
@@ -33,5 +31,5 @@ func (s *service) NewChatCompletionResponse() *ctrsvc.ChatCompletionResponse {
 
 // ChatCompletion sends a chat completion request and returns the response.
 func (s *service) ChatCompletion(ctx context.Context, req *ctrsvc.ChatCompletionRequest) (*ctrsvc.ChatCompletionResponse, error) {
-	return s.sdk.ChatService().ChatCompletion(ctx, req)
+	return s.svc.ChatCompletion(ctx, req)
 }

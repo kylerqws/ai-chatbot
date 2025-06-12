@@ -11,14 +11,12 @@ import (
 // service provides operations for managing fine-tuning jobs in OpenAI.
 type service struct {
 	ctx context.Context
-	sdk ctrpkg.OpenAI
-
 	svc ctrsvc.FineTuningService
 }
 
 // NewService creates a new fine-tuning service for managing OpenAI fine-tuning jobs.
 func NewService(ctx context.Context, sdk ctrpkg.OpenAI) ctrint.FineTuningService {
-	return &service{ctx: ctx, sdk: sdk, svc: sdk.FineTuningService()}
+	return &service{ctx: ctx, svc: sdk.FineTuningService()}
 }
 
 // NewCreateJobRequest creates a new fine-tuning job creation request.

@@ -11,14 +11,12 @@ import (
 // service provides operations for managing OpenAI files.
 type service struct {
 	ctx context.Context
-	sdk ctrpkg.OpenAI
-
 	svc ctrsvc.FileService
 }
 
 // NewService creates a new file service for managing OpenAI files.
 func NewService(ctx context.Context, sdk ctrpkg.OpenAI) ctrint.FileService {
-	return &service{ctx: ctx, sdk: sdk, svc: sdk.FileService()}
+	return &service{ctx: ctx, svc: sdk.FileService()}
 }
 
 // NewUploadFileRequest creates a new upload file request.
