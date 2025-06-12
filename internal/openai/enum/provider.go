@@ -13,8 +13,8 @@ import (
 	ctrprv "github.com/kylerqws/chatbot/internal/openai/contract/provider"
 )
 
-// manager provides access to OpenAI enum managers.
-type manager struct {
+// provider provides access to OpenAI enum managers.
+type provider struct {
 	chatRoleOnce sync.Once
 	chatRole     *chatrole.Manager
 
@@ -36,11 +36,11 @@ type manager struct {
 
 // New returns a new implementation of EnumProvider.
 func New() ctrprv.EnumProvider {
-	return &manager{}
+	return &provider{}
 }
 
 // ChatRole returns an instance of the chat role manager.
-func (m *manager) ChatRole() *chatrole.Manager {
+func (m *provider) ChatRole() *chatrole.Manager {
 	m.chatRoleOnce.Do(func() {
 		m.chatRole = chatrole.NewManager()
 	})
@@ -48,7 +48,7 @@ func (m *manager) ChatRole() *chatrole.Manager {
 }
 
 // EventLevel returns an instance of the event level manager.
-func (m *manager) EventLevel() *eventlevel.Manager {
+func (m *provider) EventLevel() *eventlevel.Manager {
 	m.eventLevelOnce.Do(func() {
 		m.eventLevel = eventlevel.NewManager()
 	})
@@ -56,7 +56,7 @@ func (m *manager) EventLevel() *eventlevel.Manager {
 }
 
 // JobStatus returns an instance of the job status manager.
-func (m *manager) JobStatus() *jobstatus.Manager {
+func (m *provider) JobStatus() *jobstatus.Manager {
 	m.jobStatusOnce.Do(func() {
 		m.jobStatus = jobstatus.NewManager()
 	})
@@ -64,7 +64,7 @@ func (m *manager) JobStatus() *jobstatus.Manager {
 }
 
 // Model returns an instance of the model manager.
-func (m *manager) Model() *model.Manager {
+func (m *provider) Model() *model.Manager {
 	m.modelOnce.Do(func() {
 		m.model = model.NewManager()
 	})
@@ -72,7 +72,7 @@ func (m *manager) Model() *model.Manager {
 }
 
 // Owner returns an instance of the owner manager.
-func (m *manager) Owner() *owner.Manager {
+func (m *provider) Owner() *owner.Manager {
 	m.ownerOnce.Do(func() {
 		m.owner = owner.NewManager()
 	})
@@ -80,7 +80,7 @@ func (m *manager) Owner() *owner.Manager {
 }
 
 // Purpose returns an instance of the purpose manager.
-func (m *manager) Purpose() *purpose.Manager {
+func (m *provider) Purpose() *purpose.Manager {
 	m.purposeOnce.Do(func() {
 		m.purpose = purpose.NewManager()
 	})
