@@ -1,24 +1,12 @@
 package contract
 
-import (
-	ctrenm "github.com/kylerqws/chatbot/internal/openai/contract/enumset"
-	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
-)
+import ctrprv "github.com/kylerqws/chatbot/internal/openai/contract/provider"
 
-// OpenAI aggregates access to OpenAI API services and enum managers.
+// OpenAI defines the root contract for accessing OpenAI service and enum providers.
 type OpenAI interface {
-	// ChatService returns the service for chat interactions.
-	ChatService() ctrsvc.ChatService
+	// ServiceProvider returns grouped OpenAI API services.
+	ServiceProvider() ctrprv.ServiceProvider
 
-	// FileService returns the service for file operations.
-	FileService() ctrsvc.FileService
-
-	// FineTuningService returns the service for fine-tuning jobs.
-	FineTuningService() ctrsvc.FineTuningService
-
-	// ModelService returns the service for model management.
-	ModelService() ctrsvc.ModelService
-
-	// EnumManagerSet returns the manager set for OpenAI enum types.
-	EnumManagerSet() ctrenm.ManagerSet
+	// EnumProvider returns grouped enum managers used in OpenAI operations.
+	EnumProvider() ctrprv.EnumProvider
 }

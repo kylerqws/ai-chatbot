@@ -1,4 +1,4 @@
-package enumset
+package provider
 
 import (
 	"github.com/kylerqws/chatbot/internal/openai/enumset/chatrole"
@@ -9,23 +9,23 @@ import (
 	"github.com/kylerqws/chatbot/internal/openai/enumset/purpose"
 )
 
-// ManagerSet defines access to enum managers.
-type ManagerSet interface {
-	// ChatRole returns the chat role manager.
+// EnumProvider defines grouped access to OpenAI enum managers.
+type EnumProvider interface {
+	// ChatRole returns the enum manager for chat roles.
 	ChatRole() *chatrole.Manager
 
-	// EventLevel returns the event level manager.
+	// EventLevel returns the enum manager for event levels.
 	EventLevel() *eventlevel.Manager
 
-	// JobStatus returns the job status manager.
+	// JobStatus returns the enum manager for fine-tuning job statuses.
 	JobStatus() *jobstatus.Manager
 
-	// Model returns the model manager.
+	// Model returns the enum manager for models.
 	Model() *model.Manager
 
-	// Owner returns the owner manager.
+	// Owner returns the enum manager for model ownership.
 	Owner() *owner.Manager
 
-	// Purpose returns the purpose manager.
+	// Purpose returns the enum manager for file purposes.
 	Purpose() *purpose.Manager
 }
