@@ -38,33 +38,33 @@ func NewProvider(ctx context.Context, sdk ctrpkg.OpenAI) ctrprv.ServiceProvider 
 }
 
 // Chat returns the service for chat completions.
-func (m *provider) Chat() ctrsvc.ChatService {
-	m.chatServiceOnce.Do(func() {
-		m.chatService = chat.NewService(m.ctx, m.sdk)
+func (p *provider) Chat() ctrsvc.ChatService {
+	p.chatServiceOnce.Do(func() {
+		p.chatService = chat.NewService(p.ctx, p.sdk)
 	})
-	return m.chatService
+	return p.chatService
 }
 
 // File returns the service for file management.
-func (m *provider) File() ctrsvc.FileService {
-	m.fileServiceOnce.Do(func() {
-		m.fileService = file.NewService(m.ctx, m.sdk)
+func (p *provider) File() ctrsvc.FileService {
+	p.fileServiceOnce.Do(func() {
+		p.fileService = file.NewService(p.ctx, p.sdk)
 	})
-	return m.fileService
+	return p.fileService
 }
 
 // FineTuning returns the service for fine-tuning jobs.
-func (m *provider) FineTuning() ctrsvc.FineTuningService {
-	m.fineServiceOnce.Do(func() {
-		m.fineTuningService = fine_tuning.NewService(m.ctx, m.sdk)
+func (p *provider) FineTuning() ctrsvc.FineTuningService {
+	p.fineServiceOnce.Do(func() {
+		p.fineTuningService = fine_tuning.NewService(p.ctx, p.sdk)
 	})
-	return m.fineTuningService
+	return p.fineTuningService
 }
 
 // Model returns the service for model operations.
-func (m *provider) Model() ctrsvc.ModelService {
-	m.modelServiceOnce.Do(func() {
-		m.modelService = model.NewService(m.ctx, m.sdk)
+func (p *provider) Model() ctrsvc.ModelService {
+	p.modelServiceOnce.Do(func() {
+		p.modelService = model.NewService(p.ctx, p.sdk)
 	})
-	return m.modelService
+	return p.modelService
 }

@@ -20,12 +20,12 @@ func NewService(ctx context.Context, sdk ctrpkg.OpenAI) ctrint.ModelService {
 }
 
 // NewRetrieveModelRequest creates a new retrieve model request.
-func (s *service) NewRetrieveModelRequest() *ctrsvc.RetrieveModelRequest {
+func (*service) NewRetrieveModelRequest() *ctrsvc.RetrieveModelRequest {
 	return &ctrsvc.RetrieveModelRequest{}
 }
 
 // NewRetrieveModelResponse creates a new retrieve model response.
-func (s *service) NewRetrieveModelResponse() *ctrsvc.RetrieveModelResponse {
+func (*service) NewRetrieveModelResponse() *ctrsvc.RetrieveModelResponse {
 	return &ctrsvc.RetrieveModelResponse{}
 }
 
@@ -35,12 +35,12 @@ func (s *service) RetrieveModel(ctx context.Context, req *ctrsvc.RetrieveModelRe
 }
 
 // NewListModelsRequest creates a new list models request.
-func (s *service) NewListModelsRequest() *ctrsvc.ListModelsRequest {
+func (*service) NewListModelsRequest() *ctrsvc.ListModelsRequest {
 	return &ctrsvc.ListModelsRequest{}
 }
 
 // NewListModelsResponse creates a new list models response.
-func (s *service) NewListModelsResponse() *ctrsvc.ListModelsResponse {
+func (*service) NewListModelsResponse() *ctrsvc.ListModelsResponse {
 	return &ctrsvc.ListModelsResponse{}
 }
 
@@ -50,12 +50,12 @@ func (s *service) ListModels(ctx context.Context, req *ctrsvc.ListModelsRequest)
 }
 
 // NewDeleteModelRequest creates a new delete model request.
-func (s *service) NewDeleteModelRequest() *ctrsvc.DeleteModelRequest {
+func (*service) NewDeleteModelRequest() *ctrsvc.DeleteModelRequest {
 	return &ctrsvc.DeleteModelRequest{}
 }
 
 // NewDeleteModelResponse creates a new delete model response.
-func (s *service) NewDeleteModelResponse() *ctrsvc.DeleteModelResponse {
+func (*service) NewDeleteModelResponse() *ctrsvc.DeleteModelResponse {
 	return &ctrsvc.DeleteModelResponse{}
 }
 

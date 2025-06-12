@@ -20,12 +20,12 @@ func NewService(ctx context.Context, sdk ctrpkg.OpenAI) ctrint.ChatService {
 }
 
 // NewChatCompletionRequest creates a new chat completion request.
-func (s *service) NewChatCompletionRequest() *ctrsvc.ChatCompletionRequest {
+func (*service) NewChatCompletionRequest() *ctrsvc.ChatCompletionRequest {
 	return &ctrsvc.ChatCompletionRequest{}
 }
 
 // NewChatCompletionResponse creates a new chat completion response.
-func (s *service) NewChatCompletionResponse() *ctrsvc.ChatCompletionResponse {
+func (*service) NewChatCompletionResponse() *ctrsvc.ChatCompletionResponse {
 	return &ctrsvc.ChatCompletionResponse{}
 }
 

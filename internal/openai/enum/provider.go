@@ -40,49 +40,49 @@ func NewProvider() ctrprv.EnumProvider {
 }
 
 // ChatRole returns the enum manager for chat roles.
-func (m *provider) ChatRole() *chatrole.Manager {
-	m.chatRoleOnce.Do(func() {
-		m.chatRole = chatrole.NewManager()
+func (p *provider) ChatRole() *chatrole.Manager {
+	p.chatRoleOnce.Do(func() {
+		p.chatRole = chatrole.NewManager()
 	})
-	return m.chatRole
+	return p.chatRole
 }
 
 // EventLevel returns the enum manager for event levels.
-func (m *provider) EventLevel() *eventlevel.Manager {
-	m.eventLevelOnce.Do(func() {
-		m.eventLevel = eventlevel.NewManager()
+func (p *provider) EventLevel() *eventlevel.Manager {
+	p.eventLevelOnce.Do(func() {
+		p.eventLevel = eventlevel.NewManager()
 	})
-	return m.eventLevel
+	return p.eventLevel
 }
 
 // JobStatus returns the enum manager for fine-tuning job statuses.
-func (m *provider) JobStatus() *jobstatus.Manager {
-	m.jobStatusOnce.Do(func() {
-		m.jobStatus = jobstatus.NewManager()
+func (p *provider) JobStatus() *jobstatus.Manager {
+	p.jobStatusOnce.Do(func() {
+		p.jobStatus = jobstatus.NewManager()
 	})
-	return m.jobStatus
+	return p.jobStatus
 }
 
 // Model returns the enum manager for models.
-func (m *provider) Model() *model.Manager {
-	m.modelOnce.Do(func() {
-		m.model = model.NewManager()
+func (p *provider) Model() *model.Manager {
+	p.modelOnce.Do(func() {
+		p.model = model.NewManager()
 	})
-	return m.model
+	return p.model
 }
 
 // Owner returns the enum manager for owners.
-func (m *provider) Owner() *owner.Manager {
-	m.ownerOnce.Do(func() {
-		m.owner = owner.NewManager()
+func (p *provider) Owner() *owner.Manager {
+	p.ownerOnce.Do(func() {
+		p.owner = owner.NewManager()
 	})
-	return m.owner
+	return p.owner
 }
 
 // Purpose returns the enum manager for purposes.
-func (m *provider) Purpose() *purpose.Manager {
-	m.purposeOnce.Do(func() {
-		m.purpose = purpose.NewManager()
+func (p *provider) Purpose() *purpose.Manager {
+	p.purposeOnce.Do(func() {
+		p.purpose = purpose.NewManager()
 	})
-	return m.purpose
+	return p.purpose
 }
