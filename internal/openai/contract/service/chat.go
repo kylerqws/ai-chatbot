@@ -7,10 +7,10 @@ import (
 
 // ChatService defines operations for generating chat completions via OpenAI.
 type ChatService interface {
-	// NewChatCompletionRequest returns a new chat completion request instance.
+	// NewChatCompletionRequest returns a new chat completion request.
 	NewChatCompletionRequest() *ctrsvc.ChatCompletionRequest
 
-	// NewChatCompletionResponse returns a new chat completion response instance.
+	// NewChatCompletionResponse returns a new chat completion response.
 	NewChatCompletionResponse() *ctrsvc.ChatCompletionResponse
 
 	// ChatCompletion sends a chat completion request and returns the response.
