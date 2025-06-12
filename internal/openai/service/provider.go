@@ -19,17 +19,17 @@ type provider struct {
 	ctx context.Context
 	sdk ctrpkg.OpenAI
 
-	chatServiceOnce sync.Once
-	chatService     ctrsvc.ChatService
+	chat     ctrsvc.ChatService
+	chatOnce sync.Once
 
-	fileServiceOnce sync.Once
-	fileService     ctrsvc.FileService
+	file     ctrsvc.FileService
+	fileOnce sync.Once
 
-	fineServiceOnce   sync.Once
-	fineTuningService ctrsvc.FineTuningService
+	fineTuning     ctrsvc.FineTuningService
+	fineTuningOnce sync.Once
 
-	modelServiceOnce sync.Once
-	modelService     ctrsvc.ModelService
+	model     ctrsvc.ModelService
+	modelOnce sync.Once
 }
 
 // NewProvider creates a new service provider that groups OpenAI API services.
@@ -39,32 +39,32 @@ func NewProvider(ctx context.Context, sdk ctrpkg.OpenAI) ctrprv.ServiceProvider 
 
 // Chat returns the service for chat completions.
 func (p *provider) Chat() ctrsvc.ChatService {
-	p.chatServiceOnce.Do(func() {
-		p.chatService = chat.NewService(p.ctx, p.sdk)
+	p.chatOnce.Do(func() {
+		p.chat = chat.NewService(p.ctx, p.sdk)
 	})
-	return p.chatService
+	return p.chat
 }
 
 // File returns the service for file management.
 func (p *provider) File() ctrsvc.FileService {
-	p.fileServiceOnce.Do(func() {
-		p.fileService = file.NewService(p.ctx, p.sdk)
+	p.fileOnce.Do(func() {
+		p.file = file.NewService(p.ctx, p.sdk)
 	})
-	return p.fileService
+	return p.file
 }
 
 // FineTuning returns the service for fine-tuning jobs.
 func (p *provider) FineTuning() ctrsvc.FineTuningService {
-	p.fineServiceOnce.Do(func() {
-		p.fineTuningService = fine_tuning.NewService(p.ctx, p.sdk)
+	p.fineTuningOnce.Do(func() {
+		p.fineTuning = fine_tuning.NewService(p.ctx, p.sdk)
 	})
-	return p.fineTuningService
+	return p.fineTuning
 }
 
 // Model returns the service for model operations.
 func (p *provider) Model() ctrsvc.ModelService {
-	p.modelServiceOnce.Do(func() {
-		p.modelService = model.NewService(p.ctx, p.sdk)
+	p.modelOnce.Do(func() {
+		p.model = model.NewService(p.ctx, p.sdk)
 	})
-	return p.modelService
+	return p.model
 }

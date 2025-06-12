@@ -20,11 +20,11 @@ type manager struct {
 	ctx context.Context
 	sdk ctrpkg.OpenAI
 
-	serviceSetOnce sync.Once
-	serviceSet     ctrprv.ServiceProvider
+	service     ctrprv.ServiceProvider
+	serviceOnce sync.Once
 
-	enumSetOnce sync.Once
-	enumSet     ctrprv.EnumProvider
+	enum     ctrprv.EnumProvider
+	enumOnce sync.Once
 }
 
 // New creates a new OpenAI manager.
@@ -38,16 +38,16 @@ func New(ctx context.Context) ctrint.OpenAI {
 
 // ServiceProvider returns the OpenAI service provider.
 func (m *manager) ServiceProvider() ctrprv.ServiceProvider {
-	m.serviceSetOnce.Do(func() {
-		m.serviceSet = service.NewProvider(m.ctx, m.sdk)
+	m.serviceOnce.Do(func() {
+		m.service = service.NewProvider(m.ctx, m.sdk)
 	})
-	return m.serviceSet
+	return m.service
 }
 
 // EnumProvider returns the OpenAI enum manager provider.
 func (m *manager) EnumProvider() ctrprv.EnumProvider {
-	m.enumSetOnce.Do(func() {
-		m.enumSet = enum.NewProvider()
+	m.enumOnce.Do(func() {
+		m.enum = enum.NewProvider()
 	})
-	return m.enumSet
+	return m.enum
 }

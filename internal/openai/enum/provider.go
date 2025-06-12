@@ -15,23 +15,23 @@ import (
 
 // provider provides access to OpenAI enum managers.
 type provider struct {
-	chatRoleOnce sync.Once
 	chatRole     *chatrole.Manager
+	chatRoleOnce sync.Once
 
-	eventLevelOnce sync.Once
 	eventLevel     *eventlevel.Manager
+	eventLevelOnce sync.Once
 
-	jobStatusOnce sync.Once
 	jobStatus     *jobstatus.Manager
+	jobStatusOnce sync.Once
 
-	modelOnce sync.Once
 	model     *model.Manager
+	modelOnce sync.Once
 
-	ownerOnce sync.Once
 	owner     *owner.Manager
+	ownerOnce sync.Once
 
-	purposeOnce sync.Once
 	purpose     *purpose.Manager
+	purposeOnce sync.Once
 }
 
 // NewProvider creates a new enum provider that groups OpenAI enum managers.

@@ -20,11 +20,11 @@ type db struct {
 	ctx context.Context
 	cfg ctrcfg.Config
 
-	client ctrcl.Client
+	cl     ctrcl.Client
 	clOnce sync.Once
 
-	migrator ctrmig.Migrator
-	migOnce  sync.Once
+	mig     ctrmig.Migrator
+	migOnce sync.Once
 }
 
 // New creates and returns a new DB access object.
@@ -39,15 +39,15 @@ func New(ctx context.Context) (ctr.DB, error) {
 // Client returns the initialized database client.
 func (d *db) Client() ctrcl.Client {
 	d.clOnce.Do(func() {
-		d.client = client.New(d.cfg)
+		d.cl = client.New(d.cfg)
 	})
-	return d.client
+	return d.cl
 }
 
 // Migrator returns the initialized database migrator.
 func (d *db) Migrator() ctrmig.Migrator {
 	d.migOnce.Do(func() {
-		d.migrator = migrator.New(d.Client())
+		d.mig = migrator.New(d.Client())
 	})
-	return d.migrator
+	return d.mig
 }
