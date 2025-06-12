@@ -37,5 +37,5 @@ func (*Manager) JoinCodes(sep string) string {
 
 // Default returns the default model.
 func (*Manager) Default() *base.Model {
-	return base.GPT35Turbo
+	return base.Default()
 }

@@ -41,5 +41,5 @@ func (*Manager) JoinCodes(sep string) string {
 
 // Default returns the default owner.
 func (*Manager) Default() *base.Owner {
-	return base.User
+	return base.Default()
 }

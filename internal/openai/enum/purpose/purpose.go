@@ -45,5 +45,5 @@ func (*Manager) JoinCodes(sep string) string {
 
 // Default returns the default purpose.
 func (*Manager) Default() *base.Purpose {
-	return base.FineTune
+	return base.Default()
 }

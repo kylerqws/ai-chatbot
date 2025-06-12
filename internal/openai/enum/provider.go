@@ -34,7 +34,7 @@ type provider struct {
 	purpose     *purpose.Manager
 }
 
-// NewProvider returns a new implementation of EnumProvider.
+// NewProvider returns a new implementation of the provider for enum managers.
 func NewProvider() ctrprv.EnumProvider {
 	return &provider{}
 }
