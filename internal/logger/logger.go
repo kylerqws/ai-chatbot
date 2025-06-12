@@ -13,7 +13,7 @@ import (
 	ctrwrt "github.com/kylerqws/chatbot/pkg/logger/contract/writer"
 )
 
-// manager provides access to internal loggers.
+// manager aggregates internal loggers (database, stdout, stderr).
 type manager struct {
 	ctx context.Context
 

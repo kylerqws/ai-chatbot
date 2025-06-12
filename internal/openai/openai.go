@@ -15,7 +15,7 @@ import (
 	ctrpkg "github.com/kylerqws/chatbot/pkg/openai/contract"
 )
 
-// manager provides access to OpenAI services and enum managers.
+// manager aggregates OpenAI service and enum providers.
 type manager struct {
 	ctx context.Context
 	sdk ctrpkg.OpenAI
