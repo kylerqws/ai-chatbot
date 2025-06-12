@@ -15,8 +15,8 @@ import (
 	ctrmig "github.com/kylerqws/chatbot/pkg/db/contract/migrator"
 )
 
-// db provides access to the database client and migrator.
-type db struct {
+// manager provides access to the database client and migrator.
+type manager struct {
 	ctx context.Context
 	cfg ctrcfg.Config
 
@@ -33,21 +33,21 @@ func New(ctx context.Context) (ctr.DB, error) {
 	if err != nil {
 		return nil, fmt.Errorf("load db config: %w", err)
 	}
-	return &db{ctx: ctx, cfg: cfg}, nil
+	return &manager{ctx: ctx, cfg: cfg}, nil
 }
 
 // Client returns the initialized database client.
-func (d *db) Client() ctrcl.Client {
-	d.clOnce.Do(func() {
-		d.cl = client.New(d.cfg)
+func (m *manager) Client() ctrcl.Client {
+	m.clOnce.Do(func() {
+		m.cl = client.New(m.cfg)
 	})
-	return d.cl
+	return m.cl
 }
 
 // Migrator returns the initialized database migrator.
-func (d *db) Migrator() ctrmig.Migrator {
-	d.migOnce.Do(func() {
-		d.mig = migrator.New(d.Client())
+func (m *manager) Migrator() ctrmig.Migrator {
+	m.migOnce.Do(func() {
+		m.mig = migrator.New(m.Client())
 	})
-	return d.mig
+	return m.mig
 }
