@@ -79,7 +79,7 @@ func (m *provider) Owner() *owner.Manager {
 	return m.owner
 }
 
-// Purpose returns the enum manager for file purposes.
+// Purpose returns the enum manager for purposes.
 func (m *provider) Purpose() *purpose.Manager {
 	m.purposeOnce.Do(func() {
 		m.purpose = purpose.NewManager()

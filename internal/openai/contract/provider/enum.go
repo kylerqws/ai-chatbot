@@ -23,9 +23,9 @@ type EnumProvider interface {
 	// Model returns the enum manager for models.
 	Model() *model.Manager
 
-	// Owner returns the enum manager for model ownership.
+	// Owner returns the enum manager for owners.
 	Owner() *owner.Manager
 
-	// Purpose returns the enum manager for file purposes.
+	// Purpose returns the enum manager for purposes.
 	Purpose() *purpose.Manager
 }
