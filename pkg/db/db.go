@@ -15,7 +15,7 @@ import (
 	ctrmig "github.com/kylerqws/chatbot/pkg/db/contract/migrator"
 )
 
-// manager provides access to the database client and migrator.
+// manager aggregates access to the database client and migrator.
 type manager struct {
 	ctx context.Context
 	cfg ctrcfg.Config
