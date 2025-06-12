@@ -62,25 +62,6 @@ func (s *fineTuningService) RetrieveJob(ctx context.Context, req *ctrsvc.Retriev
 	return result, nil
 }
 
-// CancelJob cancels an active fine-tuning job in OpenAI by its ID.
-func (s *fineTuningService) CancelJob(ctx context.Context, req *ctrsvc.CancelJobRequest) (*ctrsvc.CancelJobResponse, error) {
-	result := &ctrsvc.CancelJobResponse{}
-
-	path := "/fine_tuning/jobs/" + url.PathEscape(req.JobID) + "/cancel"
-	resp, err := s.client.RequestRaw(ctx, "POST", path, nil)
-	if err != nil {
-		return result, fmt.Errorf("cancel job: %w", err)
-	}
-
-	var job ctrsvc.Job
-	if err := json.Unmarshal(resp, &job); err != nil {
-		return result, fmt.Errorf("unmarshal cancel job response: %w", err)
-	}
-
-	result.Job = &job
-	return result, nil
-}
-
 // PauseJob pauses a running fine-tuning job in OpenAI by its ID.
 func (s *fineTuningService) PauseJob(ctx context.Context, req *ctrsvc.PauseJobRequest) (*ctrsvc.PauseJobResponse, error) {
 	result := &ctrsvc.PauseJobResponse{}
@@ -113,6 +94,25 @@ func (s *fineTuningService) ResumeJob(ctx context.Context, req *ctrsvc.ResumeJob
 	var job ctrsvc.Job
 	if err := json.Unmarshal(resp, &job); err != nil {
 		return result, fmt.Errorf("unmarshal resume job response: %w", err)
+	}
+
+	result.Job = &job
+	return result, nil
+}
+
+// CancelJob cancels an active fine-tuning job in OpenAI by its ID.
+func (s *fineTuningService) CancelJob(ctx context.Context, req *ctrsvc.CancelJobRequest) (*ctrsvc.CancelJobResponse, error) {
+	result := &ctrsvc.CancelJobResponse{}
+
+	path := "/fine_tuning/jobs/" + url.PathEscape(req.JobID) + "/cancel"
+	resp, err := s.client.RequestRaw(ctx, "POST", path, nil)
+	if err != nil {
+		return result, fmt.Errorf("cancel job: %w", err)
+	}
+
+	var job ctrsvc.Job
+	if err := json.Unmarshal(resp, &job); err != nil {
+		return result, fmt.Errorf("unmarshal cancel job response: %w", err)
 	}
 
 	result.Job = &job

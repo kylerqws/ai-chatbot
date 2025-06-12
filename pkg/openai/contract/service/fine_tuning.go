@@ -125,6 +125,26 @@ type RetrieveJobResponse struct {
 	Job *Job `json:"job"`
 }
 
+// PauseJobRequest contains the ID of the fine-tuning job to pause.
+type PauseJobRequest struct {
+	JobID string `json:"job_id"`
+}
+
+// PauseJobResponse wraps the paused fine-tuning job returned from the API.
+type PauseJobResponse struct {
+	Job *Job `json:"job"`
+}
+
+// ResumeJobRequest contains the ID of the fine-tuning job to resume.
+type ResumeJobRequest struct {
+	JobID string `json:"job_id"`
+}
+
+// ResumeJobResponse wraps the resumed fine-tuning job returned from the API.
+type ResumeJobResponse struct {
+	Job *Job `json:"job"`
+}
+
 // CancelJobRequest contains the ID of the fine-tuning job to cancel.
 type CancelJobRequest struct {
 	JobID string `json:"job_id"`
@@ -202,26 +222,6 @@ type ListCheckpointsResponse struct {
 	Checkpoints []*Checkpoint `json:"checkpoints"`
 }
 
-// PauseJobRequest contains the ID of the fine-tuning job to pause.
-type PauseJobRequest struct {
-	JobID string `json:"job_id"`
-}
-
-// PauseJobResponse wraps the paused fine-tuning job returned from the API.
-type PauseJobResponse struct {
-	Job *Job `json:"job"`
-}
-
-// ResumeJobRequest contains the ID of the fine-tuning job to resume.
-type ResumeJobRequest struct {
-	JobID string `json:"job_id"`
-}
-
-// ResumeJobResponse wraps the resumed fine-tuning job returned from the API.
-type ResumeJobResponse struct {
-	Job *Job `json:"job"`
-}
-
 // FineTuningService defines operations for managing fine-tuning jobs in OpenAI.
 type FineTuningService interface {
 	// CreateJob creates a new fine-tuning job in OpenAI.
@@ -230,14 +230,14 @@ type FineTuningService interface {
 	// RetrieveJob retrieves a fine-tuning job from OpenAI by its ID.
 	RetrieveJob(ctx context.Context, req *RetrieveJobRequest) (*RetrieveJobResponse, error)
 
-	// CancelJob cancels an active fine-tuning job in OpenAI.
-	CancelJob(ctx context.Context, req *CancelJobRequest) (*CancelJobResponse, error)
-
 	// PauseJob pauses a running fine-tuning job in OpenAI.
 	PauseJob(ctx context.Context, req *PauseJobRequest) (*PauseJobResponse, error)
 
 	// ResumeJob resumes a paused fine-tuning job in OpenAI.
 	ResumeJob(ctx context.Context, req *ResumeJobRequest) (*ResumeJobResponse, error)
+
+	// CancelJob cancels an active fine-tuning job in OpenAI.
+	CancelJob(ctx context.Context, req *CancelJobRequest) (*CancelJobResponse, error)
 
 	// ListJobs returns a filtered list of fine-tuning jobs from OpenAI.
 	ListJobs(ctx context.Context, req *ListJobsRequest) (*ListJobsResponse, error)
