@@ -14,7 +14,7 @@ type Manager struct {
 	Codes *Codes
 }
 
-// NewManager returns a new model manager.
+// NewManager creates a new manager for available model values.
 func NewManager() *Manager {
 	return &Manager{
 		List: base.AllModels,

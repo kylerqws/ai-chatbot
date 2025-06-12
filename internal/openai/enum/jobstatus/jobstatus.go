@@ -17,7 +17,7 @@ type Manager struct {
 	Codes *Codes
 }
 
-// NewManager returns a new job status manager.
+// NewManager creates a new manager for available job status values.
 func NewManager() *Manager {
 	return &Manager{
 		List: base.AllJobStatuses,

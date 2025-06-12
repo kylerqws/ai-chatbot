@@ -6,81 +6,48 @@ import (
 	"log"
 	"sync"
 
-	"github.com/kylerqws/chatbot/internal/openai/enumset"
+	"github.com/kylerqws/chatbot/internal/openai/enum"
+	"github.com/kylerqws/chatbot/internal/openai/service"
 	"github.com/kylerqws/chatbot/pkg/openai"
 
 	ctrint "github.com/kylerqws/chatbot/internal/openai/contract"
-	ctrenm "github.com/kylerqws/chatbot/internal/openai/contract/enumset"
-
+	ctrprv "github.com/kylerqws/chatbot/internal/openai/contract/provider"
 	ctrpkg "github.com/kylerqws/chatbot/pkg/openai/contract"
-	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 )
 
-// manager provides access to OpenAI services and enum sets.
+// manager provides access to OpenAI services and enum managers.
 type manager struct {
+	ctx context.Context
 	sdk ctrpkg.OpenAI
 
-	chatServiceOnce sync.Once
-	chatService     ctrsvc.ChatService
+	serviceSetOnce sync.Once
+	serviceSet     ctrprv.ServiceProvider
 
-	fileServiceOnce sync.Once
-	fileService     ctrsvc.FileService
-
-	fineServiceOnce   sync.Once
-	fineTuningService ctrsvc.FineTuningService
-
-	modelServiceOnce sync.Once
-	modelService     ctrsvc.ModelService
-
-	enumManagerSetOnce sync.Once
-	enumManagerSet     ctrenm.ManagerSet
+	enumSetOnce sync.Once
+	enumSet     ctrprv.EnumProvider
 }
 
-// New returns a new OpenAI manager.
+// New creates a new OpenAI manager.
 func New(ctx context.Context) ctrint.OpenAI {
 	sdk, err := openai.New(ctx)
 	if err != nil {
-		log.Fatal(fmt.Errorf("init OpenAI SDK: %w", err))
+		log.Fatal(fmt.Errorf("create OpenAI SDK: %w", err))
 	}
-	return &manager{sdk: sdk}
+	return &manager{ctx: ctx, sdk: sdk}
 }
 
-// ChatService returns the chat service.
-func (m *manager) ChatService() ctrsvc.ChatService {
-	m.chatServiceOnce.Do(func() {
-		m.chatService = m.sdk.ChatService()
+// ServiceProvider returns the OpenAI service provider.
+func (m *manager) ServiceProvider() ctrprv.ServiceProvider {
+	m.serviceSetOnce.Do(func() {
+		m.serviceSet = service.NewProvider(m.ctx, m.sdk)
 	})
-	return m.chatService
+	return m.serviceSet
 }
 
-// FileService returns the file service.
-func (m *manager) FileService() ctrsvc.FileService {
-	m.fileServiceOnce.Do(func() {
-		m.fileService = m.sdk.FileService()
+// EnumProvider returns the OpenAI enum manager provider.
+func (m *manager) EnumProvider() ctrprv.EnumProvider {
+	m.enumSetOnce.Do(func() {
+		m.enumSet = enum.NewProvider()
 	})
-	return m.fileService
-}
-
-// FineTuningService returns the fine-tuning service.
-func (m *manager) FineTuningService() ctrsvc.FineTuningService {
-	m.fineServiceOnce.Do(func() {
-		m.fineTuningService = m.sdk.FineTuningService()
-	})
-	return m.fineTuningService
-}
-
-// ModelService returns the model service.
-func (m *manager) ModelService() ctrsvc.ModelService {
-	m.modelServiceOnce.Do(func() {
-		m.modelService = m.sdk.ModelService()
-	})
-	return m.modelService
-}
-
-// EnumManagerSet returns the OpenAI enum manager set.
-func (m *manager) EnumManagerSet() ctrenm.ManagerSet {
-	m.enumManagerSetOnce.Do(func() {
-		m.enumManagerSet = enumset.NewManagerSet()
-	})
-	return m.enumManagerSet
+	return m.enumSet
 }

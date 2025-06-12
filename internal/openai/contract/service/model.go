@@ -7,28 +7,28 @@ import (
 
 // ModelService defines operations for managing OpenAI models.
 type ModelService interface {
-	// NewRetrieveModelRequest returns a new retrieve model request.
+	// NewRetrieveModelRequest creates a new retrieve model request.
 	NewRetrieveModelRequest() *ctrsvc.RetrieveModelRequest
 
-	// NewRetrieveModelResponse returns a new retrieve model response.
+	// NewRetrieveModelResponse creates a new retrieve model response.
 	NewRetrieveModelResponse() *ctrsvc.RetrieveModelResponse
 
 	// RetrieveModel retrieves a model from OpenAI by ID.
 	RetrieveModel(ctx context.Context, req *ctrsvc.RetrieveModelRequest) (*ctrsvc.RetrieveModelResponse, error)
 
-	// NewListModelsRequest returns a new list models request.
+	// NewListModelsRequest creates a new list models request.
 	NewListModelsRequest() *ctrsvc.ListModelsRequest
 
-	// NewListModelsResponse returns a new list models response.
+	// NewListModelsResponse creates a new list models response.
 	NewListModelsResponse() *ctrsvc.ListModelsResponse
 
 	// ListModels retrieves a list of models from OpenAI.
 	ListModels(ctx context.Context, req *ctrsvc.ListModelsRequest) (*ctrsvc.ListModelsResponse, error)
 
-	// NewDeleteModelRequest returns a new delete model request.
+	// NewDeleteModelRequest creates a new delete model request.
 	NewDeleteModelRequest() *ctrsvc.DeleteModelRequest
 
-	// NewDeleteModelResponse returns a new delete model response.
+	// NewDeleteModelResponse creates a new delete model response.
 	NewDeleteModelResponse() *ctrsvc.DeleteModelResponse
 
 	// DeleteModel removes a model from OpenAI by ID.

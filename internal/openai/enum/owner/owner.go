@@ -16,7 +16,7 @@ type Manager struct {
 	Codes *Codes
 }
 
-// NewManager returns a new owner manager.
+// NewManager creates a new manager for available owner values.
 func NewManager() *Manager {
 	return &Manager{
 		List: base.AllOwners,

@@ -34,7 +34,7 @@ type provider struct {
 	purpose     *purpose.Manager
 }
 
-// NewProvider returns a new enum provider that groups OpenAI enum managers.
+// NewProvider creates a new enum provider that groups OpenAI enum managers.
 func NewProvider() ctrprv.EnumProvider {
 	return &provider{}
 }

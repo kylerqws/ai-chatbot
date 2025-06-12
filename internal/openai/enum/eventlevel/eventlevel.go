@@ -15,7 +15,7 @@ type Manager struct {
 	Codes *Codes
 }
 
-// NewManager returns a new event level manager.
+// NewManager creates a new manager for available event level values.
 func NewManager() *Manager {
 	return &Manager{
 		List: base.AllEventLevels,

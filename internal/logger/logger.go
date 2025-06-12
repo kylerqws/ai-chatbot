@@ -27,7 +27,7 @@ type manager struct {
 	stderrOnce sync.Once
 }
 
-// New returns a new logger manager.
+// New creates a new logger manager.
 func New(ctx context.Context) ctrint.Logger {
 	return &manager{ctx: ctx}
 }

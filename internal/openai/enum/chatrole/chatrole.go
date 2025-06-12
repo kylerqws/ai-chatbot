@@ -16,7 +16,7 @@ type Manager struct {
 	Codes *Codes
 }
 
-// NewManager returns a new chat role manager.
+// NewManager creates a new manager for available chat role values.
 func NewManager() *Manager {
 	return &Manager{
 		List: base.AllChatRoles,

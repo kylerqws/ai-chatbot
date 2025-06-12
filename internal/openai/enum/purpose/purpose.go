@@ -18,7 +18,7 @@ type Manager struct {
 	Codes *Codes
 }
 
-// NewManager returns a new purpose manager.
+// NewManager creates a new manager for available purpose values.
 func NewManager() *Manager {
 	return &Manager{
 		List: base.AllPurposes,
