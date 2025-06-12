@@ -15,8 +15,8 @@ import (
 	ctrsvc "github.com/kylerqws/chatbot/pkg/openai/contract/service"
 )
 
-// api aggregates services for working with the OpenAI API.
-type api struct {
+// openai aggregates services for working with the OpenAI API.
+type openai struct {
 	ctx context.Context
 	cfg ctrcfg.Config
 
@@ -42,45 +42,45 @@ func New(ctx context.Context) (ctr.OpenAI, error) {
 	if err != nil {
 		return nil, fmt.Errorf("load openai config: %w", err)
 	}
-	return &api{ctx: ctx, cfg: cfg}, nil
+	return &openai{ctx: ctx, cfg: cfg}, nil
 }
 
 // FileService returns the initialized FileService client.
-func (a *api) FileService() ctrsvc.FileService {
-	a.fileOnce.Do(func() {
-		a.file = service.NewFileService(a.client(), a.cfg)
+func (o *openai) FileService() ctrsvc.FileService {
+	o.fileOnce.Do(func() {
+		o.file = service.NewFileService(o.client(), o.cfg)
 	})
-	return a.file
+	return o.file
 }
 
 // FineTuningService returns the initialized FineTuningService client.
-func (a *api) FineTuningService() ctrsvc.FineTuningService {
-	a.fineTuningOnce.Do(func() {
-		a.fineTuning = service.NewFineTuningService(a.client(), a.cfg)
+func (o *openai) FineTuningService() ctrsvc.FineTuningService {
+	o.fineTuningOnce.Do(func() {
+		o.fineTuning = service.NewFineTuningService(o.client(), o.cfg)
 	})
-	return a.fineTuning
+	return o.fineTuning
 }
 
 // ModelService returns the initialized ModelService client.
-func (a *api) ModelService() ctrsvc.ModelService {
-	a.modelOnce.Do(func() {
-		a.model = service.NewModelService(a.client(), a.cfg)
+func (o *openai) ModelService() ctrsvc.ModelService {
+	o.modelOnce.Do(func() {
+		o.model = service.NewModelService(o.client(), o.cfg)
 	})
-	return a.model
+	return o.model
 }
 
 // ChatService returns the initialized ChatService client.
-func (a *api) ChatService() ctrsvc.ChatService {
-	a.chatOnce.Do(func() {
-		a.chat = service.NewChatService(a.client(), a.cfg)
+func (o *openai) ChatService() ctrsvc.ChatService {
+	o.chatOnce.Do(func() {
+		o.chat = service.NewChatService(o.client(), o.cfg)
 	})
-	return a.chat
+	return o.chat
 }
 
 // client returns the initialized OpenAI HTTP client.
-func (a *api) client() ctrcl.Client {
-	a.clOnce.Do(func() {
-		a.cl = client.New(a.cfg)
+func (o *openai) client() ctrcl.Client {
+	o.clOnce.Do(func() {
+		o.cl = client.New(o.cfg)
 	})
-	return a.cl
+	return o.cl
 }
