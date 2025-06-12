@@ -36,8 +36,3 @@ func (*Manager) Resolve(code string) (*base.EventLevel, error) {
 func (*Manager) JoinCodes(sep string) string {
 	return base.JoinCodes(sep)
 }
-
-// Default returns the default event level.
-func (*Manager) Default() *base.EventLevel {
-	return base.Info
-}
