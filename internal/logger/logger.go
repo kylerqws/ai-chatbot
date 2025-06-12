@@ -20,11 +20,11 @@ type manager struct {
 	db     ctrpkg.Logger
 	dbOnce sync.Once
 
-	stdout     ctrpkg.Logger
-	stdoutOnce sync.Once
+	out     ctrpkg.Logger
+	outOnce sync.Once
 
-	stderr     ctrpkg.Logger
-	stderrOnce sync.Once
+	err     ctrpkg.Logger
+	errOnce sync.Once
 }
 
 // New creates a new logger manager.
@@ -42,18 +42,18 @@ func (m *manager) DB() ctrpkg.Logger {
 
 // Out returns the logger for standard output.
 func (m *manager) Out() ctrpkg.Logger {
-	m.stdoutOnce.Do(func() {
-		m.stdout = m.newLogger(ctrwrt.TypeStdout)
+	m.outOnce.Do(func() {
+		m.out = m.newLogger(ctrwrt.TypeStdout)
 	})
-	return m.stdout
+	return m.out
 }
 
 // Err returns the logger for standard error.
 func (m *manager) Err() ctrpkg.Logger {
-	m.stderrOnce.Do(func() {
-		m.stderr = m.newLogger(ctrwrt.TypeStderr)
+	m.errOnce.Do(func() {
+		m.err = m.newLogger(ctrwrt.TypeStderr)
 	})
-	return m.stderr
+	return m.err
 }
 
 // newLogger creates a logger for the specified writer type.
