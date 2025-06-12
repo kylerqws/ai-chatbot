@@ -1,12 +1,12 @@
 package provider
 
 import (
-	"github.com/kylerqws/chatbot/internal/openai/enumset/chatrole"
-	"github.com/kylerqws/chatbot/internal/openai/enumset/eventlevel"
-	"github.com/kylerqws/chatbot/internal/openai/enumset/jobstatus"
-	"github.com/kylerqws/chatbot/internal/openai/enumset/model"
-	"github.com/kylerqws/chatbot/internal/openai/enumset/owner"
-	"github.com/kylerqws/chatbot/internal/openai/enumset/purpose"
+	"github.com/kylerqws/chatbot/internal/openai/enum/chatrole"
+	"github.com/kylerqws/chatbot/internal/openai/enum/eventlevel"
+	"github.com/kylerqws/chatbot/internal/openai/enum/jobstatus"
+	"github.com/kylerqws/chatbot/internal/openai/enum/model"
+	"github.com/kylerqws/chatbot/internal/openai/enum/owner"
+	"github.com/kylerqws/chatbot/internal/openai/enum/purpose"
 )
 
 // EnumProvider defines grouped access to OpenAI enum managers.
