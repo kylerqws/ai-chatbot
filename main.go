@@ -11,7 +11,7 @@ import (
 	"github.com/kylerqws/chatbot/internal/cli"
 )
 
-// init loads environment variables from .env and mode-specific .env.{mode} files.
+// init loads environment variables from .env and specific .env.{mode} files.
 func init() {
 	_ = godotenv.Load()
 	_ = godotenv.Load(".env." + resolver.ResolveMode())
