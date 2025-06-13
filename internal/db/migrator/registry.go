@@ -5,8 +5,7 @@ import (
 	bunmig "github.com/uptrace/bun/migrate"
 )
 
-// migrationRegistry defines the ordered list of migration registration functions.
-// Each function must appear in the sequence it should be executed to maintain schema consistency.
+// migrationRegistry is the ordered list of schema migration registrations.
 var migrationRegistry = []func(*bunmig.Migrations){
 	// --- 06.03.2025 ---
 	intmig.CreateMessageTable06032025001,

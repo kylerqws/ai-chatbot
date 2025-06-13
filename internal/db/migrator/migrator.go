@@ -10,7 +10,7 @@ import (
 	ctrcl "github.com/kylerqws/chatbot/pkg/db/contract/client"
 )
 
-// Migrate connects to the database and applies all pending migrations.
+// Migrate applies all pending database migrations.
 func Migrate(ctx context.Context, db ctr.DB) (err error) {
 	client := db.Client()
 	if err = client.Connect(); err != nil {
@@ -24,7 +24,7 @@ func Migrate(ctx context.Context, db ctr.DB) (err error) {
 	return nil
 }
 
-// Rollback connects to the database and rolls back the last applied migration.
+// Rollback rolls back the last applied database migrations.
 func Rollback(ctx context.Context, db ctr.DB) (err error) {
 	client := db.Client()
 	if err = client.Connect(); err != nil {
@@ -38,14 +38,14 @@ func Rollback(ctx context.Context, db ctr.DB) (err error) {
 	return nil
 }
 
-// closeClient ensures the database client is closed and captures close errors.
+// // closeClient closes the database client and updates the error on failure.
 func closeClient(cl ctrcl.Client, err *error) {
 	if cerr := cl.Close(); cerr != nil && *err == nil {
 		*err = fmt.Errorf("close database client: %w", cerr)
 	}
 }
 
-// registeredMigrations returns a Migrations object populated from the registry.
+// registeredMigrations returns the set of migrations created from the registry.
 func registeredMigrations() *migrate.Migrations {
 	migs := migrate.NewMigrations()
 	for _, register := range migrationRegistry {

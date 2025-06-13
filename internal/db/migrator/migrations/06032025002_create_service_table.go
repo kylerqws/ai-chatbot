@@ -8,7 +8,7 @@ import (
 	"github.com/uptrace/bun/migrate"
 )
 
-// CreateServiceTable06032025002 registers migration for creating the `abstract` table.
+// CreateServiceTable06032025002 registers migration for creating the `service` table.
 func CreateServiceTable06032025002(migrations *migrate.Migrations) {
 	migrations.MustRegister(
 		func(ctx context.Context, db *bun.DB) error {
