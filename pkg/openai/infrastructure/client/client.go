@@ -27,8 +27,13 @@ type client struct {
 
 // New creates a new OpenAI API client using the provided configuration.
 func New(cfg ctrcfg.Config) ctrcl.Client {
-	hc := &http.Client{Timeout: cfg.GetTimeout()}
-	return &client{config: cfg, httpClient: hc}
+	return &client{config: cfg, httpClient: &http.Client{
+		Timeout: cfg.GetTimeout(),
+		Transport: &http.Transport{
+			TLSHandshakeTimeout:   cfg.GetTLSHandshakeTimeout(),
+			ResponseHeaderTimeout: cfg.GetResponseHeaderTimeout(),
+		},
+	}}
 }
 
 // RequestMultipart sends a multipart/form-data POST request to the specified path.

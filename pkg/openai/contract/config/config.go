@@ -40,4 +40,16 @@ type Config interface {
 
 	// SetTimeout sets the HTTP client timeout in seconds.
 	SetTimeout(seconds uint64) error
+
+	// GetTLSHandshakeTimeout returns the TLS handshake timeout duration.
+	GetTLSHandshakeTimeout() time.Duration
+
+	// SetTLSHandshakeTimeout sets the TLS handshake timeout in seconds.
+	SetTLSHandshakeTimeout(seconds uint64) error
+
+	// GetResponseHeaderTimeout returns the response header timeout duration.
+	GetResponseHeaderTimeout() time.Duration
+
+	// SetResponseHeaderTimeout sets the response header timeout in seconds.
+	SetResponseHeaderTimeout(seconds uint64) error
 }
