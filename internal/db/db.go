@@ -6,10 +6,12 @@ import (
 	"log"
 
 	"github.com/kylerqws/chatbot/pkg/db"
-	"github.com/uptrace/bun"
 
 	ctrint "github.com/kylerqws/chatbot/internal/db/contract"
 	ctrpkg "github.com/kylerqws/chatbot/pkg/db/contract"
+
+	ctrcl "github.com/kylerqws/chatbot/pkg/db/contract/client"
+	ctrmig "github.com/kylerqws/chatbot/pkg/db/contract/migrator"
 )
 
 // proxy is an internal wrapper over the base DB client.
@@ -26,17 +28,10 @@ func New(ctx context.Context) ctrint.DB {
 	return &proxy{db: instance}
 }
 
-// Connect opens the database connection.
-func (p *proxy) Connect() error {
-	return p.db.Client().Connect()
+func (p *proxy) Client() ctrcl.Client {
+	return p.db.Client()
 }
 
-// Close closes the database connection.
-func (p *proxy) Close() error {
-	return p.db.Client().Close()
-}
-
-// DB returns the low-level database instance.
-func (p *proxy) DB() *bun.DB {
-	return p.db.Client().DB()
+func (p *proxy) Migrator() ctrmig.Migrator {
+	return p.db.Migrator()
 }
