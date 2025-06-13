@@ -1,11 +1,11 @@
 package model
 
 import (
-	"time"
-
 	"github.com/uptrace/bun"
+	"time"
 )
 
+// AiChat links a user with an AI-generated message.
 type AiChat struct {
 	bun.BaseModel `bun:"table:aichat"`
 

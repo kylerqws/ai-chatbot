@@ -1,11 +1,11 @@
 package model
 
 import (
-	"time"
-
 	"github.com/uptrace/bun"
+	"time"
 )
 
+// User represents an identity from an external service.
 type User struct {
 	bun.BaseModel `bun:"table:user"`
 

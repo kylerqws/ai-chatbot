@@ -1,17 +1,17 @@
 package model
 
 import (
-	"time"
-
 	"github.com/uptrace/bun"
+	"time"
 )
 
-type Message struct {
-	bun.BaseModel `bun:"table:message"`
+// Service represents an external platform (e.g., a social network).
+type Service struct {
+	bun.BaseModel `bun:"table:service"`
 
 	EntityID  int64     `bun:",pk,autoincrement"`
-	Request   string    `bun:",notnull"`
-	Response  string    `bun:",notnull"`
+	Code      string    `bun:",unique,notnull"`
+	Name      string    `bun:",unique,notnull"`
 	CreatedAt time.Time `bun:",nullzero,default:current_timestamp"`
 	UpdatedAt time.Time `bun:",nullzero,default:current_timestamp"`
 }
