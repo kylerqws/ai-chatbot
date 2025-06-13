@@ -30,6 +30,7 @@ func New(cfg ctrcfg.Config) ctrcl.Client {
 	return &client{config: cfg, httpClient: &http.Client{
 		Timeout: cfg.GetTimeout(),
 		Transport: &http.Transport{
+			ForceAttemptHTTP2:     true,
 			TLSHandshakeTimeout:   cfg.GetTLSHandshakeTimeout(),
 			ResponseHeaderTimeout: cfg.GetResponseHeaderTimeout(),
 		},
