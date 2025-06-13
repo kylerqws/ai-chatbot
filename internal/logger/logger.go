@@ -13,8 +13,8 @@ import (
 	ctrwrt "github.com/kylerqws/chatbot/pkg/logger/contract/writer"
 )
 
-// manager aggregates internal loggers (database, stdout, stderr).
-type manager struct {
+// entrypoint aggregates internal loggers (database, stdout, stderr).
+type entrypoint struct {
 	ctx context.Context
 
 	db     ctrpkg.Logger
@@ -27,38 +27,38 @@ type manager struct {
 	errOnce sync.Once
 }
 
-// New creates a new logger manager.
+// New creates a new logger entrypoint with multiple output loggers.
 func New(ctx context.Context) ctrint.Logger {
-	return &manager{ctx: ctx}
+	return &entrypoint{ctx: ctx}
 }
 
 // DB returns the logger for database output.
-func (m *manager) DB() ctrpkg.Logger {
-	m.dbOnce.Do(func() {
-		m.db = m.newLogger(ctrwrt.TypeDB)
+func (e *entrypoint) DB() ctrpkg.Logger {
+	e.dbOnce.Do(func() {
+		e.db = e.newLogger(ctrwrt.TypeDB)
 	})
-	return m.db
+	return e.db
 }
 
 // Out returns the logger for standard output.
-func (m *manager) Out() ctrpkg.Logger {
-	m.outOnce.Do(func() {
-		m.out = m.newLogger(ctrwrt.TypeStdout)
+func (e *entrypoint) Out() ctrpkg.Logger {
+	e.outOnce.Do(func() {
+		e.out = e.newLogger(ctrwrt.TypeStdout)
 	})
-	return m.out
+	return e.out
 }
 
 // Err returns the logger for standard error.
-func (m *manager) Err() ctrpkg.Logger {
-	m.errOnce.Do(func() {
-		m.err = m.newLogger(ctrwrt.TypeStderr)
+func (e *entrypoint) Err() ctrpkg.Logger {
+	e.errOnce.Do(func() {
+		e.err = e.newLogger(ctrwrt.TypeStderr)
 	})
-	return m.err
+	return e.err
 }
 
 // newLogger creates a logger for the specified writer type.
-func (m *manager) newLogger(wt string) ctrpkg.Logger {
-	instance, err := logger.NewWithWriter(m.ctx, wt)
+func (e *entrypoint) newLogger(wt string) ctrpkg.Logger {
+	instance, err := logger.NewWithWriter(e.ctx, wt)
 	if err != nil {
 		log.Fatal(fmt.Errorf("create logger with writer '%s': %w", wt, err))
 	}

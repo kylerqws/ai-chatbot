@@ -15,8 +15,8 @@ import (
 	ctrpkg "github.com/kylerqws/chatbot/pkg/openai/contract"
 )
 
-// manager aggregates OpenAI service and enum providers.
-type manager struct {
+// entrypoint aggregates OpenAI service and enum providers.
+type entrypoint struct {
 	ctx context.Context
 	sdk ctrpkg.OpenAI
 
@@ -27,27 +27,27 @@ type manager struct {
 	enumOnce sync.Once
 }
 
-// New creates a new OpenAI manager.
+// New creates a new OpenAI entrypoint with service and enum providers.
 func New(ctx context.Context) ctrint.OpenAI {
 	sdk, err := openai.New(ctx)
 	if err != nil {
 		log.Fatal(fmt.Errorf("create OpenAI SDK: %w", err))
 	}
-	return &manager{ctx: ctx, sdk: sdk}
+	return &entrypoint{ctx: ctx, sdk: sdk}
 }
 
 // ServiceProvider returns the OpenAI service provider.
-func (m *manager) ServiceProvider() ctrprv.ServiceProvider {
-	m.serviceOnce.Do(func() {
-		m.service = service.NewProvider(m.ctx, m.sdk)
+func (e *entrypoint) ServiceProvider() ctrprv.ServiceProvider {
+	e.serviceOnce.Do(func() {
+		e.service = service.NewProvider(e.ctx, e.sdk)
 	})
-	return m.service
+	return e.service
 }
 
 // EnumProvider returns the OpenAI enum manager provider.
-func (m *manager) EnumProvider() ctrprv.EnumProvider {
-	m.enumOnce.Do(func() {
-		m.enum = enum.NewProvider()
+func (e *entrypoint) EnumProvider() ctrprv.EnumProvider {
+	e.enumOnce.Do(func() {
+		e.enum = enum.NewProvider()
 	})
-	return m.enum
+	return e.enum
 }
