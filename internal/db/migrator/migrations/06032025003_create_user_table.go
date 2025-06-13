@@ -2,11 +2,13 @@ package migrations
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/migrate"
 )
 
+// CreateUserTable06032025003 registers migration for creating the `user` table.
 func CreateUserTable06032025003(migrations *migrate.Migrations) {
 	migrations.MustRegister(
 		func(ctx context.Context, db *bun.DB) error {
@@ -21,13 +23,17 @@ func CreateUserTable06032025003(migrations *migrate.Migrations) {
 					FOREIGN KEY (service_id) REFERENCES service(entity_id) ON DELETE CASCADE
 				);
 			`)
-
-			return err
+			if err != nil {
+				return fmt.Errorf("create user table: %w", err)
+			}
+			return nil
 		},
 		func(ctx context.Context, db *bun.DB) error {
 			_, err := db.ExecContext(ctx, `DROP TABLE IF EXISTS user;`)
-
-			return err
+			if err != nil {
+				return fmt.Errorf("drop user table: %w", err)
+			}
+			return nil
 		},
 	)
 }

@@ -2,11 +2,13 @@ package migrations
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/migrate"
 )
 
+// CreateAiChatTable06032025004 registers migration for creating the `aichat` table.
 func CreateAiChatTable06032025004(migrations *migrate.Migrations) {
 	migrations.MustRegister(
 		func(ctx context.Context, db *bun.DB) error {
@@ -21,13 +23,17 @@ func CreateAiChatTable06032025004(migrations *migrate.Migrations) {
 					FOREIGN KEY (message_id) REFERENCES message(entity_id) ON DELETE CASCADE
 				);
 			`)
-
-			return err
+			if err != nil {
+				return fmt.Errorf("create aichat table: %w", err)
+			}
+			return nil
 		},
 		func(ctx context.Context, db *bun.DB) error {
 			_, err := db.ExecContext(ctx, `DROP TABLE IF EXISTS aichat;`)
-
-			return err
+			if err != nil {
+				return fmt.Errorf("drop aichat table: %w", err)
+			}
+			return nil
 		},
 	)
 }
