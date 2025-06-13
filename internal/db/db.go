@@ -28,10 +28,12 @@ func New(ctx context.Context) ctrint.DB {
 	return &proxy{db: instance}
 }
 
+// Client returns the initialized database client.
 func (p *proxy) Client() ctrcl.Client {
 	return p.db.Client()
 }
 
+// Migrator returns the initialized database migrator.
 func (p *proxy) Migrator() ctrmig.Migrator {
 	return p.db.Migrator()
 }
