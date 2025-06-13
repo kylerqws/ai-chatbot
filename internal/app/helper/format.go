@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// FormatBytes converts a byte count into a human-readable string.
 func FormatBytes(b int64) string {
 	const unit = 1024
 	if b < unit {
@@ -21,6 +22,7 @@ func FormatBytes(b int64) string {
 	return fmt.Sprintf("%.2f %sB", float64(b)/div, units[exp])
 }
 
+// FormatTime converts a Unix timestamp to a formatted date-time string.
 func FormatTime(t int64) string {
 	return time.Unix(t, 0).Format(time.DateTime)
 }
