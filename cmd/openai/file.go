@@ -7,7 +7,7 @@ import (
 	intcli "github.com/kylerqws/chatbot/internal/cli/adapter/cmd/openai"
 )
 
-// FileCommand creates a command for interacting with the OpenAI file API.
+// FileCommand creates the OpenAI file command.
 func FileCommand(app *intapp.App) *cobra.Command {
 	return intcli.NewFileAdapter(app).Configure()
 }

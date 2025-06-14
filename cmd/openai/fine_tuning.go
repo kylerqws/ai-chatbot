@@ -7,7 +7,7 @@ import (
 	intcli "github.com/kylerqws/chatbot/internal/cli/adapter/cmd/openai"
 )
 
-// FineTuningCommand creates a command for managing fine-tuning jobs via OpenAI API.
+// FineTuningCommand creates the OpenAI fine-tuning command.
 func FineTuningCommand(app *intapp.App) *cobra.Command {
 	return intcli.NewFineTuningAdapter(app).Configure()
 }

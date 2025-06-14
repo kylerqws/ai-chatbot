@@ -7,7 +7,7 @@ import (
 	intcli "github.com/kylerqws/chatbot/internal/cli/adapter/cmd/openai/file"
 )
 
-// ListCommand creates a command for listing OpenAI files.
+// ListCommand creates the OpenAI file listing command.
 func ListCommand(app *intapp.App) *cobra.Command {
 	return intcli.NewListAdapter(app).Configure()
 }

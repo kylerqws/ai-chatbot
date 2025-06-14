@@ -7,7 +7,7 @@ import (
 	intcli "github.com/kylerqws/chatbot/internal/cli/adapter/cmd/dev/db"
 )
 
-// MigrateCommand creates a command for applies database migrations.
+// MigrateCommand creates the migrate command.
 func MigrateCommand(app *intapp.App) *cobra.Command {
 	return intcli.NewMigrateAdapter(app).Configure()
 }

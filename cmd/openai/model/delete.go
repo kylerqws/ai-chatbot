@@ -7,7 +7,7 @@ import (
 	intcli "github.com/kylerqws/chatbot/internal/cli/adapter/cmd/openai/model"
 )
 
-// DeleteCommand creates a command for deleting an OpenAI model.
+// DeleteCommand creates the OpenAI model deletion command.
 func DeleteCommand(app *intapp.App) *cobra.Command {
 	return intcli.NewDeleteAdapter(app).Configure()
 }

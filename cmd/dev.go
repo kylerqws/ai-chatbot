@@ -7,7 +7,7 @@ import (
 	intcli "github.com/kylerqws/chatbot/internal/cli/adapter/cmd"
 )
 
-// DevCommand creates a command for development utilities.
+// DevCommand creates the development command.
 func DevCommand(app *intapp.App) *cobra.Command {
 	return intcli.NewDevAdapter(app).Configure()
 }

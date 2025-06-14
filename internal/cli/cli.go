@@ -7,7 +7,7 @@ import (
 	"github.com/kylerqws/chatbot/internal/cli/adapter"
 )
 
-// RootCommand creates the root CLI command.
+// RootCommand creates the root command.
 func RootCommand(app *app.App) *cobra.Command {
 	// Disable automatic sorting of subcommands to preserve custom order.
 	cobra.EnableCommandSorting = false
@@ -15,7 +15,7 @@ func RootCommand(app *app.App) *cobra.Command {
 	return adapter.NewRootAdapter(app).Configure()
 }
 
-// Execute runs the root CLI command.
+// Execute runs the CLI entry point.
 func Execute(app *app.App) error {
 	defer app.ContextCancel()()
 	return RootCommand(app).Execute()

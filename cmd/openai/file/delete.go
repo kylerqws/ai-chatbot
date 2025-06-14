@@ -7,7 +7,7 @@ import (
 	intcli "github.com/kylerqws/chatbot/internal/cli/adapter/cmd/openai/file"
 )
 
-// DeleteCommand creates a command for deleting an OpenAI file.
+// DeleteCommand creates the OpenAI file deletion command.
 func DeleteCommand(app *intapp.App) *cobra.Command {
 	return intcli.NewDeleteAdapter(app).Configure()
 }
