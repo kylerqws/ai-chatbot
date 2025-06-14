@@ -3,20 +3,18 @@ package adapter
 import (
 	"fmt"
 	"io"
-	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/spf13/cobra"
 )
 
-// ErrorAdapter provides the implementation for CLI error handling.
+// ErrorAdapter provides the implementation for CLI adapter with error handling.
 type ErrorAdapter struct {
 	command *cobra.Command
 	errors  []error
 }
 
-// NewErrorAdapter creates a new error adapter.
+// NewErrorAdapter creates a new error command adapter.
 func NewErrorAdapter(cmd *cobra.Command) *ErrorAdapter {
 	return &ErrorAdapter{command: cmd}
 }
@@ -66,14 +64,12 @@ func (a *ErrorAdapter) ErrorIfExist(format string, args ...any) error {
 		if !a.ShowErrors() {
 			return fmt.Errorf(format, args...)
 		}
-
-		exec := fmt.Sprintf("%s %s", filepath.Base(os.Args[0]), strings.Join(os.Args[1:], " "))
-		return fmt.Errorf("Failed to execute command: `%s`\n%s", exec, a.StringErrors())
+		return fmt.Errorf("Failed to execute command:\n%s", a.StringErrors())
 	}
 	return nil
 }
 
-// PrintErrors outputs all errors to the default output stream.
+// PrintErrors outputs all errors to the default writer.
 func (a *ErrorAdapter) PrintErrors() error {
 	return a.PrintErrorsToWriter(a.command.ErrOrStderr())
 }

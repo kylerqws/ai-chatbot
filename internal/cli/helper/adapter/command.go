@@ -18,7 +18,7 @@ type CommandAdapter struct {
 	command *cobra.Command
 }
 
-// NewCommandAdapter creates a new command adapter instance.
+// NewCommandAdapter creates a new command adapter.
 func NewCommandAdapter(app *app.App, cmd *cobra.Command) *CommandAdapter {
 	hlp := &CommandAdapter{command: cmd}
 
@@ -29,12 +29,12 @@ func NewCommandAdapter(app *app.App, cmd *cobra.Command) *CommandAdapter {
 	return hlp
 }
 
-// FuncArgs returns the command handler for raw arguments.
+// FuncArgs returns the cobra-compatible command argument handler.
 func (a *CommandAdapter) FuncArgs() ctr.FuncArgs {
 	return ctr.FuncArgs(a.command.Args)
 }
 
-// SetFuncArgs sets the command handler for raw arguments.
+// SetFuncArgs sets the cobra-compatible command argument handler.
 func (a *CommandAdapter) SetFuncArgs(fn ctr.FuncArgs) {
 	a.command.Args = cobra.PositionalArgs(fn)
 }

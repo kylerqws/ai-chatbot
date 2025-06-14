@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-// CommandAdapter defines the interface for a CLI command with logic and output.
+// CommandAdapter defines the interface for a CLI adapters with logic and output.
 type CommandAdapter interface {
 	GeneralAdapter
 
@@ -30,7 +30,7 @@ type CommandAdapter interface {
 	// ErrorIfExist returns a formatted error if any exist.
 	ErrorIfExist(format string, args ...any) error
 
-	// PrintErrors outputs all errors to the default output stream.
+	// PrintErrors outputs all errors to the default writer.
 	PrintErrors() error
 
 	// PrintErrorsToWriter outputs all errors to the specified writer.
@@ -45,10 +45,10 @@ type CommandAdapter interface {
 	// PrintMessageToWriter outputs a message to the specified writer.
 	PrintMessageToWriter(w io.Writer, args ...any) error
 
-	// FuncArgs returns the command handler for raw arguments.
+	// FuncArgs returns the cobra-compatible command argument handler.
 	FuncArgs() ctr.FuncArgs
 
-	// SetFuncArgs sets the command handler for raw arguments.
+	// SetFuncArgs sets the cobra-compatible command argument handler.
 	SetFuncArgs(handler ctr.FuncArgs)
 
 	// FuncRunE returns the cobra-compatible command execution function.

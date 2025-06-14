@@ -58,7 +58,7 @@ func (a *GeneralAdapter) SetLong(value string) {
 	a.command.Long = value
 }
 
-// Configure applies full configuration for the command.
+// Configure applies configuration for the command.
 func (a *GeneralAdapter) Configure() *cobra.Command {
 	return a.MainConfigure()
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/kylerqws/chatbot/internal/cli/setup"
 )
 
-// ParentAdapter provides the base implementation for CLI adapters with subcommands.
+// ParentAdapter provides the implementation for CLI adapters with subcommands.
 type ParentAdapter struct {
 	*GeneralAdapter
 	*ChildrenAdapter

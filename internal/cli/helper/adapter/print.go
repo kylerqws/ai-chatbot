@@ -7,12 +7,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// PrintAdapter provides the implementation for CLI output handling.
+// PrintAdapter provides the implementation for CLI adapter with output handling.
 type PrintAdapter struct {
 	command *cobra.Command
 }
 
-// NewPrintAdapter creates a new print adapter.
+// NewPrintAdapter creates a new print command adapter.
 func NewPrintAdapter(cmd *cobra.Command) *PrintAdapter {
 	return &PrintAdapter{command: cmd}
 }

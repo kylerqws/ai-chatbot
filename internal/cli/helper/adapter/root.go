@@ -7,13 +7,13 @@ import (
 	"github.com/kylerqws/chatbot/internal/cli/setup"
 )
 
-// RootAdapter provides the base implementation for the root CLI adapter.
+// RootAdapter provides the implementation for the root CLI adapter.
 type RootAdapter struct {
 	*ParentAdapter
 	command *cobra.Command
 }
 
-// NewRootAdapter creates a new root adapter.
+// NewRootAdapter creates a new root command adapter.
 func NewRootAdapter(app *app.App, cmd *cobra.Command) *RootAdapter {
 	hlp := &RootAdapter{command: cmd}
 	hlp.ParentAdapter = NewParentAdapter(app, cmd)
