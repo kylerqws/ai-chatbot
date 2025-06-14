@@ -2,7 +2,6 @@ package client
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/kylerqws/chatbot/pkg/db/infrastructure/client/dialect"
 	"github.com/uptrace/bun"
@@ -54,7 +53,7 @@ func (c *dbClient) Close() error {
 // DB returns the low-level database instance.
 func (c *dbClient) DB() *bun.DB {
 	if c.db == nil {
-		log.Fatalf("database not initialized")
+		panic("database not initialized")
 	}
 	return c.db
 }

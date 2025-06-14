@@ -3,7 +3,6 @@ package dialect
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -64,7 +63,7 @@ func (d *sqliteDialect) Close() error {
 // DB returns the low-level database instance.
 func (d *sqliteDialect) DB() *bun.DB {
 	if d.db == nil {
-		log.Fatalf("database not initialized")
+		panic("database not initialized")
 	}
 	return d.db
 }

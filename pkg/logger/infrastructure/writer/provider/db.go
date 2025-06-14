@@ -1,7 +1,6 @@
 package provider
 
 import (
-	"fmt"
 	"io"
 
 	ctrcfg "github.com/kylerqws/chatbot/pkg/logger/contract/config"
@@ -30,5 +29,5 @@ func (*dbProvider) Writer() io.Writer {
 
 // Write persists log entries to the database.
 func (*dbWriter) Write(_ []byte) (int, error) {
-	return 0, fmt.Errorf("db writer is not implemented")
+	panic("db writer is not implemented")
 }
