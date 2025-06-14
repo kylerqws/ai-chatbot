@@ -63,7 +63,7 @@ func (h *GeneralAdapter) Configure() *cobra.Command {
 	return h.MainConfigure()
 }
 
-// MainConfigure applies common configuration to the command.
+// MainConfigure applies common configuration for the command.
 func (h *GeneralAdapter) MainConfigure() *cobra.Command {
 	return setup.GeneralConfigure(h)
 }

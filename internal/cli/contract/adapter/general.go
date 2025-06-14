@@ -34,6 +34,6 @@ type GeneralAdapter interface {
 	// Configure applies full configuration for the command.
 	Configure() *cobra.Command
 
-	// MainConfigure applies common configuration to the command.
+	// MainConfigure applies common configuration for the command.
 	MainConfigure() *cobra.Command
 }

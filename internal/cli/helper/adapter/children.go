@@ -2,7 +2,7 @@ package adapter
 
 import "github.com/spf13/cobra"
 
-// ChildrenAdapter provides base functionality for managing child CLI commands.
+// ChildrenAdapter provides the base implementation for managing CLI subcommands.
 type ChildrenAdapter struct {
 	command  *cobra.Command
 	children []*cobra.Command

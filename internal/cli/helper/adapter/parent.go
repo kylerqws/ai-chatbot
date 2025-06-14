@@ -7,7 +7,7 @@ import (
 	"github.com/kylerqws/chatbot/internal/cli/setup"
 )
 
-// ParentAdapter provides a base implementation for commands with subcommands.
+// ParentAdapter provides the base implementation for CLI adapters with subcommands.
 type ParentAdapter struct {
 	*GeneralAdapter
 	*ChildrenAdapter
@@ -25,7 +25,7 @@ func NewParentAdapter(app *app.App, cmd *cobra.Command) *ParentAdapter {
 	return hlp
 }
 
-// MainConfigure applies common configuration to the command.
+// MainConfigure applies common configuration for the command.
 func (h *ParentAdapter) MainConfigure() *cobra.Command {
 	return setup.ParentConfigure(h)
 }
