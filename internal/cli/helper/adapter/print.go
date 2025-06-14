@@ -7,22 +7,27 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// PrintAdapter provides the implementation for CLI output handling.
 type PrintAdapter struct {
 	command *cobra.Command
 }
 
+// NewPrintAdapter creates a new print adapter.
 func NewPrintAdapter(cmd *cobra.Command) *PrintAdapter {
 	return &PrintAdapter{command: cmd}
 }
 
-func (h *PrintAdapter) PrintMessage(args ...any) error {
-	return h.PrintMessageToWriter(h.command.OutOrStdout(), args...)
+// PrintMessage outputs a general message to the default writer.
+func (a *PrintAdapter) PrintMessage(args ...any) error {
+	return a.PrintMessageToWriter(a.command.OutOrStdout(), args...)
 }
 
-func (h *PrintAdapter) PrintErrMessage(args ...any) error {
-	return h.PrintMessageToWriter(h.command.ErrOrStderr(), args...)
+// PrintErrMessage outputs an error message to the default writer.
+func (a *PrintAdapter) PrintErrMessage(args ...any) error {
+	return a.PrintMessageToWriter(a.command.ErrOrStderr(), args...)
 }
 
+// PrintMessageToWriter outputs a message to the specified writer.
 func (*PrintAdapter) PrintMessageToWriter(w io.Writer, args ...any) error {
 	if _, err := fmt.Fprintln(w, args...); err != nil {
 		return err

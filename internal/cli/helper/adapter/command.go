@@ -9,13 +9,16 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
 )
 
+// CommandAdapter provides the base implementation for functional CLI commands.
 type CommandAdapter struct {
 	*GeneralAdapter
 	*ErrorAdapter
 	*PrintAdapter
+
 	command *cobra.Command
 }
 
+// NewCommandAdapter creates a new command adapter instance.
 func NewCommandAdapter(app *app.App, cmd *cobra.Command) *CommandAdapter {
 	hlp := &CommandAdapter{command: cmd}
 
@@ -26,22 +29,27 @@ func NewCommandAdapter(app *app.App, cmd *cobra.Command) *CommandAdapter {
 	return hlp
 }
 
-func (h *CommandAdapter) FuncArgs() ctr.FuncArgs {
-	return ctr.FuncArgs(h.command.Args)
+// FuncArgs returns the command handler for raw arguments.
+func (a *CommandAdapter) FuncArgs() ctr.FuncArgs {
+	return ctr.FuncArgs(a.command.Args)
 }
 
-func (h *CommandAdapter) SetFuncArgs(fn ctr.FuncArgs) {
-	h.command.Args = cobra.PositionalArgs(fn)
+// SetFuncArgs sets the command handler for raw arguments.
+func (a *CommandAdapter) SetFuncArgs(fn ctr.FuncArgs) {
+	a.command.Args = cobra.PositionalArgs(fn)
 }
 
-func (h *CommandAdapter) FuncRunE() ctr.FuncRunE {
-	return h.command.RunE
+// FuncRunE returns the cobra-compatible command execution function.
+func (a *CommandAdapter) FuncRunE() ctr.FuncRunE {
+	return a.command.RunE
 }
 
-func (h *CommandAdapter) SetFuncRunE(fn ctr.FuncRunE) {
-	h.command.RunE = fn
+// SetFuncRunE sets the cobra-compatible command execution function.
+func (a *CommandAdapter) SetFuncRunE(fn ctr.FuncRunE) {
+	a.command.RunE = fn
 }
 
-func (h *CommandAdapter) MainConfigure() *cobra.Command {
-	return setup.CommandConfigure(h)
+// MainConfigure applies common configuration for the command.
+func (a *CommandAdapter) MainConfigure() *cobra.Command {
+	return setup.CommandConfigure(a)
 }
