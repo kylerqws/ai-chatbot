@@ -2,19 +2,19 @@ package adapter
 
 import "github.com/spf13/cobra"
 
-// ParentAdapter defines the interface for CLI commands with nested subcommands.
+// ParentAdapter defines the interface for CLI adapters with nested subcommands.
 type ParentAdapter interface {
 	GeneralAdapter
 
-	// Children returns the list of child cobra commands.
+	// Children returns all registered child commands.
 	Children() []*cobra.Command
 
-	// ExistChildren returns true if child commands are defined.
+	// ExistChildren reports whether any child commands have been added.
 	ExistChildren() bool
 
-	// AddChild appends a single child command.
+	// AddChild adds a single child command to the collection.
 	AddChild(child *cobra.Command)
 
-	// AddChildren appends multiple child commands.
+	// AddChildren adds multiple child commands to the collection.
 	AddChildren(children ...*cobra.Command)
 }
