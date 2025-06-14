@@ -2,7 +2,7 @@ package adapter
 
 import "github.com/spf13/cobra"
 
-// ParentAdapter defines the interface for CLI adapters with nested subcommands.
+// ParentAdapter defines the interface for a CLI adapter with nested subcommands.
 type ParentAdapter interface {
 	GeneralAdapter
 
