@@ -32,7 +32,7 @@ func (a *ChildrenAdapter) AddChild(child *cobra.Command) {
 
 // AddChildren adds multiple child commands to the collection.
 func (a *ChildrenAdapter) AddChildren(children ...*cobra.Command) {
-	for _, child := range children {
-		a.AddChild(child)
+	for i := range children {
+		a.AddChild(children[i])
 	}
 }
