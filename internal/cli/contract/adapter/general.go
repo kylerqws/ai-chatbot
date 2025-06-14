@@ -31,7 +31,7 @@ type GeneralAdapter interface {
 	// SetLong sets the long description.
 	SetLong(value string)
 
-	// Configure applies full configuration for the command.
+	// Configure applies configuration for the command.
 	Configure() *cobra.Command
 
 	// MainConfigure applies common configuration for the command.

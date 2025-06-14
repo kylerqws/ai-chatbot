@@ -11,7 +11,7 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// RootAdapter implements the root command adapter.
+// RootAdapter provides the implementation for the root CLI adapter.
 type RootAdapter struct {
 	*helper.RootAdapter
 }
@@ -25,7 +25,7 @@ func NewRootAdapter(app *intapp.App) ctr.RootAdapter {
 	return adp
 }
 
-// Configure configures the root CLI command and attaches subcommands.
+// Configure applies configuration for the command.
 func (a *RootAdapter) Configure() *cobra.Command {
 	app := a.App()
 
