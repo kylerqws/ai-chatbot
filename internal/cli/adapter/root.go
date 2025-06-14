@@ -8,13 +8,15 @@ import (
 	intapp "github.com/kylerqws/chatbot/internal/app"
 	helper "github.com/kylerqws/chatbot/internal/cli/helper/adapter"
 
-	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
+	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
+// RootAdapter implements the root command adapter.
 type RootAdapter struct {
 	*helper.RootAdapter
 }
 
+// NewRootAdapter creates a new root command adapter.
 func NewRootAdapter(app *intapp.App) ctr.RootAdapter {
 	adp := &RootAdapter{}
 	cmd := &cobra.Command{}
@@ -23,6 +25,7 @@ func NewRootAdapter(app *intapp.App) ctr.RootAdapter {
 	return adp
 }
 
+// Configure configures the root CLI command and attaches subcommands.
 func (a *RootAdapter) Configure() *cobra.Command {
 	app := a.App()
 
