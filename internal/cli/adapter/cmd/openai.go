@@ -15,7 +15,7 @@ type OpenAIAdapter struct {
 	*helper.ParentAdapter
 }
 
-// NewOpenAIAdapter creates a new OpenAI group adapter.
+// NewOpenAIAdapter creates a new OpenAI command group adapter.
 func NewOpenAIAdapter(app *intapp.App) ctr.ParentAdapter {
 	adp := &OpenAIAdapter{}
 	cmd := &cobra.Command{}
