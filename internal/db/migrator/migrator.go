@@ -38,7 +38,7 @@ func Rollback(ctx context.Context, db ctr.DB) (err error) {
 	return nil
 }
 
-// // closeClient closes the database client and updates the error on failure.
+// closeClient closes the database client and updates the error on failure.
 func closeClient(cl ctrcl.Client, err *error) {
 	if cerr := cl.Close(); cerr != nil && *err == nil {
 		*err = fmt.Errorf("close database client: %w", cerr)

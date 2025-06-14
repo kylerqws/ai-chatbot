@@ -23,7 +23,7 @@ type proxy struct {
 func New(ctx context.Context) ctrint.DB {
 	instance, err := db.New(ctx)
 	if err != nil {
-		log.Fatal(fmt.Errorf("create base DB client: %w", err))
+		log.Fatalln(fmt.Errorf("create base DB client: %w", err))
 	}
 	return &proxy{db: instance}
 }
