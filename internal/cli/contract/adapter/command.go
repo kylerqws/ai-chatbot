@@ -21,7 +21,7 @@ type CommandAdapter interface {
 	// AddErrors adds multiple errors to the collection.
 	AddErrors(errs ...error)
 
-	// ShowErrors returns true if errors should be displayed to the user.
+	// ShowErrors reports whether errors should be displayed to the user.
 	ShowErrors() bool
 
 	// StringErrors returns all errors as a single concatenated string.
