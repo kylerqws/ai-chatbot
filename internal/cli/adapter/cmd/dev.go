@@ -7,13 +7,15 @@ import (
 	intapp "github.com/kylerqws/chatbot/internal/app"
 	helper "github.com/kylerqws/chatbot/internal/cli/helper/adapter"
 
-	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
+	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
+// DevAdapter provides the implementation for the dev group CLI adapter.
 type DevAdapter struct {
 	*helper.ParentAdapter
 }
 
+// NewDevAdapter creates a new dev command group adapter.
 func NewDevAdapter(app *intapp.App) ctr.ParentAdapter {
 	adp := &DevAdapter{}
 	cmd := &cobra.Command{}
@@ -22,6 +24,7 @@ func NewDevAdapter(app *intapp.App) ctr.ParentAdapter {
 	return adp
 }
 
+// Configure applies configuration for the command.
 func (a *DevAdapter) Configure() *cobra.Command {
 	app := a.App()
 

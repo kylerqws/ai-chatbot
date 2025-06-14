@@ -7,13 +7,15 @@ import (
 	intapp "github.com/kylerqws/chatbot/internal/app"
 	helper "github.com/kylerqws/chatbot/internal/cli/helper/adapter"
 
-	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
+	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
+// OpenAIAdapter provides the implementation for the OpenAI group CLI adapter.
 type OpenAIAdapter struct {
 	*helper.ParentAdapter
 }
 
+// NewOpenAIAdapter creates a new OpenAI group adapter.
 func NewOpenAIAdapter(app *intapp.App) ctr.ParentAdapter {
 	adp := &OpenAIAdapter{}
 	cmd := &cobra.Command{}
@@ -22,6 +24,7 @@ func NewOpenAIAdapter(app *intapp.App) ctr.ParentAdapter {
 	return adp
 }
 
+// Configure applies configuration for the command.
 func (a *OpenAIAdapter) Configure() *cobra.Command {
 	app := a.App()
 
@@ -30,7 +33,8 @@ func (a *OpenAIAdapter) Configure() *cobra.Command {
 
 	a.AddChildren(
 		action.FileCommand(app),
-		action.JobCommand(app),
+		action.FineTuningCommand(app),
+		action.ModelCommand(app),
 		action.ChatCommand(app),
 	)
 
