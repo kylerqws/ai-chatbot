@@ -31,7 +31,7 @@ type entrypoint struct {
 func New(ctx context.Context) ctrint.OpenAI {
 	sdk, err := openai.New(ctx)
 	if err != nil {
-		log.Fatal(fmt.Errorf("create OpenAI SDK: %w", err))
+		log.Fatalln(fmt.Errorf("create OpenAI SDK: %w", err))
 	}
 	return &entrypoint{ctx: ctx, sdk: sdk}
 }
