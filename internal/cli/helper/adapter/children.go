@@ -14,25 +14,25 @@ func NewChildrenAdapter(cmd *cobra.Command) *ChildrenAdapter {
 }
 
 // Children returns all registered child commands.
-func (h *ChildrenAdapter) Children() []*cobra.Command {
-	return h.children
+func (a *ChildrenAdapter) Children() []*cobra.Command {
+	return a.children
 }
 
 // ExistChildren reports whether any child commands have been added.
-func (h *ChildrenAdapter) ExistChildren() bool {
-	return len(h.children) > 0
+func (a *ChildrenAdapter) ExistChildren() bool {
+	return len(a.children) > 0
 }
 
 // AddChild adds a single child command to the collection.
-func (h *ChildrenAdapter) AddChild(child *cobra.Command) {
+func (a *ChildrenAdapter) AddChild(child *cobra.Command) {
 	if child != nil {
-		h.children = append(h.children, child)
+		a.children = append(a.children, child)
 	}
 }
 
 // AddChildren adds multiple child commands to the collection.
-func (h *ChildrenAdapter) AddChildren(children ...*cobra.Command) {
+func (a *ChildrenAdapter) AddChildren(children ...*cobra.Command) {
 	for _, child := range children {
-		h.AddChild(child)
+		a.AddChild(child)
 	}
 }

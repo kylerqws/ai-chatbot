@@ -19,51 +19,51 @@ func NewGeneralAdapter(app *app.App, cmd *cobra.Command) *GeneralAdapter {
 }
 
 // App returns the associated application instance.
-func (h *GeneralAdapter) App() *app.App {
-	return h.app
+func (a *GeneralAdapter) App() *app.App {
+	return a.app
 }
 
 // Command returns the cobra command instance.
-func (h *GeneralAdapter) Command() *cobra.Command {
-	return h.command
+func (a *GeneralAdapter) Command() *cobra.Command {
+	return a.command
 }
 
 // Use returns the usage string.
-func (h *GeneralAdapter) Use() string {
-	return h.command.Use
+func (a *GeneralAdapter) Use() string {
+	return a.command.Use
 }
 
 // SetUse sets the usage string.
-func (h *GeneralAdapter) SetUse(value string) {
-	h.command.Use = value
+func (a *GeneralAdapter) SetUse(value string) {
+	a.command.Use = value
 }
 
 // Short returns the short description.
-func (h *GeneralAdapter) Short() string {
-	return h.command.Short
+func (a *GeneralAdapter) Short() string {
+	return a.command.Short
 }
 
 // SetShort sets the short description.
-func (h *GeneralAdapter) SetShort(value string) {
-	h.command.Short = value
+func (a *GeneralAdapter) SetShort(value string) {
+	a.command.Short = value
 }
 
 // Long returns the long description.
-func (h *GeneralAdapter) Long() string {
-	return h.command.Long
+func (a *GeneralAdapter) Long() string {
+	return a.command.Long
 }
 
 // SetLong sets the long description.
-func (h *GeneralAdapter) SetLong(value string) {
-	h.command.Long = value
+func (a *GeneralAdapter) SetLong(value string) {
+	a.command.Long = value
 }
 
 // Configure applies full configuration for the command.
-func (h *GeneralAdapter) Configure() *cobra.Command {
-	return h.MainConfigure()
+func (a *GeneralAdapter) Configure() *cobra.Command {
+	return a.MainConfigure()
 }
 
 // MainConfigure applies common configuration for the command.
-func (h *GeneralAdapter) MainConfigure() *cobra.Command {
-	return setup.GeneralConfigure(h)
+func (a *GeneralAdapter) MainConfigure() *cobra.Command {
+	return setup.GeneralConfigure(a)
 }

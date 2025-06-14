@@ -26,6 +26,6 @@ func NewParentAdapter(app *app.App, cmd *cobra.Command) *ParentAdapter {
 }
 
 // MainConfigure applies common configuration for the command.
-func (h *ParentAdapter) MainConfigure() *cobra.Command {
-	return setup.ParentConfigure(h)
+func (a *ParentAdapter) MainConfigure() *cobra.Command {
+	return setup.ParentConfigure(a)
 }

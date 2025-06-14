@@ -22,16 +22,16 @@ func NewRootAdapter(app *app.App, cmd *cobra.Command) *RootAdapter {
 }
 
 // Version returns the CLI application version.
-func (h *RootAdapter) Version() string {
-	return h.command.Version
+func (a *RootAdapter) Version() string {
+	return a.command.Version
 }
 
 // SetVersion sets the CLI application version.
-func (h *RootAdapter) SetVersion(version string) {
-	h.command.Version = version
+func (a *RootAdapter) SetVersion(version string) {
+	a.command.Version = version
 }
 
 // MainConfigure applies common configuration for the command.
-func (h *RootAdapter) MainConfigure() *cobra.Command {
-	return setup.RootConfigure(h)
+func (a *RootAdapter) MainConfigure() *cobra.Command {
+	return setup.RootConfigure(a)
 }
