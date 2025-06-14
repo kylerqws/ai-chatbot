@@ -5,12 +5,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// GeneralAdapter defines the interface for all CLI command adapters.
+// GeneralAdapter defines the interface for all CLI adapters.
 type GeneralAdapter interface {
 	// App returns the associated application instance.
 	App() *app.App
 
-	// Command returns the configured cobra command.
+	// Command returns the cobra command instance.
 	Command() *cobra.Command
 
 	// Use returns the usage string.
@@ -19,21 +19,21 @@ type GeneralAdapter interface {
 	// SetUse sets the usage string.
 	SetUse(value string)
 
-	// Short returns the short description for the command.
+	// Short returns the short description.
 	Short() string
 
 	// SetShort sets the short description.
 	SetShort(value string)
 
-	// Long returns the long description for the command.
+	// Long returns the long description.
 	Long() string
 
 	// SetLong sets the long description.
 	SetLong(value string)
 
-	// Configure performs command-specific configuration logic.
+	// Configure applies full configuration for the command.
 	Configure() *cobra.Command
 
-	// MainConfigure performs the common configuration for all commands.
+	// MainConfigure applies common configuration to the command.
 	MainConfigure() *cobra.Command
 }
