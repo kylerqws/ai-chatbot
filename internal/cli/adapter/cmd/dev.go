@@ -10,12 +10,12 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// DevAdapter provides the implementation for the dev group CLI adapter.
+// DevAdapter provides the implementation for the dev CLI adapter.
 type DevAdapter struct {
 	*helper.ParentAdapter
 }
 
-// NewDevAdapter creates a new dev command group adapter.
+// NewDevAdapter creates a new dev command adapter.
 func NewDevAdapter(app *intapp.App) ctr.ParentAdapter {
 	adp := &DevAdapter{}
 	cmd := &cobra.Command{}

@@ -10,12 +10,12 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// OpenAIAdapter provides the implementation for the OpenAI group CLI adapter.
+// OpenAIAdapter provides the implementation for the OpenAI CLI adapter.
 type OpenAIAdapter struct {
 	*helper.ParentAdapter
 }
 
-// NewOpenAIAdapter creates a new OpenAI command group adapter.
+// NewOpenAIAdapter creates a new OpenAI command adapter.
 func NewOpenAIAdapter(app *intapp.App) ctr.ParentAdapter {
 	adp := &OpenAIAdapter{}
 	cmd := &cobra.Command{}

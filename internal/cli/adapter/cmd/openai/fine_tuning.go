@@ -3,21 +3,21 @@ package openai
 import (
 	"github.com/spf13/cobra"
 
-	// TODO: will use it: action "github.com/kylerqws/chatbot/cmd/openai/chat"
+	// TODO: will use it: action "github.com/kylerqws/chatbot/cmd/openai/fine-tuning"
 	intapp "github.com/kylerqws/chatbot/internal/app"
 	helper "github.com/kylerqws/chatbot/internal/cli/helper/adapter"
 
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// ChatAdapter provides the implementation for the chat CLI adapter.
-type ChatAdapter struct {
+// FineTuningAdapter provides the implementation for the fine-tuning CLI adapter.
+type FineTuningAdapter struct {
 	*helper.ParentAdapter
 }
 
-// NewChatAdapter creates a new chat command adapter.
-func NewChatAdapter(app *intapp.App) ctr.ParentAdapter {
-	adp := &ChatAdapter{}
+// NewFineTuningAdapter creates a new fine-tuning command adapter.
+func NewFineTuningAdapter(app *intapp.App) ctr.ParentAdapter {
+	adp := &FineTuningAdapter{}
 	cmd := &cobra.Command{}
 
 	adp.ParentAdapter = helper.NewParentAdapter(app, cmd)
@@ -25,11 +25,11 @@ func NewChatAdapter(app *intapp.App) ctr.ParentAdapter {
 }
 
 // Configure applies configuration for the command.
-func (a *ChatAdapter) Configure() *cobra.Command {
+func (a *FineTuningAdapter) Configure() *cobra.Command {
 	// TODO: will use it: app := a.App()
 
-	a.SetUse("chat")
-	a.SetShort("Chat completion via OpenAI API")
+	a.SetUse("fine-tuning")
+	a.SetShort("Operations on fine-tuning jobs management")
 
 	a.AddChildren( /* TODO: add subcommands*/ )
 

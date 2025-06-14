@@ -7,13 +7,15 @@ import (
 	intapp "github.com/kylerqws/chatbot/internal/app"
 	helper "github.com/kylerqws/chatbot/internal/cli/helper/adapter"
 
-	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
+	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
+// DBAdapter provides the implementation for the db CLI adapter.
 type DBAdapter struct {
 	*helper.ParentAdapter
 }
 
+// NewDBAdapter creates a new db command adapter.
 func NewDBAdapter(app *intapp.App) ctr.ParentAdapter {
 	adp := &DBAdapter{}
 	cmd := &cobra.Command{}
@@ -22,6 +24,7 @@ func NewDBAdapter(app *intapp.App) ctr.ParentAdapter {
 	return adp
 }
 
+// Configure applies configuration for the command.
 func (a *DBAdapter) Configure() *cobra.Command {
 	app := a.App()
 
