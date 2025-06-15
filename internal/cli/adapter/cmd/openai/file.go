@@ -10,7 +10,7 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// FileAdapter provides the implementation for the file CLI adapter.
+// FileAdapter provides the implementation for the file command adapter.
 type FileAdapter struct {
 	*helper.ParentAdapter
 }

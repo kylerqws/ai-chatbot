@@ -10,7 +10,7 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// OpenAIAdapter provides the implementation for the OpenAI CLI adapter.
+// OpenAIAdapter provides the implementation for the OpenAI command adapter.
 type OpenAIAdapter struct {
 	*helper.ParentAdapter
 }

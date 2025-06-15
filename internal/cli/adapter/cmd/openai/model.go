@@ -10,7 +10,7 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// ModelAdapter provides the implementation for the model CLI adapter.
+// ModelAdapter provides the implementation for the model command adapter.
 type ModelAdapter struct {
 	*helper.ParentAdapter
 }

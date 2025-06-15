@@ -10,7 +10,7 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// FineTuningAdapter provides the implementation for the fine-tuning CLI adapter.
+// FineTuningAdapter provides the implementation for the fine-tuning command adapter.
 type FineTuningAdapter struct {
 	*helper.ParentAdapter
 }

@@ -10,7 +10,7 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// MigrateAdapter provides the implementation for the migrate CLI adapter.
+// MigrateAdapter provides the implementation for the migrate command adapter.
 type MigrateAdapter struct {
 	*helper.CommandAdapter
 }

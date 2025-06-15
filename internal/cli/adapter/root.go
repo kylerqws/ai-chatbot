@@ -11,7 +11,7 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// RootAdapter provides the implementation for the root CLI adapter.
+// RootAdapter provides the implementation for the root command adapter.
 type RootAdapter struct {
 	*helper.RootAdapter
 }

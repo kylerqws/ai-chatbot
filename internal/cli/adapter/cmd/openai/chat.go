@@ -10,7 +10,7 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// ChatAdapter provides the implementation for the chat CLI adapter.
+// ChatAdapter provides the implementation for the chat command adapter.
 type ChatAdapter struct {
 	*helper.ParentAdapter
 }

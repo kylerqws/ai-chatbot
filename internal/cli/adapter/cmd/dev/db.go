@@ -10,7 +10,7 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// DBAdapter provides the implementation for the db CLI adapter.
+// DBAdapter provides the implementation for the db command adapter.
 type DBAdapter struct {
 	*helper.ParentAdapter
 }

@@ -10,7 +10,7 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// RollbackAdapter provides the implementation for the rollback CLI adapter.
+// RollbackAdapter provides the implementation for the rollback command adapter.
 type RollbackAdapter struct {
 	*helper.CommandAdapter
 }

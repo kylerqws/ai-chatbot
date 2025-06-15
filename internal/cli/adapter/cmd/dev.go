@@ -10,7 +10,7 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// DevAdapter provides the implementation for the dev CLI adapter.
+// DevAdapter provides the implementation for the dev command adapter.
 type DevAdapter struct {
 	*helper.ParentAdapter
 }

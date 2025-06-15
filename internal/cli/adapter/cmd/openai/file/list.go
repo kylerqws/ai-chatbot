@@ -12,7 +12,7 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// ListAdapter provides the implementation for the list CLI adapter.
+// ListAdapter provides the implementation for the list command adapter.
 type ListAdapter struct {
 	*helper.CommandAdapter
 	*helper.OpenAiAdapter
