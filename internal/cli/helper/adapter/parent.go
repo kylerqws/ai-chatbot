@@ -15,7 +15,7 @@ type ParentAdapter struct {
 	command *cobra.Command
 }
 
-// NewParentAdapter creates a new parent command adapter.
+// NewParentAdapter creates a new ParentAdapter adapter.
 func NewParentAdapter(app *app.App, cmd *cobra.Command) *ParentAdapter {
 	hlp := &ParentAdapter{command: cmd}
 
