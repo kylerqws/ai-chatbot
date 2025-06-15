@@ -7,7 +7,7 @@ import (
 	helper "github.com/kylerqws/chatbot/internal/cli/helper/adapter"
 	intmig "github.com/kylerqws/chatbot/internal/db/migrator"
 
-	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
+	ctradp "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
 // RollbackAdapter provides the implementation for the rollback CLI adapter.
@@ -16,7 +16,7 @@ type RollbackAdapter struct {
 }
 
 // NewRollbackAdapter creates a new rollback command adapter.
-func NewRollbackAdapter(app *intapp.App) ctr.CommandAdapter {
+func NewRollbackAdapter(app *intapp.App) ctradp.CommandAdapter {
 	adp := &RollbackAdapter{}
 	cmd := &cobra.Command{}
 

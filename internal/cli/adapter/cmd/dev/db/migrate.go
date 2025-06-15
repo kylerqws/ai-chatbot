@@ -7,7 +7,7 @@ import (
 	helper "github.com/kylerqws/chatbot/internal/cli/helper/adapter"
 	intmig "github.com/kylerqws/chatbot/internal/db/migrator"
 
-	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
+	ctradp "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
 // MigrateAdapter provides the implementation for the migrate CLI adapter.
@@ -16,7 +16,7 @@ type MigrateAdapter struct {
 }
 
 // NewMigrateAdapter creates a new migrate command adapter.
-func NewMigrateAdapter(app *intapp.App) ctr.CommandAdapter {
+func NewMigrateAdapter(app *intapp.App) ctradp.CommandAdapter {
 	adp := &MigrateAdapter{}
 	cmd := &cobra.Command{}
 
