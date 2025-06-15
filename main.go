@@ -17,7 +17,7 @@ func init() {
 	_ = godotenv.Load(".env." + resolver.ResolveMode())
 }
 
-// main runs the CLI entry point. Exits with code 1 on error.
+// main executes the CLI entry point and exits with code 1 on failure.
 func main() {
 	if err := cli.Execute(app.New(resolver.ResolveContext())); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err)
