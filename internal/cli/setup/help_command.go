@@ -18,21 +18,20 @@ const (
 	deprecatedMarker     = "[DEPRECATED]"
 )
 
+// HelpFunction returns a custom help function for Cobra-based CLI.
 func HelpFunction() ctr.FuncHelp {
 	return func(cmd *cobra.Command, _ []string) {
 		if cmd.Deprecated != "" {
 			return
 		}
+
 		w := cmd.OutOrStdout()
 
 		sub, loc, glob := cmd.Commands(), localFlags(cmd), globalFlags(cmd)
 		hasLoc, hasGlob := existFlags(loc), existFlags(glob)
 		hasCmds, hasFlags := existCommands(sub), hasLoc || hasGlob
 
-		cmdUseLine := useLine(cmd, hasCmds, hasFlags)
-		hasShort, hasLong := cmd.Short != "", cmd.Long != ""
-
-		if hasShort {
+		if cmd.Short != "" {
 			if _, err := fmt.Fprintln(w, cmd.Short); err != nil {
 				return
 			}
@@ -40,7 +39,7 @@ func HelpFunction() ctr.FuncHelp {
 				return
 			}
 		}
-		if hasLong {
+		if cmd.Long != "" {
 			if _, err := fmt.Fprintln(w, cmd.Long); err != nil {
 				return
 			}
@@ -52,7 +51,7 @@ func HelpFunction() ctr.FuncHelp {
 		if _, err := fmt.Fprintln(w, "Usage:"); err != nil {
 			return
 		}
-		if _, err := fmt.Fprintf(w, "  %s\n", cmdUseLine); err != nil {
+		if _, err := fmt.Fprintf(w, "  %s\n", useLine(cmd, hasCmds, hasFlags)); err != nil {
 			return
 		}
 
@@ -90,118 +89,105 @@ func HelpFunction() ctr.FuncHelp {
 	}
 }
 
-func useLine(cmd *cobra.Command, existCommands, existFlags bool) string {
-	cmdUseLine := strings.TrimSuffix(cmd.UseLine(), defaultFlagSuffix)
-	cmdUseLine = strings.TrimSpace(cmdUseLine)
-
-	if existCommands {
-		cmdUseLine += " " + defaultCommandSuffix
+// useLine generates the usage line.
+func useLine(cmd *cobra.Command, existCmds, existFlags bool) string {
+	line := strings.TrimSpace(strings.TrimSuffix(cmd.UseLine(), defaultFlagSuffix))
+	if existCmds {
+		line += " " + defaultCommandSuffix
 	}
 	if existFlags {
-		cmdUseLine += " " + customFlagSuffix
+		line += " " + customFlagSuffix
 	}
-
-	return cmdUseLine
+	return line
 }
 
+// localFlags returns local flags that are not inherited or persistent.
 func localFlags(cmd *cobra.Command) []*pflag.Flag {
 	var flags []*pflag.Flag
 
-	inheritedFlags := cmd.InheritedFlags()
-	persistentFlags := cmd.PersistentFlags()
+	inherited := cmd.InheritedFlags()
+	persistent := cmd.PersistentFlags()
 
-	if set := cmd.LocalFlags(); set != nil {
-		set.VisitAll(func(f *pflag.Flag) {
-			if f.Hidden {
-				return
-			}
-			if inheritedFlags.Lookup(f.Name) != nil {
-				return
-			}
-			if persistentFlags.Lookup(f.Name) != nil {
-				return
-			}
-
+	cmd.LocalFlags().VisitAll(func(f *pflag.Flag) {
+		if !f.Hidden && inherited.Lookup(f.Name) == nil && persistent.Lookup(f.Name) == nil {
 			flags = append(flags, f)
-		})
-	}
+		}
+	})
 
 	return flags
 }
 
+// globalFlags returns all inherited and persistent flags.
 func globalFlags(cmd *cobra.Command) []*pflag.Flag {
 	var flags []*pflag.Flag
 
-	if set := cmd.InheritedFlags(); set != nil {
-		set.VisitAll(func(f *pflag.Flag) {
-			if f.Hidden {
-				return
-			}
-
+	cmd.InheritedFlags().VisitAll(func(f *pflag.Flag) {
+		if !f.Hidden {
 			flags = append(flags, f)
-		})
-	}
+		}
+	})
 
-	if set := cmd.PersistentFlags(); set != nil {
-		set.VisitAll(func(f *pflag.Flag) {
-			if f.Hidden {
-				return
-			}
-
+	cmd.PersistentFlags().VisitAll(func(f *pflag.Flag) {
+		if !f.Hidden {
 			flags = append(flags, f)
-		})
-	}
+		}
+	})
 
 	return flags
 }
 
-func existCommands(list []*cobra.Command) bool {
-	for i := range list {
-		if !list[i].Hidden {
+// existCommands reports whether any visible subcommands are present.
+func existCommands(cmds []*cobra.Command) bool {
+	for i := range cmds {
+		if !cmds[i].Hidden {
 			return true
 		}
 	}
 	return false
 }
 
-func existFlags(list []*pflag.Flag) bool {
-	for i := range list {
-		if !list[i].Hidden {
+// existFlags reports whether any visible flags are present.
+func existFlags(flags []*pflag.Flag) bool {
+	for i := range flags {
+		if !flags[i].Hidden {
 			return true
 		}
 	}
 	return false
 }
 
+// printCommandLine writes a formatted subcommand entry.
 func printCommandLine(w io.Writer, cmd *cobra.Command) error {
 	if cmd.Hidden {
 		return nil
 	}
 
-	cmdPart, cmdShort := fmt.Sprintf("  %s", cmd.Name()), cmd.Short
+	name := fmt.Sprintf("  %s", cmd.Name())
+	desc := cmd.Short
 	if cmd.Deprecated != "" {
-		cmdShort += " " + deprecatedMarker
+		desc += " " + deprecatedMarker
 	}
 
-	if _, err := fmt.Fprintf(w, "%-20s\t%s\n", cmdPart, cmdShort); err != nil {
+	if _, err := fmt.Fprintf(w, "%-20s\t%s\n", name, desc); err != nil {
 		return err
 	}
 	return nil
 }
 
+// printFlagLine writes a formatted flag entry.
 func printFlagLine(w io.Writer, flag *pflag.Flag) error {
 	if flag.Hidden {
 		return nil
 	}
 
-	var flagPart string
+	var name string
 	if flag.Shorthand != "" {
-		flagPart = fmt.Sprintf("  -%s, --%s", flag.Shorthand, flag.Name)
+		name = fmt.Sprintf("  -%s, --%s", flag.Shorthand, flag.Name)
 	} else {
-		flagPart = fmt.Sprintf("  --%s", flag.Name)
+		name = fmt.Sprintf("  --%s", flag.Name)
 	}
 
-	if _, err := fmt.Fprintf(w, "%-20s\t%s\n", flagPart, flag.Usage); err != nil {
+	if _, err := fmt.Fprintf(w, "%-20s\t%s\n", name, flag.Usage); err != nil {
 		return err
 	}
 	return nil
