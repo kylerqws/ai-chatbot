@@ -10,7 +10,7 @@ type GeneralAdapter interface {
 	// App returns the associated application instance.
 	App() *app.App
 
-	// Command returns the cobra command instance.
+	// Command returns the Cobra command instance.
 	Command() *cobra.Command
 
 	// Use returns the usage string.
