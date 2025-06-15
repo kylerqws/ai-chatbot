@@ -64,7 +64,7 @@ func (a *ListAdapter) Configure() *cobra.Command {
 
 // HelpInfo returns extended help usage text for the command.
 func (a *ListAdapter) HelpInfo() string {
-	return "You can repeat flags to provide more than one filter, e.g.:\n" +
+	return "You can repeat flags to provide more than one filter, for example:\n" +
 		fmt.Sprintf(
 			"  %s --%s %s --%s %s --%s %s",
 			a.Command().Name(),
@@ -113,7 +113,7 @@ func (a *ListAdapter) ConfigureFlags() {
 	desc = "Filter by expires date before (e.g. " + helper.DateExample + " or " + helper.DatetimeExample + ")"
 	a.AddStringFlag(helper.ExpiresBeforeFlagKey, "", "", desc)
 
-	desc = "Sort order for list (" + helper.SortAsc + " or " + helper.SortDesc + ")"
+	desc = "Sort order for list (opt.: " + helper.SortAsc + " or " + helper.SortDesc + ")"
 	a.AddStringFlag(helper.SortOrderFlagKey, "", helper.DefaultSort, desc)
 
 	desc = "After file ID (e.g. " + helper.FileIDExample + ")"
@@ -145,7 +145,9 @@ func (a *ListAdapter) Validate(_ *cobra.Command, _ []string) error {
 
 // List executes the file listing process.
 func (a *ListAdapter) List(_ *cobra.Command, _ []string) error {
-	if a.Request() && a.ExistFiles() {
+	a.Request()
+
+	if a.ExistFiles() {
 		if err := a.PrintFiles(); err != nil {
 			return err
 		}
@@ -157,101 +159,80 @@ func (a *ListAdapter) List(_ *cobra.Command, _ []string) error {
 }
 
 // Request executes the API call to retrieve files from OpenAI.
-func (a *ListAdapter) Request() bool {
+func (a *ListAdapter) Request() {
 	app := a.App()
 	ctx := app.Context()
 	svc := app.OpenAI().ServiceProvider().File()
-	fgs := a.Command().Flags()
 	req := svc.NewListFilesRequest()
+	fgs := a.Command().Flags()
 
-	// File IDs
 	fileIDs, err := fgs.GetStringSlice(helper.IdFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
 	req.FileIDs = fileIDs
 
-	// Purposes
 	purposes, err := fgs.GetStringSlice(helper.PurposeFlagKey)
+	purpose, purposeList := a.extractSingleValue(purposes)
 	if err != nil {
 		a.AddError(err)
 	}
-	purpose, purposeList := a.extractSingleValue(purposes)
 	req.Purposes = purposeList
 	req.Purpose = &purpose
 
-	// Filenames
 	filenames, err := fgs.GetStringSlice(helper.FilenameFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
 	req.Filenames = filenames
 
-	// Created After
 	createdAfter, err := fgs.GetString(helper.CreatedAfterFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
-	if createdAfter != "" {
-		req.CreatedAfter = a.ParseDateTime(createdAfter)
-	}
+	req.CreatedAfter = a.ParseDateTime(createdAfter)
 
-	// Created Before
 	createdBefore, err := fgs.GetString(helper.CreatedBeforeFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
-	if createdBefore != "" {
-		req.CreatedBefore = a.ParseDateTime(createdBefore)
-	}
+	req.CreatedBefore = a.ParseDateTime(createdBefore)
 
-	// Expires After
 	expiresAfter, err := fgs.GetString(helper.ExpiresAfterFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
-	if expiresAfter != "" {
-		req.ExpiresAfter = a.ParseDateTime(expiresAfter)
-	}
+	req.ExpiresAfter = a.ParseDateTime(expiresAfter)
 
-	// Expires Before
 	expiresBefore, err := fgs.GetString(helper.ExpiresBeforeFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
-	if expiresBefore != "" {
-		req.ExpiresBefore = a.ParseDateTime(expiresBefore)
-	}
+	req.ExpiresBefore = a.ParseDateTime(expiresBefore)
 
-	// Sort Order
 	sortOrder, err := fgs.GetString(helper.SortOrderFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
 	req.Order = &sortOrder
 
-	// After File ID
 	afterID, err := fgs.GetString(helper.AfterFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
 	req.After = &afterID
 
-	// Limit
 	limit, err := fgs.GetUint8(helper.LimitFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
 	req.Limit = &limit
 
-	// API call
 	resp, err := svc.ListFiles(ctx, req)
 	if err != nil {
 		a.AddError(err)
 	}
-
 	a.AddFiles(a.WrapOpenAIFiles(resp.Files...)...)
-	return true
 }
 
 // PrintFiles renders the retrieved files in a formatted table.
