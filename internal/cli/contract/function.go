@@ -3,7 +3,7 @@ package contract
 import "github.com/spf13/cobra"
 
 type (
-	// FuncArgs defines a command handler for processing CLI arguments.
+	// FuncArgs defines the handler for processing arguments passed to a command.
 	FuncArgs func(cmd *cobra.Command, args []string) error
 
 	// FuncRunE defines the main logic handler for executing a command.

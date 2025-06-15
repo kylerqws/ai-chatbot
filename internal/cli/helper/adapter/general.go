@@ -7,13 +7,13 @@ import (
 	"github.com/kylerqws/chatbot/internal/cli/setup"
 )
 
-// GeneralAdapter provides the base implementation for CLI adapters.
+// GeneralAdapter provides the implementation for all CLI adapters.
 type GeneralAdapter struct {
 	app     *app.App
 	command *cobra.Command
 }
 
-// NewGeneralAdapter creates a new general command adapter.
+// NewGeneralAdapter creates a new GeneralAdapter adapter.
 func NewGeneralAdapter(app *app.App, cmd *cobra.Command) *GeneralAdapter {
 	return &GeneralAdapter{app: app, command: cmd}
 }

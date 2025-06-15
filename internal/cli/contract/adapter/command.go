@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-// CommandAdapter defines the interface for a CLI adapter with logic and output.
+// CommandAdapter defines the interface for a CLI adapter with functional command.
 type CommandAdapter interface {
 	GeneralAdapter
 

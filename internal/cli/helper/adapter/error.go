@@ -14,7 +14,7 @@ type ErrorAdapter struct {
 	errors  []error
 }
 
-// NewErrorAdapter creates a new error command adapter.
+// NewErrorAdapter creates a new ErrorAdapter adapter.
 func NewErrorAdapter(cmd *cobra.Command) *ErrorAdapter {
 	return &ErrorAdapter{command: cmd}
 }

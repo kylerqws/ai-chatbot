@@ -9,7 +9,7 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
 )
 
-// CommandAdapter provides the base implementation for functional commands.
+// CommandAdapter provides the implementation for CLI adapter with functional command.
 type CommandAdapter struct {
 	*GeneralAdapter
 	*ErrorAdapter
@@ -18,7 +18,7 @@ type CommandAdapter struct {
 	command *cobra.Command
 }
 
-// NewCommandAdapter creates a new command adapter.
+// NewCommandAdapter creates a new CommandAdapter adapter.
 func NewCommandAdapter(app *app.App, cmd *cobra.Command) *CommandAdapter {
 	hlp := &CommandAdapter{command: cmd}
 
