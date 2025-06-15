@@ -3,20 +3,20 @@ package cli
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/kylerqws/chatbot/internal/app"
-	"github.com/kylerqws/chatbot/internal/cli/adapter"
+	intapp "github.com/kylerqws/chatbot/internal/app"
+	intcli "github.com/kylerqws/chatbot/internal/cli/adapter"
 )
 
 // RootCommand creates the root command.
-func RootCommand(app *app.App) *cobra.Command {
+func RootCommand(app *intapp.App) *cobra.Command {
 	// Disable automatic sorting of subcommands to preserve custom order.
 	cobra.EnableCommandSorting = false
 
-	return adapter.NewRootAdapter(app).Configure()
+	return intcli.NewRootAdapter(app).Configure()
 }
 
 // Execute runs the CLI entry point by executing the root command.
-func Execute(app *app.App) error {
+func Execute(app *intapp.App) error {
 	defer app.ContextCancel()()
 	return RootCommand(app).Execute()
 }

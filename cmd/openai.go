@@ -7,7 +7,7 @@ import (
 	intcli "github.com/kylerqws/chatbot/internal/cli/adapter/cmd"
 )
 
-// OpenAICommand creates the OpenAI command.
+// OpenAICommand creates the OpenAI API command.
 func OpenAICommand(app *intapp.App) *cobra.Command {
 	return intcli.NewOpenAIAdapter(app).Configure()
 }
