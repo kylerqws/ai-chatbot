@@ -9,7 +9,7 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
 )
 
-// CommandAdapter provides the base implementation for functional CLI commands.
+// CommandAdapter provides the base implementation for functional commands.
 type CommandAdapter struct {
 	*GeneralAdapter
 	*ErrorAdapter
