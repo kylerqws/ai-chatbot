@@ -15,7 +15,7 @@ func RootCommand(app *intapp.App) *cobra.Command {
 	return intcli.NewRootAdapter(app).Configure()
 }
 
-// Execute runs the CLI entry point by executing the root command.
+// Execute launches the CLI application and processes user commands.
 func Execute(app *intapp.App) error {
 	defer app.ContextCancel()()
 	return RootCommand(app).Execute()
