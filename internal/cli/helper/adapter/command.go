@@ -29,22 +29,22 @@ func NewCommandAdapter(app *app.App, cmd *cobra.Command) *CommandAdapter {
 	return hlp
 }
 
-// FuncArgs returns the cobra-compatible command argument handler.
+// FuncArgs returns the cobra-compatible argument handler.
 func (a *CommandAdapter) FuncArgs() ctr.FuncArgs {
 	return ctr.FuncArgs(a.command.Args)
 }
 
-// SetFuncArgs sets the cobra-compatible command argument handler.
+// SetFuncArgs sets the cobra-compatible argument handler.
 func (a *CommandAdapter) SetFuncArgs(fn ctr.FuncArgs) {
 	a.command.Args = cobra.PositionalArgs(fn)
 }
 
-// FuncRunE returns the cobra-compatible command execution function.
+// FuncRunE returns the cobra-compatible execution handler.
 func (a *CommandAdapter) FuncRunE() ctr.FuncRunE {
 	return a.command.RunE
 }
 
-// SetFuncRunE sets the cobra-compatible command execution function.
+// SetFuncRunE sets the cobra-compatible execution handler.
 func (a *CommandAdapter) SetFuncRunE(fn ctr.FuncRunE) {
 	a.command.RunE = fn
 }
