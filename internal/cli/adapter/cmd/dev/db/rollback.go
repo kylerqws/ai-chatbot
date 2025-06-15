@@ -7,13 +7,15 @@ import (
 	helper "github.com/kylerqws/chatbot/internal/cli/helper/adapter"
 	intmig "github.com/kylerqws/chatbot/internal/db/migrator"
 
-	ctr "github.com/kylerqws/chatbot/internal/cli/contract"
+	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
+// RollbackAdapter provides the implementation for the rollback CLI adapter.
 type RollbackAdapter struct {
 	*helper.CommandAdapter
 }
 
+// NewRollbackAdapter creates a new rollback command adapter.
 func NewRollbackAdapter(app *intapp.App) ctr.CommandAdapter {
 	adp := &RollbackAdapter{}
 	cmd := &cobra.Command{}
@@ -22,14 +24,16 @@ func NewRollbackAdapter(app *intapp.App) ctr.CommandAdapter {
 	return adp
 }
 
+// Configure applies configuration for the command.
 func (a *RollbackAdapter) Configure() *cobra.Command {
 	a.SetUse("rollback")
-	a.SetShort("Rollback the last set of migrations")
-	a.SetFuncRunE(a.Rollback)
+	a.SetShort("Rollback the most recent batch of database migrations")
 
+	a.SetFuncRunE(a.Rollback)
 	return a.MainConfigure()
 }
 
+// Rollback executes the database rollback process.
 func (a *RollbackAdapter) Rollback(_ *cobra.Command, _ []string) error {
 	app := a.App()
 
