@@ -18,7 +18,7 @@ const (
 	deprecatedMarker     = "[DEPRECATED]"
 )
 
-// HelpFunction returns a custom help function for Cobra-based CLI.
+// HelpFunction returns a customized help function for Cobra commands.
 func HelpFunction() ctr.FuncHelp {
 	return func(cmd *cobra.Command, _ []string) {
 		if cmd.Deprecated != "" {
@@ -26,7 +26,6 @@ func HelpFunction() ctr.FuncHelp {
 		}
 
 		w := cmd.OutOrStdout()
-
 		sub, loc, glob := cmd.Commands(), localFlags(cmd), globalFlags(cmd)
 		hasLoc, hasGlob := existFlags(loc), existFlags(glob)
 		hasCmds, hasFlags := existCommands(sub), hasLoc || hasGlob
@@ -104,12 +103,10 @@ func useLine(cmd *cobra.Command, existCmds, existFlags bool) string {
 // localFlags returns local flags that are not inherited or persistent.
 func localFlags(cmd *cobra.Command) []*pflag.Flag {
 	var flags []*pflag.Flag
-
-	inherited := cmd.InheritedFlags()
-	persistent := cmd.PersistentFlags()
+	i, p := cmd.InheritedFlags(), cmd.PersistentFlags()
 
 	cmd.LocalFlags().VisitAll(func(f *pflag.Flag) {
-		if !f.Hidden && inherited.Lookup(f.Name) == nil && persistent.Lookup(f.Name) == nil {
+		if !f.Hidden && i.Lookup(f.Name) == nil && p.Lookup(f.Name) == nil {
 			flags = append(flags, f)
 		}
 	})
@@ -162,8 +159,7 @@ func printCommandLine(w io.Writer, cmd *cobra.Command) error {
 		return nil
 	}
 
-	name := fmt.Sprintf("  %s", cmd.Name())
-	desc := cmd.Short
+	name, desc := fmt.Sprintf("  %s", cmd.Name()), cmd.Short
 	if cmd.Deprecated != "" {
 		desc += " " + deprecatedMarker
 	}

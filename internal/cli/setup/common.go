@@ -36,17 +36,17 @@ func FixHelpFunc(cmd *cobra.Command) {
 	cmd.SetHelpFunc(HelpFunction())
 }
 
-// AddHelpFlag registers the `--help` flag.
+// AddHelpFlag registers the `--help` flag to the given command.
 func AddHelpFlag(cmd *cobra.Command) {
 	AddBoolFlag(cmd, "help", "h", false, "Show help information", true)
 }
 
-// AddVersionFlag registers the `--version` flag.
+// AddVersionFlag registers the `--version` flag to the given command.
 func AddVersionFlag(cmd *cobra.Command) {
 	AddBoolFlag(cmd, "version", "v", false, "Show application version", false)
 }
 
-// AddErrorFlag registers the `--error` flag.
+// AddErrorFlag registers the `--error` flag to the given command.
 func AddErrorFlag(cmd *cobra.Command) {
 	AddBoolFlag(cmd, "error", "e", false, "Show execution errors", true)
 }
