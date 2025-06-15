@@ -10,12 +10,12 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// ChatAdapter provides the implementation for the chat command adapter.
+// ChatAdapter provides the implementation for the OpenAI chat CLI adapter.
 type ChatAdapter struct {
 	*helper.ParentAdapter
 }
 
-// NewChatAdapter creates a new chat command adapter.
+// NewChatAdapter creates a new ChatAdapter adapter.
 func NewChatAdapter(app *intapp.App) ctr.ParentAdapter {
 	adp := &ChatAdapter{}
 	cmd := &cobra.Command{}

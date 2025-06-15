@@ -10,12 +10,12 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// RollbackAdapter provides the implementation for the rollback command adapter.
+// RollbackAdapter provides the implementation for the database rollback CLI adapter.
 type RollbackAdapter struct {
 	*helper.CommandAdapter
 }
 
-// NewRollbackAdapter creates a new rollback command adapter.
+// NewRollbackAdapter creates a new RollbackAdapter adapter.
 func NewRollbackAdapter(app *intapp.App) ctr.CommandAdapter {
 	adp := &RollbackAdapter{}
 	cmd := &cobra.Command{}

@@ -10,12 +10,12 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// ModelAdapter provides the implementation for the model command adapter.
+// ModelAdapter provides the implementation for the OpenAI model CLI adapter.
 type ModelAdapter struct {
 	*helper.ParentAdapter
 }
 
-// NewModelAdapter creates a new model command adapter.
+// NewModelAdapter creates a new ModelAdapter adapter.
 func NewModelAdapter(app *intapp.App) ctr.ParentAdapter {
 	adp := &ModelAdapter{}
 	cmd := &cobra.Command{}

@@ -10,12 +10,12 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// DBAdapter provides the implementation for the db command adapter.
+// DBAdapter provides the implementation for the database tools CLI adapter.
 type DBAdapter struct {
 	*helper.ParentAdapter
 }
 
-// NewDBAdapter creates a new db command adapter.
+// NewDBAdapter creates a new DBAdapter adapter.
 func NewDBAdapter(app *intapp.App) ctr.ParentAdapter {
 	adp := &DBAdapter{}
 	cmd := &cobra.Command{}

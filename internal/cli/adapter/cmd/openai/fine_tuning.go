@@ -10,12 +10,12 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// FineTuningAdapter provides the implementation for the fine-tuning command adapter.
+// FineTuningAdapter provides the implementation for the OpenAI fine-tuning CLI adapter.
 type FineTuningAdapter struct {
 	*helper.ParentAdapter
 }
 
-// NewFineTuningAdapter creates a new fine-tuning command adapter.
+// NewFineTuningAdapter creates a new FineTuningAdapter adapter.
 func NewFineTuningAdapter(app *intapp.App) ctr.ParentAdapter {
 	adp := &FineTuningAdapter{}
 	cmd := &cobra.Command{}

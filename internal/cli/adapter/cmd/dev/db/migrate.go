@@ -10,12 +10,12 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// MigrateAdapter provides the implementation for the migrate command adapter.
+// MigrateAdapter provides the implementation for the database migration CLI adapter.
 type MigrateAdapter struct {
 	*helper.CommandAdapter
 }
 
-// NewMigrateAdapter creates a new migrate command adapter.
+// NewMigrateAdapter creates a new MigrateAdapter adapter.
 func NewMigrateAdapter(app *intapp.App) ctr.CommandAdapter {
 	adp := &MigrateAdapter{}
 	cmd := &cobra.Command{}

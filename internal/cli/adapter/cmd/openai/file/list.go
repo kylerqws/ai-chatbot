@@ -12,7 +12,7 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// ListAdapter provides the implementation for the list command adapter.
+// ListAdapter provides the implementation for the OpenAI file listing CLI adapter.
 type ListAdapter struct {
 	*helper.CommandAdapter
 	*helper.OpenAiAdapter
@@ -27,7 +27,7 @@ type ListAdapter struct {
 	*helper.FormatAdapter
 }
 
-// NewListAdapter creates a new list command adapter.
+// NewListAdapter creates a new ListAdapter adapter.
 func NewListAdapter(app *intapp.App) ctr.CommandAdapter {
 	adp := &ListAdapter{}
 	cmd := &cobra.Command{}

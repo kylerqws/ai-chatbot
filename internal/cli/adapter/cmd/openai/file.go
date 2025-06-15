@@ -10,12 +10,12 @@ import (
 	ctr "github.com/kylerqws/chatbot/internal/cli/contract/adapter"
 )
 
-// FileAdapter provides the implementation for the file command adapter.
+// FileAdapter provides the implementation for the OpenAI file CLI adapter.
 type FileAdapter struct {
 	*helper.ParentAdapter
 }
 
-// NewFileAdapter creates a new file command adapter.
+// NewFileAdapter creates a new FileAdapter adapter.
 func NewFileAdapter(app *intapp.App) ctr.ParentAdapter {
 	adp := &FileAdapter{}
 	cmd := &cobra.Command{}
