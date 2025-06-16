@@ -22,14 +22,14 @@ func CreateMessageTable06032025001(migrations *migrate.Migrations) {
 				);
 			`)
 			if err != nil {
-				return fmt.Errorf("create message table: %w", err)
+				return fmt.Errorf("create `message` table: %w", err)
 			}
 			return nil
 		},
 		func(ctx context.Context, db *bun.DB) error {
 			_, err := db.ExecContext(ctx, `DROP TABLE IF EXISTS message;`)
 			if err != nil {
-				return fmt.Errorf("drop message table: %w", err)
+				return fmt.Errorf("drop `message` table: %w", err)
 			}
 			return nil
 		},

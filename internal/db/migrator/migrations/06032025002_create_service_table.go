@@ -22,14 +22,14 @@ func CreateServiceTable06032025002(migrations *migrate.Migrations) {
 				);
 			`)
 			if err != nil {
-				return fmt.Errorf("create service table: %w", err)
+				return fmt.Errorf("create `service` table: %w", err)
 			}
 			return nil
 		},
 		func(ctx context.Context, db *bun.DB) error {
 			_, err := db.ExecContext(ctx, `DROP TABLE IF EXISTS service;`)
 			if err != nil {
-				return fmt.Errorf("drop service table: %w", err)
+				return fmt.Errorf("drop `service` table: %w", err)
 			}
 			return nil
 		},

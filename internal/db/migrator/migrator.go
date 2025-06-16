@@ -21,7 +21,7 @@ func Migrate(ctx context.Context, db ctr.DB) (err error) {
 	if err = db.Migrator().Migrate(ctx, registeredMigrations()); err != nil {
 		return fmt.Errorf("apply migrations: %w", err)
 	}
-	return nil
+	return err
 }
 
 // Rollback rolls back the last applied database migrations.
@@ -35,7 +35,7 @@ func Rollback(ctx context.Context, db ctr.DB) (err error) {
 	if err = db.Migrator().Rollback(ctx, registeredMigrations()); err != nil {
 		return fmt.Errorf("rollback migrations: %w", err)
 	}
-	return nil
+	return err
 }
 
 // closeClient closes the database client and updates the error on failure.
@@ -48,8 +48,8 @@ func closeClient(cl ctrcl.Client, err *error) {
 // registeredMigrations returns the set of migrations created from the registry.
 func registeredMigrations() *migrate.Migrations {
 	migs := migrate.NewMigrations()
-	for _, register := range migrationRegistry {
-		register(migs)
+	for i := range registry {
+		registry[i](migs)
 	}
 	return migs
 }

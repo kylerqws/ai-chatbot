@@ -24,14 +24,14 @@ func CreateAiChatTable06032025004(migrations *migrate.Migrations) {
 				);
 			`)
 			if err != nil {
-				return fmt.Errorf("create aichat table: %w", err)
+				return fmt.Errorf("create `aichat` table: %w", err)
 			}
 			return nil
 		},
 		func(ctx context.Context, db *bun.DB) error {
 			_, err := db.ExecContext(ctx, `DROP TABLE IF EXISTS aichat;`)
 			if err != nil {
-				return fmt.Errorf("drop aichat table: %w", err)
+				return fmt.Errorf("drop `aichat` table: %w", err)
 			}
 			return nil
 		},

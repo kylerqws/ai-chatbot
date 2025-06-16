@@ -5,8 +5,8 @@ import (
 	bunmig "github.com/uptrace/bun/migrate"
 )
 
-// migrationRegistry is the ordered list of schema migration registrations.
-var migrationRegistry = []func(*bunmig.Migrations){
+// registry is the ordered list of schema migration registrations.
+var registry = []func(*bunmig.Migrations){
 	// --- 06.03.2025 ---
 	intmig.CreateMessageTable06032025001,
 	intmig.CreateServiceTable06032025002,
