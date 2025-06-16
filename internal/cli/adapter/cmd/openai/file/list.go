@@ -26,7 +26,7 @@ type ListAdapter struct {
 	*helper.FormatAdapter
 }
 
-// NewListAdapter creates a new ListAdapter adapter.
+// NewListAdapter creates a new instance of ListAdapter.
 func NewListAdapter(app *intapp.App) ctr.CommandAdapter {
 	adp := &ListAdapter{}
 	cmd := &cobra.Command{}
@@ -112,7 +112,7 @@ func (a *ListAdapter) ConfigureFlags() {
 	desc = "Filter by expires date before (e.g. " + helper.DateExample + " or '" + helper.DatetimeExample + "')\n"
 	a.AddStringFlag(helper.ExpiresBeforeFlagKey, "", "", desc)
 
-	desc = "Sort Order (val. " + helper.SortOrderAscExample + " or " + helper.SortOrderDescExample + ")"
+	desc = "Sort order (opt. " + helper.SortOrderAscExample + ", " + helper.SortOrderDescExample + ")"
 	a.AddStringFlag(helper.SortOrderFlagKey, "", helper.DefaultSortOrder, desc)
 
 	desc = "After file ID (e.g. " + helper.FileIDExample + ")"
@@ -157,7 +157,7 @@ func (a *ListAdapter) List(_ *cobra.Command, _ []string) error {
 	return a.ErrorIfExist("Failed to retrieve files or data is unavailable.")
 }
 
-// Request executes the API call to retrieve files from OpenAI.
+// Request prepares and sends the API request to retrieve files.
 func (a *ListAdapter) Request() {
 	app := a.App()
 	ctx := app.Context()
@@ -264,7 +264,7 @@ func (a *ListAdapter) PrintFiles() error {
 	return nil
 }
 
-// ExtractSinglePurpose returns the single purpose if only one exists.
+// ExtractSinglePurpose returns the purpose if single, else the full list.
 func (*ListAdapter) ExtractSinglePurpose(purposes *[]string) (*string, []string) {
 	if purposes == nil || len(*purposes) == 0 {
 		return nil, nil
