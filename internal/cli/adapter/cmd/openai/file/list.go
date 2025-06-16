@@ -94,10 +94,10 @@ func (a *ListAdapter) ConfigureFlags() {
 	desc := "Filter by file ID (e.g. " + helper.FileIDExample + ")"
 	a.AddStringSliceFlag(helper.IdFlagKey, "", []string{}, desc)
 
-	desc = "Filter by purpose (e.g. " + a.PurposeManager().JoinCodes(", ") + ", ...)"
+	desc = "Filter by purpose (e.g. " + a.PurposeManager().JoinCodes(", ") + ", etc.)"
 	a.AddStringSliceFlag(helper.PurposeFlagKey, "", []string{}, desc)
 
-	desc = "Filter by file name (e.g. " + helper.Filename1Example + ", " + helper.Filename2Example + ", ...)\n"
+	desc = "Filter by file name (e.g. " + helper.Filename1Example + ", " + helper.Filename2Example + ", etc.)\n"
 	a.AddStringSliceFlag(helper.FilenameFlagKey, "", []string{}, desc)
 
 	desc = "Filter by creation date after (e.g. " + helper.DateExample + " or '" + helper.DatetimeExample + "')"
@@ -106,13 +106,13 @@ func (a *ListAdapter) ConfigureFlags() {
 	desc = "Filter by creation date before (e.g. " + helper.DateExample + " or '" + helper.DatetimeExample + "')"
 	a.AddStringFlag(helper.CreatedBeforeFlagKey, "", "", desc)
 
-	desc = "Filter by expires date after (e.g. " + helper.DateExample + " or '" + helper.DatetimeExample + "')"
+	desc = "Filter by expiration date after (e.g. " + helper.DateExample + " or '" + helper.DatetimeExample + "')"
 	a.AddStringFlag(helper.ExpiresAfterFlagKey, "", "", desc)
 
-	desc = "Filter by expires date before (e.g. " + helper.DateExample + " or '" + helper.DatetimeExample + "')\n"
+	desc = "Filter by expiration date before (e.g. " + helper.DateExample + " or '" + helper.DatetimeExample + "')\n"
 	a.AddStringFlag(helper.ExpiresBeforeFlagKey, "", "", desc)
 
-	desc = "Sort order (opt. " + helper.SortOrderAscExample + ", " + helper.SortOrderDescExample + ")"
+	desc = "Sort order (" + helper.SortOrderAscExample + ", " + helper.SortOrderDescExample + ")"
 	a.AddStringFlag(helper.SortOrderFlagKey, "", helper.DefaultSortOrder, desc)
 
 	desc = "After file ID (e.g. " + helper.FileIDExample + ")"
