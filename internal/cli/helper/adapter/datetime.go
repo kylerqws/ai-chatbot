@@ -18,13 +18,13 @@ const (
 
 // DateTimeAdapter provides the implementation of a CLI adapter for date and time handling.
 type DateTimeAdapter struct {
-	command         *cobra.Command
-	datetimeFormats []string
+	command     *cobra.Command
+	dateFormats []string
 }
 
 // NewDateTimeAdapter creates a new instance of DateTimeAdapter.
 func NewDateTimeAdapter(cmd *cobra.Command) *DateTimeAdapter {
-	return &DateTimeAdapter{command: cmd, datetimeFormats: []string{time.DateOnly, time.DateTime}}
+	return &DateTimeAdapter{command: cmd, dateFormats: []string{time.DateOnly, time.DateTime}}
 }
 
 // ParseDateTime parses a date or datetime string into a UTC Unix timestamp.
@@ -33,8 +33,8 @@ func (a *DateTimeAdapter) ParseDateTime(dateStr string) *int64 {
 		return a.datetimePointer(0)
 	}
 
-	for i := range a.datetimeFormats {
-		t, err := time.ParseInLocation(a.datetimeFormats[i], dateStr, time.UTC)
+	for i := range a.dateFormats {
+		t, err := time.ParseInLocation(a.dateFormats[i], dateStr, time.UTC)
 		if err == nil {
 			return a.datetimePointer(t.UTC().Unix())
 		}
@@ -66,8 +66,8 @@ func (*DateTimeAdapter) DateTime(years, months, days int) string {
 // ValidateDateFormat validates a date or datetime string.
 func (a *DateTimeAdapter) ValidateDateFormat(dateStr string) error {
 	var err error
-	for i := range a.datetimeFormats {
-		if _, err = time.Parse(a.datetimeFormats[i], dateStr); err == nil {
+	for i := range a.dateFormats {
+		if _, err = time.Parse(a.dateFormats[i], dateStr); err == nil {
 			return nil
 		}
 	}
