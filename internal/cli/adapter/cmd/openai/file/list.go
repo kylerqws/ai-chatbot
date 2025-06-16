@@ -132,7 +132,7 @@ func (a *ListAdapter) ConfigureFlags() {
 // Validate validates all arguments and flags passed to the command.
 func (a *ListAdapter) Validate(_ *cobra.Command, _ []string) error {
 	a.CacheChangedFlags(a.FilterKeys()...)
-	if !a.HasChangedFlagsInCache() {
+	if !a.HasChangedFlags() {
 		return nil
 	}
 
@@ -177,81 +177,81 @@ func (a *ListAdapter) Request() {
 	svc := app.OpenAI().ServiceProvider().File()
 	req := svc.NewListFilesRequest()
 
-	if a.HasChangedFlagsInCache() {
-		if a.HasChangedFlagInCache(helper.IdFlagKey) {
-			fileIDs, err := a.GetStringSliceFlag(helper.IdFlagKey)
+	if a.HasChangedFlags() {
+		if a.HasChangedFlag(helper.IdFlagKey) {
+			fileIDs, err := a.StringSliceFlag(helper.IdFlagKey)
 			if err != nil {
 				a.AddError(err)
 			}
 			req.FileIDs = fileIDs
 		}
 
-		if a.HasChangedFlagInCache(helper.PurposeFlagKey) {
-			purposes, err := a.GetStringSliceFlag(helper.PurposeFlagKey)
+		if a.HasChangedFlag(helper.PurposeFlagKey) {
+			purposes, err := a.StringSliceFlag(helper.PurposeFlagKey)
 			if err != nil {
 				a.AddError(err)
 			}
 			req.Purpose, req.Purposes = a.ExtractSinglePurpose(&purposes)
 		}
 
-		if a.HasChangedFlagInCache(helper.FilenameFlagKey) {
-			filenames, err := a.GetStringSliceFlag(helper.FilenameFlagKey)
+		if a.HasChangedFlag(helper.FilenameFlagKey) {
+			filenames, err := a.StringSliceFlag(helper.FilenameFlagKey)
 			if err != nil {
 				a.AddError(err)
 			}
 			req.Filenames = filenames
 		}
 
-		if a.HasChangedFlagInCache(helper.CreatedAfterFlagKey) {
-			createdAfter, err := a.GetStringFlag(helper.CreatedAfterFlagKey)
+		if a.HasChangedFlag(helper.CreatedAfterFlagKey) {
+			createdAfter, err := a.StringFlag(helper.CreatedAfterFlagKey)
 			if err != nil {
 				a.AddError(err)
 			}
 			req.CreatedAfter = a.ParseDateTime(createdAfter)
 		}
 
-		if a.HasChangedFlagInCache(helper.CreatedBeforeFlagKey) {
-			createdBefore, err := a.GetStringFlag(helper.CreatedBeforeFlagKey)
+		if a.HasChangedFlag(helper.CreatedBeforeFlagKey) {
+			createdBefore, err := a.StringFlag(helper.CreatedBeforeFlagKey)
 			if err != nil {
 				a.AddError(err)
 			}
 			req.CreatedBefore = a.ParseDateTime(createdBefore)
 		}
 
-		if a.HasChangedFlagInCache(helper.ExpiresAfterFlagKey) {
-			expiresAfter, err := a.GetStringFlag(helper.ExpiresAfterFlagKey)
+		if a.HasChangedFlag(helper.ExpiresAfterFlagKey) {
+			expiresAfter, err := a.StringFlag(helper.ExpiresAfterFlagKey)
 			if err != nil {
 				a.AddError(err)
 			}
 			req.ExpiresAfter = a.ParseDateTime(expiresAfter)
 		}
 
-		if a.HasChangedFlagInCache(helper.ExpiresBeforeFlagKey) {
-			expiresBefore, err := a.GetStringFlag(helper.ExpiresBeforeFlagKey)
+		if a.HasChangedFlag(helper.ExpiresBeforeFlagKey) {
+			expiresBefore, err := a.StringFlag(helper.ExpiresBeforeFlagKey)
 			if err != nil {
 				a.AddError(err)
 			}
 			req.ExpiresBefore = a.ParseDateTime(expiresBefore)
 		}
 
-		if a.HasChangedFlagInCache(helper.SortOrderFlagKey) {
-			order, err := a.GetPointerStringFlag(helper.SortOrderFlagKey)
+		if a.HasChangedFlag(helper.SortOrderFlagKey) {
+			order, err := a.PointerStringFlag(helper.SortOrderFlagKey)
 			if err != nil {
 				a.AddError(err)
 			}
 			req.Order = a.SortOrderToLower(order)
 		}
 
-		if a.HasChangedFlagInCache(helper.AfterFlagKey) {
-			afterID, err := a.GetPointerStringFlag(helper.AfterFlagKey)
+		if a.HasChangedFlag(helper.AfterFlagKey) {
+			afterID, err := a.PointerStringFlag(helper.AfterFlagKey)
 			if err != nil {
 				a.AddError(err)
 			}
 			req.After = afterID
 		}
 
-		if a.HasChangedFlagInCache(helper.LimitFlagKey) {
-			limit, err := a.GetPointerUint8Flag(helper.LimitFlagKey)
+		if a.HasChangedFlag(helper.LimitFlagKey) {
+			limit, err := a.PointerUint8Flag(helper.LimitFlagKey)
 			if err != nil {
 				a.AddError(err)
 			}
