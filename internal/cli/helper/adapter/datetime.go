@@ -28,19 +28,20 @@ func NewDateTimeAdapter(cmd *cobra.Command) *DateTimeAdapter {
 }
 
 // ParseDateTime parses a date or datetime string into a UTC Unix timestamp.
-func (a *DateTimeAdapter) ParseDateTime(dateStr string) *int64 {
-	if strings.TrimSpace(dateStr) == "" {
-		return a.datetimePointer(0)
+func (a *DateTimeAdapter) ParseDateTime(date string) *int64 {
+	date = strings.TrimSpace(date)
+	if date == "" {
+		return nil
 	}
 
 	for i := range a.dateFormats {
-		t, err := time.ParseInLocation(a.dateFormats[i], dateStr, time.UTC)
+		timestamp, err := time.ParseInLocation(a.dateFormats[i], date, time.UTC)
 		if err == nil {
-			return a.datetimePointer(t.UTC().Unix())
+			return a.datetimePointer(timestamp.UTC().Unix())
 		}
 	}
 
-	return a.datetimePointer(time.Now().UTC().Unix())
+	return nil
 }
 
 // NowDate returns the current UTC date.
@@ -64,14 +65,14 @@ func (*DateTimeAdapter) DateTime(years, months, days int) string {
 }
 
 // ValidateDateFormat validates a date or datetime string.
-func (a *DateTimeAdapter) ValidateDateFormat(dateStr string) error {
+func (a *DateTimeAdapter) ValidateDateFormat(date string) error {
 	var err error
 	for i := range a.dateFormats {
-		if _, err = time.Parse(a.dateFormats[i], dateStr); err == nil {
+		if _, err = time.Parse(a.dateFormats[i], date); err == nil {
 			return nil
 		}
 	}
-	return fmt.Errorf("invalid date or datetime format in '%s': %w", dateStr, err)
+	return fmt.Errorf("invalid date or datetime format in '%s': %w", date, err)
 }
 
 // datetimePointer returns a pointer to the value or nil if it's zero.
