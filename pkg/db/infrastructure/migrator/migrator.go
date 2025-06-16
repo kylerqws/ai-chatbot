@@ -24,7 +24,7 @@ func New(cl ctrcl.Client) ctrmig.Migrator {
 func (m *migrator) Migrate(ctx context.Context, mgs *migrate.Migrations) error {
 	mig, err := m.newMigrator(ctx, mgs)
 	if err != nil {
-		return fmt.Errorf("prepare migrator: %w", err)
+		return fmt.Errorf("create migrator: %w", err)
 	}
 	if _, err := mig.Migrate(ctx); err != nil {
 		return fmt.Errorf("apply migrations: %w", err)
@@ -36,7 +36,7 @@ func (m *migrator) Migrate(ctx context.Context, mgs *migrate.Migrations) error {
 func (m *migrator) Rollback(ctx context.Context, mgs *migrate.Migrations) error {
 	mig, err := m.newMigrator(ctx, mgs)
 	if err != nil {
-		return fmt.Errorf("prepare migrator: %w", err)
+		return fmt.Errorf("create migrator: %w", err)
 	}
 	if _, err := mig.Rollback(ctx); err != nil {
 		return fmt.Errorf("rollback migrations: %w", err)
