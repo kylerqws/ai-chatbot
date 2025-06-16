@@ -2,63 +2,75 @@ package adapter
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/spf13/cobra"
 )
 
-const EmptyTableColumn = "-"
+const (
+	// EmptyTableColumn defines a placeholder for empty table columns.
+	EmptyTableColumn = "-"
+)
 
+// TableAdapter provides the implementation for CLI adapter with table handling.
 type TableAdapter struct {
 	command *cobra.Command
 	table   *table.Writer
 	tables  []*table.Writer
 }
 
+// NewTableAdapter creates a new instance of TableAdapter.
 func NewTableAdapter(cmd *cobra.Command) *TableAdapter {
 	return &TableAdapter{command: cmd}
 }
 
-func (h *TableAdapter) CreateTable() uint8 {
+// CreateTable creates a new table and sets it as active.
+func (a *TableAdapter) CreateTable() uint8 {
 	tbl := table.NewWriter()
 
-	tbl.SetOutputMirror(h.command.OutOrStdout())
-	tbl.SetStyle(h.DefaultTableStyle())
+	tbl.SetOutputMirror(a.command.OutOrStdout())
+	tbl.SetStyle(a.DefaultTableStyle())
 
-	h.table = &tbl
-	h.tables = append(h.tables, h.table)
+	a.table = &tbl
+	a.tables = append(a.tables, a.table)
 
-	id := len(h.tables) - 1
+	id := len(a.tables) - 1
 	return uint8(id)
 }
 
-func (h *TableAdapter) ResetTables() {
-	h.table = nil
-	h.tables = nil
+// ResetTables clears all tables.
+func (a *TableAdapter) ResetTables() {
+	a.table = nil
+	a.tables = nil
 }
 
-func (h *TableAdapter) Table() *table.Writer {
-	return h.table
+// Table returns the currently active table.
+func (a *TableAdapter) Table() *table.Writer {
+	return a.table
 }
 
-func (h *TableAdapter) Tables() []*table.Writer {
-	return h.tables
+// Tables returns all created tables.
+func (a *TableAdapter) Tables() []*table.Writer {
+	return a.tables
 }
 
-func (h *TableAdapter) ExistTables() bool {
-	return len(h.tables) > 0
+// ExistTables reports whether any tables have been created.
+func (a *TableAdapter) ExistTables() bool {
+	return len(a.tables) > 0
 }
 
-func (h *TableAdapter) SwitchTable(id uint8) error {
-	if id >= uint8(len(h.tables)) {
+// SwitchTable sets the active table by ID.
+func (a *TableAdapter) SwitchTable(id uint8) error {
+	if id >= uint8(len(a.tables)) {
 		return fmt.Errorf("table with ID %d not found", id)
 	}
 
-	h.table = h.tables[id]
+	a.table = a.tables[id]
 	return nil
 }
 
+// DefaultTableStyle returns the default table styling.
 func (*TableAdapter) DefaultTableStyle() table.Style {
 	style := table.StyleBold
 
@@ -68,24 +80,29 @@ func (*TableAdapter) DefaultTableStyle() table.Style {
 	return style
 }
 
+// ColumnConfig creates a column configuration.
 func (*TableAdapter) ColumnConfig(
 	index uint8, align text.Align, width uint8, colors text.Colors,
 ) table.ColumnConfig {
 	return table.ColumnConfig{Number: int(index), Align: align, WidthMin: int(width), Colors: colors}
 }
 
-func (h *TableAdapter) SetColumnTableConfigs(configs ...table.ColumnConfig) {
-	(*h.table).SetColumnConfigs(configs)
+// SetColumnTableConfigs applies column configurations to the active table.
+func (a *TableAdapter) SetColumnTableConfigs(configs ...table.ColumnConfig) {
+	(*a.table).SetColumnConfigs(configs)
 }
 
-func (h *TableAdapter) AppendTableHeader(headers ...any) {
-	(*h.table).AppendHeader(append(table.Row{}, headers...))
+// AppendTableHeader appends headers to the active table.
+func (a *TableAdapter) AppendTableHeader(headers ...any) {
+	(*a.table).AppendHeader(append(table.Row{}, headers...))
 }
 
-func (h *TableAdapter) AppendTableRow(rows ...any) {
-	(*h.table).AppendRow(append(table.Row{}, rows...))
+// AppendTableRow appends a row to the active table.
+func (a *TableAdapter) AppendTableRow(rows ...any) {
+	(*a.table).AppendRow(append(table.Row{}, rows...))
 }
 
-func (h *TableAdapter) RenderTable() {
-	(*h.table).Render()
+// RenderTable renders the active table.
+func (a *TableAdapter) RenderTable() {
+	(*a.table).Render()
 }
