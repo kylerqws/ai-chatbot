@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-// ResolveMode returns the execution mode based on CLI arguments.
+// ResolveMode returns the current execution mode.
 func ResolveMode() string {
 	if len(os.Args) > 1 && os.Args[1] == "server" {
 		return app.ModeService

@@ -9,7 +9,7 @@ import (
 	"github.com/kylerqws/chatbot/internal/app"
 )
 
-// ResolveContext returns the application context based on the execution mode.
+// ResolveContext returns a context and its cancel function.
 func ResolveContext() (context.Context, context.CancelFunc) {
 	if ResolveMode() == app.ModeService {
 		return signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
