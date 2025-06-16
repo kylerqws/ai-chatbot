@@ -24,7 +24,7 @@ func (a *ErrorAdapter) Errors() []error {
 	return a.errors
 }
 
-// ExistErrors reports whether any errors have been recorded.
+// ExistErrors reports whether any errors have been added.
 func (a *ErrorAdapter) ExistErrors() bool {
 	return len(a.errors) > 0
 }
@@ -49,7 +49,7 @@ func (a *ErrorAdapter) ShowErrors() bool {
 	return show && err == nil
 }
 
-// StringErrors returns all errors as a single concatenated string.
+// StringErrors returns all errors as a single string.
 func (a *ErrorAdapter) StringErrors() string {
 	var buf strings.Builder
 	if err := a.PrintErrorsToWriter(&buf); err != nil {
