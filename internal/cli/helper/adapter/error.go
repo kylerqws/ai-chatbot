@@ -14,7 +14,7 @@ type ErrorAdapter struct {
 	errors  []error
 }
 
-// NewErrorAdapter creates a new ErrorAdapter adapter.
+// NewErrorAdapter creates a new instance of ErrorAdapter.
 func NewErrorAdapter(cmd *cobra.Command) *ErrorAdapter {
 	return &ErrorAdapter{command: cmd}
 }
@@ -64,7 +64,7 @@ func (a *ErrorAdapter) ErrorIfExist(format string, args ...any) error {
 		if !a.ShowErrors() {
 			return fmt.Errorf(format, args...)
 		}
-		return fmt.Errorf("Failed to execute command:\n%s", a.StringErrors())
+		return fmt.Errorf(a.StringErrors())
 	}
 	return nil
 }

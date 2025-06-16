@@ -12,7 +12,7 @@ type PrintAdapter struct {
 	command *cobra.Command
 }
 
-// NewPrintAdapter creates a new PrintAdapter adapter.
+// NewPrintAdapter creates a new instance of PrintAdapter.
 func NewPrintAdapter(cmd *cobra.Command) *PrintAdapter {
 	return &PrintAdapter{command: cmd}
 }

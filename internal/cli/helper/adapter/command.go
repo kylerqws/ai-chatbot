@@ -18,7 +18,7 @@ type CommandAdapter struct {
 	command *cobra.Command
 }
 
-// NewCommandAdapter creates a new CommandAdapter adapter.
+// NewCommandAdapter creates a new instance of CommandAdapter.
 func NewCommandAdapter(app *app.App, cmd *cobra.Command) *CommandAdapter {
 	hlp := &CommandAdapter{command: cmd}
 

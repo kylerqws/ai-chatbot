@@ -13,7 +13,7 @@ type GeneralAdapter struct {
 	command *cobra.Command
 }
 
-// NewGeneralAdapter creates a new GeneralAdapter adapter.
+// NewGeneralAdapter creates a new instance of GeneralAdapter.
 func NewGeneralAdapter(app *app.App, cmd *cobra.Command) *GeneralAdapter {
 	return &GeneralAdapter{app: app, command: cmd}
 }

@@ -8,7 +8,7 @@ type ChildrenAdapter struct {
 	children []*cobra.Command
 }
 
-// NewChildrenAdapter creates a new ChildrenAdapter adapter.
+// NewChildrenAdapter creates a new instance of ChildrenAdapter.
 func NewChildrenAdapter(cmd *cobra.Command) *ChildrenAdapter {
 	return &ChildrenAdapter{command: cmd}
 }

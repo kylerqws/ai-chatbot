@@ -13,7 +13,7 @@ type RootAdapter struct {
 	command *cobra.Command
 }
 
-// NewRootAdapter creates a new RootAdapter adapter.
+// NewRootAdapter creates a new instance of RootAdapter.
 func NewRootAdapter(app *app.App, cmd *cobra.Command) *RootAdapter {
 	hlp := &RootAdapter{command: cmd}
 	hlp.ParentAdapter = NewParentAdapter(app, cmd)
