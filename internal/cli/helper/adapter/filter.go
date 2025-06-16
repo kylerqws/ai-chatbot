@@ -2,27 +2,32 @@ package adapter
 
 import "github.com/spf13/cobra"
 
+// FilterAdapter provides the implementation for CLI adapter with filter handling.
 type FilterAdapter struct {
 	command    *cobra.Command
 	filterKeys []string
 }
 
+// NewFilterAdapter creates a new instance of FilterAdapter.
 func NewFilterAdapter(cmd *cobra.Command) *FilterAdapter {
 	return &FilterAdapter{command: cmd}
 }
 
-func (h *FilterAdapter) FilterKeys() []string {
-	return h.filterKeys
+// FilterKeys returns all filter keys.
+func (a *FilterAdapter) FilterKeys() []string {
+	return a.filterKeys
 }
 
-func (h *FilterAdapter) AddFilterKey(key string) {
+// AddFilterKey adds a single filter key to the collection.
+func (a *FilterAdapter) AddFilterKey(key string) {
 	if key != "" {
-		h.filterKeys = append(h.filterKeys, key)
+		a.filterKeys = append(a.filterKeys, key)
 	}
 }
 
-func (h *FilterAdapter) AddFilterKeys(keys ...string) {
+// AddFilterKeys adds multiple filter keys to the collection.
+func (a *FilterAdapter) AddFilterKeys(keys ...string) {
 	for i := range keys {
-		h.AddFilterKey(keys[i])
+		a.AddFilterKey(keys[i])
 	}
 }
