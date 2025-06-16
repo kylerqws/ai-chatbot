@@ -44,7 +44,6 @@ func (d *sqliteDialect) Connect() error {
 	if err := d.init(); err != nil {
 		return fmt.Errorf("init database: %w", err)
 	}
-
 	if err := d.db.Ping(); err != nil {
 		return fmt.Errorf("ping database: %w", err)
 	}
@@ -70,8 +69,7 @@ func (d *sqliteDialect) DB() *bun.DB {
 
 // prepareDSN normalizes and ensures the DSN path is valid.
 func (*sqliteDialect) prepareDSN(dsn string) (string, error) {
-	dsn = strings.TrimSpace(dsn)
-	if dsn == "" {
+	if dsn = strings.TrimSpace(dsn); dsn == "" {
 		dsn = "var/database.sqlite"
 	}
 

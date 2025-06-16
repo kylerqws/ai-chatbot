@@ -37,8 +37,8 @@ func (c *dbClient) Connect() error {
 	if err := c.dialect.Connect(); err != nil {
 		return fmt.Errorf("connect with dialect '%s': %w", dn, err)
 	}
-
 	c.db = c.dialect.DB()
+
 	return nil
 }
 
