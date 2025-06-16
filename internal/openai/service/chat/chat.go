@@ -29,7 +29,7 @@ func (*service) NewChatCompletionResponse() *ctrsvc.ChatCompletionResponse {
 	return &ctrsvc.ChatCompletionResponse{}
 }
 
-// ChatCompletion sends a chat completion request and returns the response.
+// ChatCompletion sends a chat completion request to OpenAI.
 func (s *service) ChatCompletion(ctx context.Context, req *ctrsvc.ChatCompletionRequest) (*ctrsvc.ChatCompletionResponse, error) {
 	return s.svc.ChatCompletion(ctx, req)
 }
