@@ -13,9 +13,14 @@ func NewFilterAdapter(cmd *cobra.Command) *FilterAdapter {
 	return &FilterAdapter{command: cmd}
 }
 
-// FilterKeys returns all filter keys.
+// FilterKeys returns the list of collected filter keys.
 func (a *FilterAdapter) FilterKeys() []string {
 	return a.filterKeys
+}
+
+// ExistFilterKeys reports whether any filter keys have been added.
+func (a *FilterAdapter) ExistFilterKeys() bool {
+	return len(a.filterKeys) > 0
 }
 
 // AddFilterKey adds a single filter key to the collection.
