@@ -37,7 +37,7 @@ func (a *DateTimeAdapter) ParseDateTime(date string) *int64 {
 	for i := range a.dateFormats {
 		tm, err := time.ParseInLocation(a.dateFormats[i], date, time.UTC)
 		if err == nil {
-			return a.datetimePointer(tm.UTC().Unix())
+			return a.valuePointer(tm.UTC().Unix())
 		}
 	}
 
@@ -76,7 +76,7 @@ func (a *DateTimeAdapter) ValidateDateFormat(date string) error {
 }
 
 // datetimePointer returns a pointer to the value or nil if it's zero.
-func (*DateTimeAdapter) datetimePointer(val int64) *int64 {
+func (*DateTimeAdapter) valuePointer(val int64) *int64 {
 	if val == 0 {
 		return nil
 	}
