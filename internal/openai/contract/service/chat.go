@@ -13,6 +13,6 @@ type ChatService interface {
 	// NewChatCompletionResponse creates a new chat completion response.
 	NewChatCompletionResponse() *ctrsvc.ChatCompletionResponse
 
-	// ChatCompletion sends a chat completion request and returns the response.
+	// ChatCompletion sends a chat completion request to OpenAI.
 	ChatCompletion(ctx context.Context, req *ctrsvc.ChatCompletionRequest) (*ctrsvc.ChatCompletionResponse, error)
 }
