@@ -35,9 +35,9 @@ func (a *DateTimeAdapter) ParseDateTime(date string) *int64 {
 	}
 
 	for i := range a.dateFormats {
-		timestamp, err := time.ParseInLocation(a.dateFormats[i], date, time.UTC)
+		tm, err := time.ParseInLocation(a.dateFormats[i], date, time.UTC)
 		if err == nil {
-			return a.datetimePointer(timestamp.UTC().Unix())
+			return a.datetimePointer(tm.UTC().Unix())
 		}
 	}
 
