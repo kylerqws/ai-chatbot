@@ -23,7 +23,6 @@ func New(ctx context.Context) (ctrcfg.Config, error) {
 			return nil, fmt.Errorf("load env config: %w", err)
 		}
 		return cfg, nil
-
 	default:
 		return nil, fmt.Errorf("unsupported config source: '%s'", st)
 	}
