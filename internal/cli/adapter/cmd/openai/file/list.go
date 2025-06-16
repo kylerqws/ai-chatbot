@@ -2,7 +2,6 @@ package file
 
 import (
 	"fmt"
-
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/spf13/cobra"
 
@@ -66,11 +65,11 @@ func (a *ListAdapter) Configure() *cobra.Command {
 func (a *ListAdapter) HelpInfo() string {
 	return "You can repeat flags to provide more than one filter, for example:\n" +
 		fmt.Sprintf(
-			"  %s --%s %s --%s %s --%s %s",
+			"  %s --%s '%s' --%s '%s' --%s '%s'",
 			a.Command().Name(),
 			helper.PurposeFlagKey, a.PurposeManager().Codes.FineTune,
 			helper.PurposeFlagKey, helper.PurposeExample,
-			helper.SortOrderFlagKey, helper.SortDesc,
+			helper.SortOrderFlagKey, helper.SortOrderDescExample,
 		)
 }
 
@@ -95,26 +94,26 @@ func (a *ListAdapter) ConfigureFlags() {
 	desc := "Filter by file ID (e.g. " + helper.FileIDExample + ")"
 	a.AddStringSliceFlag(helper.IdFlagKey, "", []string{}, desc)
 
-	desc = "Filter by purpose (e.g. " + a.PurposeManager().JoinCodes(", ") + "...)"
+	desc = "Filter by purpose (e.g. " + a.PurposeManager().JoinCodes(", ") + ", ...)"
 	a.AddStringSliceFlag(helper.PurposeFlagKey, "", []string{}, desc)
 
-	desc = "Filter by file name (e.g. " + helper.Filename1Example + ", " + helper.Filename2Example + "...)"
+	desc = "Filter by file name (e.g. " + helper.Filename1Example + ", " + helper.Filename2Example + ", ...)\n"
 	a.AddStringSliceFlag(helper.FilenameFlagKey, "", []string{}, desc)
 
-	desc = "Filter by creation date after (e.g. " + helper.DateExample + " or " + helper.DatetimeExample + ")"
+	desc = "Filter by creation date after (e.g. " + helper.DateExample + " or '" + helper.DatetimeExample + "')"
 	a.AddStringFlag(helper.CreatedAfterFlagKey, "", "", desc)
 
-	desc = "Filter by creation date before (e.g. " + helper.DateExample + " or " + helper.DatetimeExample + ")"
+	desc = "Filter by creation date before (e.g. " + helper.DateExample + " or '" + helper.DatetimeExample + "')"
 	a.AddStringFlag(helper.CreatedBeforeFlagKey, "", "", desc)
 
-	desc = "Filter by expires date after (e.g. " + helper.DateExample + " or " + helper.DatetimeExample + ")"
+	desc = "Filter by expires date after (e.g. " + helper.DateExample + " or '" + helper.DatetimeExample + "')"
 	a.AddStringFlag(helper.ExpiresAfterFlagKey, "", "", desc)
 
-	desc = "Filter by expires date before (e.g. " + helper.DateExample + " or " + helper.DatetimeExample + ")"
+	desc = "Filter by expires date before (e.g. " + helper.DateExample + " or '" + helper.DatetimeExample + "')\n"
 	a.AddStringFlag(helper.ExpiresBeforeFlagKey, "", "", desc)
 
-	desc = "Sort order for list (opt.: " + helper.SortAsc + " or " + helper.SortDesc + ")"
-	a.AddStringFlag(helper.SortOrderFlagKey, "", helper.DefaultSort, desc)
+	desc = "Sort Order (val. " + helper.SortOrderAscExample + " or " + helper.SortOrderDescExample + ")"
+	a.AddStringFlag(helper.SortOrderFlagKey, "", helper.DefaultSortOrder, desc)
 
 	desc = "After file ID (e.g. " + helper.FileIDExample + ")"
 	a.AddStringFlag(helper.AfterFlagKey, "", "", desc)
@@ -162,71 +161,69 @@ func (a *ListAdapter) List(_ *cobra.Command, _ []string) error {
 func (a *ListAdapter) Request() {
 	app := a.App()
 	ctx := app.Context()
+
 	svc := app.OpenAI().ServiceProvider().File()
 	req := svc.NewListFilesRequest()
-	fgs := a.Command().Flags()
 
-	fileIDs, err := fgs.GetStringSlice(helper.IdFlagKey)
+	fileIDs, err := a.GetStringSliceFlag(helper.IdFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
 	req.FileIDs = fileIDs
 
-	purposes, err := fgs.GetStringSlice(helper.PurposeFlagKey)
-	purpose, purposeList := a.extractSingleValue(purposes)
+	purposes, err := a.GetStringSliceFlag(helper.PurposeFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
-	req.Purposes = purposeList
-	req.Purpose = &purpose
+	req.Purpose, req.Purposes = a.ExtractSinglePurpose(&purposes)
 
-	filenames, err := fgs.GetStringSlice(helper.FilenameFlagKey)
+	filenames, err := a.GetStringSliceFlag(helper.FilenameFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
 	req.Filenames = filenames
 
-	createdAfter, err := fgs.GetString(helper.CreatedAfterFlagKey)
+	createdAfter, err := a.GetStringFlag(helper.CreatedAfterFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
 	req.CreatedAfter = a.ParseDateTime(createdAfter)
 
-	createdBefore, err := fgs.GetString(helper.CreatedBeforeFlagKey)
+	createdBefore, err := a.GetStringFlag(helper.CreatedBeforeFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
 	req.CreatedBefore = a.ParseDateTime(createdBefore)
 
-	expiresAfter, err := fgs.GetString(helper.ExpiresAfterFlagKey)
+	expiresAfter, err := a.GetStringFlag(helper.ExpiresAfterFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
 	req.ExpiresAfter = a.ParseDateTime(expiresAfter)
 
-	expiresBefore, err := fgs.GetString(helper.ExpiresBeforeFlagKey)
+	expiresBefore, err := a.GetStringFlag(helper.ExpiresBeforeFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
 	req.ExpiresBefore = a.ParseDateTime(expiresBefore)
 
-	sortOrder, err := fgs.GetString(helper.SortOrderFlagKey)
+	order, err := a.GetPointerStringFlag(helper.SortOrderFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
-	req.Order = &sortOrder
+	req.Order = a.SortOrderToLower(order)
 
-	afterID, err := fgs.GetString(helper.AfterFlagKey)
+	afterID, err := a.GetPointerStringFlag(helper.AfterFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
-	req.After = &afterID
+	req.After = afterID
 
-	limit, err := fgs.GetUint8(helper.LimitFlagKey)
+	limit, err := a.GetPointerUint8Flag(helper.LimitFlagKey)
 	if err != nil {
 		a.AddError(err)
 	}
-	req.Limit = &limit
+	req.Limit = limit
 
 	resp, err := svc.ListFiles(ctx, req)
 	if err != nil {
@@ -267,10 +264,13 @@ func (a *ListAdapter) PrintFiles() error {
 	return nil
 }
 
-// extractSingleValue returns the single value if only one exists.
-func (*ListAdapter) extractSingleValue(values []string) (string, []string) {
-	if len(values) == 1 {
-		return values[0], nil
+// ExtractSinglePurpose returns the single purpose if only one exists.
+func (*ListAdapter) ExtractSinglePurpose(purposes *[]string) (*string, []string) {
+	if purposes == nil || len(*purposes) == 0 {
+		return nil, nil
 	}
-	return "", values
+	if len(*purposes) == 1 {
+		return &(*purposes)[0], nil
+	}
+	return nil, *purposes
 }
