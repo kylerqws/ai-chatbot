@@ -61,7 +61,7 @@ func (a *ListAdapter) Configure() *cobra.Command {
 	return a.MainConfigure()
 }
 
-// HelpInfo returns extended help usage info for the command.
+// HelpInfo returns extended help usage for the command.
 func (a *ListAdapter) HelpInfo() string {
 	return "You can repeat flags to provide multiple filters, for example:\n" +
 		fmt.Sprintf(
