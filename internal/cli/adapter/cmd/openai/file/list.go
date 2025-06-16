@@ -61,15 +61,22 @@ func (a *ListAdapter) Configure() *cobra.Command {
 	return a.MainConfigure()
 }
 
-// HelpInfo returns extended help usage text for the command.
+// HelpInfo returns extended help usage info for the command.
 func (a *ListAdapter) HelpInfo() string {
-	return "You can repeat flags to provide more than one filter, for example:\n" +
+	return "You can repeat flags to provide multiple filters, for example:\n" +
 		fmt.Sprintf(
-			"  %s --%s '%s' --%s '%s' --%s '%s'",
+			"  %s --%s '%s' --%s '%s' --%s '%s'\n\n",
 			a.Command().Name(),
-			helper.PurposeFlagKey, a.PurposeManager().Codes.FineTune,
-			helper.PurposeFlagKey, helper.PurposeExample,
+			helper.PurposeFlagKey, helper.Purpose1Example,
+			helper.PurposeFlagKey, helper.Purpose2Example,
 			helper.SortOrderFlagKey, helper.SortOrderDescExample,
+		) +
+		fmt.Sprintf(
+			"Filters are processed in two stages:\n"+
+				"  1. OpenAI server (applies '%s', '%s', '%s', and '%s' if a single value is specified)\n"+
+				"  2. Client-side (filters the remaining data using all other flags)",
+			helper.SortOrderFlagKey, helper.AfterFlagKey,
+			helper.LimitFlagKey, helper.PurposeFlagKey,
 		)
 }
 
@@ -124,6 +131,11 @@ func (a *ListAdapter) ConfigureFlags() {
 
 // Validate validates all arguments and flags passed to the command.
 func (a *ListAdapter) Validate(_ *cobra.Command, _ []string) error {
+	a.CacheChangedFlags(a.FilterKeys()...)
+	if !a.HasChangedFlagsInCache() {
+		return nil
+	}
+
 	a.AddErrors(a.ValidateStringSliceFlag(helper.IdFlagKey, a.ValidateFileID)...)
 	a.AddErrors(a.ValidateStringSliceFlag(helper.PurposeFlagKey, a.ValidatePurposeCode)...)
 
@@ -165,70 +177,93 @@ func (a *ListAdapter) Request() {
 	svc := app.OpenAI().ServiceProvider().File()
 	req := svc.NewListFilesRequest()
 
-	fileIDs, err := a.GetStringSliceFlag(helper.IdFlagKey)
-	if err != nil {
-		a.AddError(err)
-	}
-	req.FileIDs = fileIDs
+	if a.HasChangedFlagsInCache() {
+		if a.HasChangedFlagInCache(helper.IdFlagKey) {
+			fileIDs, err := a.GetStringSliceFlag(helper.IdFlagKey)
+			if err != nil {
+				a.AddError(err)
+			}
+			req.FileIDs = fileIDs
+		}
 
-	purposes, err := a.GetStringSliceFlag(helper.PurposeFlagKey)
-	if err != nil {
-		a.AddError(err)
-	}
-	req.Purpose, req.Purposes = a.ExtractSinglePurpose(&purposes)
+		if a.HasChangedFlagInCache(helper.PurposeFlagKey) {
+			purposes, err := a.GetStringSliceFlag(helper.PurposeFlagKey)
+			if err != nil {
+				a.AddError(err)
+			}
+			req.Purpose, req.Purposes = a.ExtractSinglePurpose(&purposes)
+		}
 
-	filenames, err := a.GetStringSliceFlag(helper.FilenameFlagKey)
-	if err != nil {
-		a.AddError(err)
-	}
-	req.Filenames = filenames
+		if a.HasChangedFlagInCache(helper.FilenameFlagKey) {
+			filenames, err := a.GetStringSliceFlag(helper.FilenameFlagKey)
+			if err != nil {
+				a.AddError(err)
+			}
+			req.Filenames = filenames
+		}
 
-	createdAfter, err := a.GetStringFlag(helper.CreatedAfterFlagKey)
-	if err != nil {
-		a.AddError(err)
-	}
-	req.CreatedAfter = a.ParseDateTime(createdAfter)
+		if a.HasChangedFlagInCache(helper.CreatedAfterFlagKey) {
+			createdAfter, err := a.GetStringFlag(helper.CreatedAfterFlagKey)
+			if err != nil {
+				a.AddError(err)
+			}
+			req.CreatedAfter = a.ParseDateTime(createdAfter)
+		}
 
-	createdBefore, err := a.GetStringFlag(helper.CreatedBeforeFlagKey)
-	if err != nil {
-		a.AddError(err)
-	}
-	req.CreatedBefore = a.ParseDateTime(createdBefore)
+		if a.HasChangedFlagInCache(helper.CreatedBeforeFlagKey) {
+			createdBefore, err := a.GetStringFlag(helper.CreatedBeforeFlagKey)
+			if err != nil {
+				a.AddError(err)
+			}
+			req.CreatedBefore = a.ParseDateTime(createdBefore)
+		}
 
-	expiresAfter, err := a.GetStringFlag(helper.ExpiresAfterFlagKey)
-	if err != nil {
-		a.AddError(err)
-	}
-	req.ExpiresAfter = a.ParseDateTime(expiresAfter)
+		if a.HasChangedFlagInCache(helper.ExpiresAfterFlagKey) {
+			expiresAfter, err := a.GetStringFlag(helper.ExpiresAfterFlagKey)
+			if err != nil {
+				a.AddError(err)
+			}
+			req.ExpiresAfter = a.ParseDateTime(expiresAfter)
+		}
 
-	expiresBefore, err := a.GetStringFlag(helper.ExpiresBeforeFlagKey)
-	if err != nil {
-		a.AddError(err)
-	}
-	req.ExpiresBefore = a.ParseDateTime(expiresBefore)
+		if a.HasChangedFlagInCache(helper.ExpiresBeforeFlagKey) {
+			expiresBefore, err := a.GetStringFlag(helper.ExpiresBeforeFlagKey)
+			if err != nil {
+				a.AddError(err)
+			}
+			req.ExpiresBefore = a.ParseDateTime(expiresBefore)
+		}
 
-	order, err := a.GetPointerStringFlag(helper.SortOrderFlagKey)
-	if err != nil {
-		a.AddError(err)
-	}
-	req.Order = a.SortOrderToLower(order)
+		if a.HasChangedFlagInCache(helper.SortOrderFlagKey) {
+			order, err := a.GetPointerStringFlag(helper.SortOrderFlagKey)
+			if err != nil {
+				a.AddError(err)
+			}
+			req.Order = a.SortOrderToLower(order)
+		}
 
-	afterID, err := a.GetPointerStringFlag(helper.AfterFlagKey)
-	if err != nil {
-		a.AddError(err)
-	}
-	req.After = afterID
+		if a.HasChangedFlagInCache(helper.AfterFlagKey) {
+			afterID, err := a.GetPointerStringFlag(helper.AfterFlagKey)
+			if err != nil {
+				a.AddError(err)
+			}
+			req.After = afterID
+		}
 
-	limit, err := a.GetPointerUint8Flag(helper.LimitFlagKey)
-	if err != nil {
-		a.AddError(err)
+		if a.HasChangedFlagInCache(helper.LimitFlagKey) {
+			limit, err := a.GetPointerUint8Flag(helper.LimitFlagKey)
+			if err != nil {
+				a.AddError(err)
+			}
+			req.Limit = limit
+		}
 	}
-	req.Limit = limit
 
 	resp, err := svc.ListFiles(ctx, req)
 	if err != nil {
 		a.AddError(err)
 	}
+
 	a.AddFiles(a.WrapOpenAIFiles(resp.Files...)...)
 }
 
