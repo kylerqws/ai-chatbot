@@ -13,7 +13,7 @@ func NewChildrenAdapter(cmd *cobra.Command) *ChildrenAdapter {
 	return &ChildrenAdapter{command: cmd}
 }
 
-// Children returns all registered child commands.
+// Children returns the list of collected child commands.
 func (a *ChildrenAdapter) Children() []*cobra.Command {
 	return a.children
 }
